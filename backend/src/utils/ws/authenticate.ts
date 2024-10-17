@@ -1,7 +1,7 @@
 import http from 'http';
-import verifyApiKey from '../utils/verifyApiKey';
+import verifyApiKey from '../verifyApiKey';
 
-const wsAuthenticate = (request: http.IncomingMessage, callback: (error: Error | null, client: unknown/*TODO: implement client type - probably it will be type from Prisma*/ | null) => void) => {
+const authenticate = (request: http.IncomingMessage, callback: (error: Error | null, client: unknown/*TODO: implement client type - probably it will be type from Prisma*/ | null) => void) => {
 	const apiKey = request.headers['authorization'];
 
 	if (apiKey == null) {
@@ -21,4 +21,4 @@ const wsAuthenticate = (request: http.IncomingMessage, callback: (error: Error |
 	callback(null, client);
 };
 
-export default wsAuthenticate;
+export default authenticate;

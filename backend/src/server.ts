@@ -8,7 +8,8 @@ import config from '../config';
 import WebSocket, { WebSocketServer } from 'ws';
 import http from 'http';
 import logger from './utils/logger';
-import wsAuthenticate from './middlewares/wsAuthenticate';
+import authenticate from './utils/ws/authenticate';
+import {broadcast} from './utils/ws/broadcast';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -34,18 +35,18 @@ app.use('*', (req, res) => NOT_FOUND(res));
 const wss = new WebSocketServer({ noServer: true });
 
 wss.on('connection', (ws) => {
-	logger.info('Client connected via WebSocket');
-
-	ws.on('message', (message: WebSocket.RawData) => {
-		logger.debug(`Received message: ${message}`);
+	ws.on('message', (message: WebSocket.RawData, isBinary: boolean) => {
+		logger.verbose(`Received message: ${message}`);
 
 		const messageString = message.toString();
 
+		broadcast({wss, message: messageString});
+
 		try {
 			const data = JSON.parse(messageString);
+			logger.debug(`Parsed data: ${messageString}`);
 
 			// TODO: Implement handling of the parsed data here
-			logger.debug(`Parsed data: ${messageString}`);
 		} catch (error: unknown) {
 			if (error instanceof Error) {
 				logger.warn(`Failed to parse message as JSON: ${error.message}`);
@@ -53,9 +54,6 @@ wss.on('connection', (ws) => {
 				logger.warn(`Failed to parse message as JSON: ${error}`);
 			}
 		}
-
-		// Respond to the client
-		ws.send('ack');
 	});
 
 	ws.on('error', logger.error);
@@ -66,18 +64,18 @@ httpServer.on('upgrade', (request, socket, head) => {
 	logger.debug('Upgrading to WebSocket');
 	socket.on('error', logger.error);
 
-	wsAuthenticate(request, (err, client) => {
+	authenticate(request, (err, client) => {
 		if (err || !client) {
 			socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
 			socket.destroy();
 
-			logger.warn('WebSocket authentication failed');
+			logger.debug('WebSocket authentication failed');
 			return;
 		}
 
-		socket.removeListener('error', logger.error);
-
 		wss.handleUpgrade(request, socket, head, ws => {
+			socket.removeListener('error', logger.error);
+
 			wss.emit('connection', ws, request, client);
 			logger.debug('WebSocket connection established');
 		});
