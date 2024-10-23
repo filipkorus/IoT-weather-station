@@ -1,10 +1,15 @@
 import {Router} from 'express';
-import exampleRouter from './example/example.router';
 import {HelloWorldHandler} from './main.controller';
+import requireAuth from '../middlewares/requireAuth';
+import nodeRouter from './node/node.router';
+import authRouter from './auth/auth.router';
+import userRouter from './user/user.router';
 
 const router = Router();
 
-router.use('/example', exampleRouter);
+router.use('/node', nodeRouter);
+router.use('/auth', authRouter);
+router.use('/user', requireAuth, userRouter);
 
 router.get('/', HelloWorldHandler);
 

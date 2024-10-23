@@ -8,8 +8,13 @@ import config from '../config';
 import WebSocket, { WebSocketServer } from 'ws';
 import http from 'http';
 import logger from './utils/logger';
-import authenticate from './utils/ws/authenticate';
+import authenticate from './middlewares/authenticate';
+import wsAuthenticate from './utils/ws/wsAuthenticate';
 import {broadcast} from './utils/ws/broadcast';
+import {onSocketPostError, onSocketPreError} from './utils/ws/wsOnError';
+import {getNodeByApiKey, setNodeIsOnline} from './routes/node/node.service';
+import wsHandleMessage from './utils/ws/wsHandleMessage';
+import wsRemoteIpPortAndUserAgent from './utils/ws/wsRemoteIpPortAndUserAgent';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -23,6 +28,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 /* custom middlewares */
+app.use(authenticate);
 app.use(requestLogger);
 
 /* main router */
@@ -34,37 +40,46 @@ app.use('*', (req, res) => NOT_FOUND(res));
 /* WebSocket server */
 const wss = new WebSocketServer({ noServer: true });
 
-wss.on('connection', (ws) => {
+wss.on('connection', async (ws: WebSocket, request: http.IncomingMessage) => {
+	const apiKey = request.headers.authorization ?? '';
+	const node = await getNodeByApiKey(apiKey);
+	if (node == null) {
+		logger.debug('Node not found');
+		ws.close();
+		return;
+	}
+
+	const remoteIpPortAndUserAgent = wsRemoteIpPortAndUserAgent(ws, request);
+
 	ws.on('message', (message: WebSocket.RawData, isBinary: boolean) => {
 		logger.verbose(`Received message: ${message}`);
 
 		const messageString = message.toString();
 
+		// TODO: Remove in production
 		broadcast({wss, message: messageString});
 
-		try {
-			const data = JSON.parse(messageString);
-			logger.debug(`Parsed data: ${messageString}`);
-
-			// TODO: Implement handling of the parsed data here
-		} catch (error: unknown) {
-			if (error instanceof Error) {
-				logger.warn(`Failed to parse message as JSON: ${error.message}`);
-			} else {
-				logger.warn(`Failed to parse message as JSON: ${error}`);
-			}
-		}
+		wsHandleMessage({
+			webSocketServer: wss,
+			sender: ws,
+			node,
+			message: messageString,
+			remoteIpPortAndUserAgent
+		});
 	});
 
-	ws.on('error', logger.error);
-	ws.on('close', () => logger.debug('Client disconnected'));
+	ws.on('error', onSocketPostError);
+	ws.on('close', () => {
+		logger.debug(`Node (id=${node.id}) disconnected`);
+		setNodeIsOnline(node.id, false);
+	});
 });
 
-httpServer.on('upgrade', (request, socket, head) => {
+httpServer.on('upgrade', async (request, socket, head) => {
 	logger.debug('Upgrading to WebSocket');
-	socket.on('error', logger.error);
+	socket.on('error', onSocketPreError);
 
-	authenticate(request, (err, client) => {
+	await wsAuthenticate(request, (err, client) => {
 		if (err || !client) {
 			socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
 			socket.destroy();
@@ -74,7 +89,7 @@ httpServer.on('upgrade', (request, socket, head) => {
 		}
 
 		wss.handleUpgrade(request, socket, head, ws => {
-			socket.removeListener('error', logger.error);
+			socket.removeListener('error', onSocketPreError);
 
 			wss.emit('connection', ws, request, client);
 			logger.debug('WebSocket connection established');
