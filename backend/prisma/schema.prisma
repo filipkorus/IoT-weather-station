@@ -7,7 +7,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Example {
-  id    Int    @id @default(autoincrement())
-  title String
+model User {
+  id           Int            @id @default(autoincrement())
+  username     String         @unique
+  passwordHash String
+  joined       DateTime       @default(now())
+  nodes        Node[]
+  RefreshToken RefreshToken[]
+}
+
+model RefreshToken {
+  id      Int      @id @default(autoincrement())
+  token   String   @unique
+  expires DateTime
+  created DateTime @default(now())
+  userId  Int
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Node {
+  id          String     @id
+  name        String?
+  apiKey      String     @unique @default(uuid())
+  pairingCode String?    @unique
+  isPaired    Boolean    @default(false)
+  isOnline    Boolean    @default(false)
+  lastOnline  DateTime?
+  userId      Int?
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  NodeData    NodeData[]
+  NodeLikes   NodeLike[]
+}
+
+model NodeData {
+  id          Int      @id @default(autoincrement())
+  created     DateTime @default(now())
+  temperature Float?
+  humidity    Float?
+  pressure    Float?
+  snowDepth   Float?
+  pm1         Float?
+  pm25        Float?
+  pm10        Float?
+  nodeId      String
+  Node        Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+}
+
+model NodeLike {
+  id         Int      @id @default(autoincrement())
+  ipAddr     String
+  remotePort Int
+  userAgent  String
+  created    DateTime @default(now())
+  Node       Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  nodeId     String
+
+  @@unique([ipAddr, remotePort, userAgent, nodeId])
 }
