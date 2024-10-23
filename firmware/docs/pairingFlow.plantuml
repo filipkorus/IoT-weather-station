@@ -1,0 +1,15 @@
+@startuml pairingFlow
+participant User
+== Pairing gateway with user account ==
+Gateway -> Backend : Gateway UID
+Gateway <- Backend : Pairing code
+User <- Gateway  : Displaying pairing code
+User -> Backend : Enter pairing code
+Gateway <-> Backend : Connection established
+== Pairing sensor with gateway ==
+User -> Gateway : Pair button press
+User -> Sensor : Pair button press
+Gateway <- Sensor : Sensor UID
+hnote over Gateway : Sensor UID saved to EEPROM
+Gateway -> Backend : Sensor Data
+@enduml

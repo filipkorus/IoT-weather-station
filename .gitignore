@@ -33,3 +33,5 @@ database
 
 venv
 __pycache__
+.obsidian
+

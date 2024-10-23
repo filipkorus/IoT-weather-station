@@ -1,0 +1,9 @@
+@startuml connectionFlow
+Gateway -> Backend : Gateway UID
+alt Gateway Paired
+Gateway <- Backend : Basic User Data
+Gateway <-> Backend : Connection established
+else Gateway No Paired
+note over Gateway, Backend: Pairing Flow
+end
+@enduml
