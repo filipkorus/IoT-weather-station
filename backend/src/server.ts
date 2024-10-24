@@ -10,11 +10,12 @@ import http from 'http';
 import logger from './utils/logger';
 import authenticate from './middlewares/authenticate';
 import wsAuthenticate from './utils/ws/wsAuthenticate';
-import {broadcast} from './utils/ws/broadcast';
 import {onSocketPostError, onSocketPreError} from './utils/ws/wsOnError';
-import {getNodeByApiKey, setNodeIsOnline} from './routes/node/node.service';
+import {setNodeIsOnline} from './routes/node/node.service';
 import wsHandleMessage from './utils/ws/wsHandleMessage';
-import wsRemoteIpPortAndUserAgent from './utils/ws/wsRemoteIpPortAndUserAgent';
+import wsRemoteIpAndUserAgent from './utils/ws/wsRemoteIpAndUserAgent';
+import {Node} from '@prisma/client';
+import WebBrowserClient from './types/WebBrowserClient';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -40,38 +41,30 @@ app.use('*', (req, res) => NOT_FOUND(res));
 /* WebSocket server */
 const wss = new WebSocketServer({ noServer: true });
 
-wss.on('connection', async (ws: WebSocket, request: http.IncomingMessage) => {
-	const apiKey = request.headers.authorization ?? '';
-	const node = await getNodeByApiKey(apiKey);
-	if (node == null) {
-		logger.debug('Node not found');
-		ws.close();
-		return;
+wss.on('connection', async (ws: WebSocket, request: http.IncomingMessage, client: Node | WebBrowserClient) => {
+	const webBrowserClientInfo = wsRemoteIpAndUserAgent(ws, request);
+	if ('userAgent' in client) { // check if client is a WebBrowserClient and overwrite its properties
+		client.ipAddr = webBrowserClientInfo.ipAddr;
+		client.userAgent = webBrowserClientInfo.userAgent;
 	}
-
-	const remoteIpPortAndUserAgent = wsRemoteIpPortAndUserAgent(ws, request);
 
 	ws.on('message', (message: WebSocket.RawData, isBinary: boolean) => {
 		logger.verbose(`Received message: ${message}`);
 
-		const messageString = message.toString();
-
-		// TODO: Remove in production
-		broadcast({wss, message: messageString});
-
 		wsHandleMessage({
 			webSocketServer: wss,
 			sender: ws,
-			node,
-			message: messageString,
-			remoteIpPortAndUserAgent
+			client,
+			receivedMessage: message.toString()
 		});
 	});
 
 	ws.on('error', onSocketPostError);
 	ws.on('close', () => {
-		logger.debug(`Node (id=${node.id}) disconnected`);
-		setNodeIsOnline(node.id, false);
+		if ('id' in client) {
+			logger.debug(`Node (id=${client.id}) disconnected`);
+			setNodeIsOnline(client.id, false);
+		}
 	});
 });
 
