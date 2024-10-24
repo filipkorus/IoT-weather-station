@@ -9,12 +9,13 @@ import WebSocket, { WebSocketServer } from 'ws';
 import http from 'http';
 import logger from './utils/logger';
 import authenticate from './middlewares/authenticate';
+import authenticateGateway from './middlewares/authenticateGateway';
 import wsAuthenticate from './utils/ws/wsAuthenticate';
 import {onSocketPostError, onSocketPreError} from './utils/ws/wsOnError';
-import {setNodeIsOnline} from './routes/node/node.service';
+import {setGatewayIsOnline} from './routes/gateway/gateway.service';
 import wsHandleMessage from './utils/ws/wsHandleMessage';
 import wsRemoteIpAndUserAgent from './utils/ws/wsRemoteIpAndUserAgent';
-import {Node} from '@prisma/client';
+import {Gateway, Node} from '@prisma/client';
 import WebBrowserClient from './types/WebBrowserClient';
 
 const app = express();
@@ -30,6 +31,7 @@ app.use(cookieParser());
 
 /* custom middlewares */
 app.use(authenticate);
+app.use(authenticateGateway);
 app.use(requestLogger);
 
 /* main router */
@@ -41,7 +43,7 @@ app.use('*', (req, res) => NOT_FOUND(res));
 /* WebSocket server */
 const wss = new WebSocketServer({ noServer: true });
 
-wss.on('connection', async (ws: WebSocket, request: http.IncomingMessage, client: Node | WebBrowserClient) => {
+wss.on('connection', async (ws: WebSocket, request: http.IncomingMessage, client: Gateway | WebBrowserClient) => {
 	const webBrowserClientInfo = wsRemoteIpAndUserAgent(ws, request);
 	if ('userAgent' in client) { // check if client is a WebBrowserClient and overwrite its properties
 		client.ipAddr = webBrowserClientInfo.ipAddr;
@@ -63,7 +65,7 @@ wss.on('connection', async (ws: WebSocket, request: http.IncomingMessage, client
 	ws.on('close', () => {
 		if ('id' in client) {
 			logger.debug(`Node (id=${client.id}) disconnected`);
-			setNodeIsOnline(client.id, false);
+			setGatewayIsOnline(client.id, false);
 		}
 	});
 });
