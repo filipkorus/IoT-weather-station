@@ -2,13 +2,13 @@ import {Node} from '@prisma/client';
 import WebSocket from 'ws';
 import {
 	countNodeLikesByNodeId,
-	getNodeLikesByNodeIdUserAgentIpAndPort,
+	getNodeLikesByNodeIdUserAgentAndRemoteIp,
 	saveNodeData,
 	saveNodeLike
 } from '../../routes/node/node.service';
-import {broadcastToAllExceptSender} from './broadcast';
+import {broadcast, broadcastToAllExceptSender} from './broadcast';
 import logger from '../logger';
-import RemoteIpPortAndUserAgent from '../../types/RemoteIpPortAndUserAgent';
+import WebBrowserClient from '../../types/WebBrowserClient';
 
 const _saveSensorData = async (node: Node, message: object) => {
 	if (!('temperature' in message && 'humidity' in message && 'pressure' in message && 'snowDepth' in message && 'pm1' in message && 'pm25' in message && 'pm10' in message)) {
@@ -30,12 +30,14 @@ const _saveSensorData = async (node: Node, message: object) => {
 	return data;
 };
 
-const _saveLike = async (node: Node, likeData: {ipAddr: string, remotePort: number, userAgent: string}) => {
-	const likes = await getNodeLikesByNodeIdUserAgentIpAndPort({
-		nodeId: node.id,
-		userAgent: likeData.userAgent,
-		ipAddr: likeData.ipAddr,
-		remotePort: likeData.remotePort
+const _saveLike = async (nodeId: string, client: WebBrowserClient) => {
+	const likeData = {
+		userAgent: client.userAgent,
+		ipAddr: client.ipAddr
+	};
+	const likes = await getNodeLikesByNodeIdUserAgentAndRemoteIp({
+		nodeId,
+		...likeData
 	});
 
 	// Check if the user has already liked the node
@@ -43,26 +45,25 @@ const _saveLike = async (node: Node, likeData: {ipAddr: string, remotePort: numb
 		return null;
 	}
 
-	return await saveNodeLike({nodeId: node.id, likeData});
+	return await saveNodeLike({nodeId, likeData});
 };
 
 /**
- * Handle incoming WebSocket message
+ * Handle WebSocket message
  * @param webSocketServer WebSocket server
- * @param sender WebSocket connection
- * @param node Node
- * @param message Message string
- * @param remoteIpPortAndUserAgent Remote IP, port and user agent
+ * @param sender  WebSocket sender
+ * @param client Node or WebBrowserClient
+ * @param receivedMessage Message
  */
 const wsHandleMessage = async (
-	{webSocketServer, sender, node, message, remoteIpPortAndUserAgent}:
-		{webSocketServer: WebSocket.Server, sender: WebSocket, node: Node, message: string, remoteIpPortAndUserAgent: RemoteIpPortAndUserAgent}
+	{webSocketServer, sender, client, receivedMessage}:
+		{webSocketServer: WebSocket.Server, sender: WebSocket, client: Node | WebBrowserClient, receivedMessage: string}
 ) => {
 	let parsedMessage: object = {};
 
 	try {
-		parsedMessage = JSON.parse(message);
-		logger.debug(`Parsed data: ${message}`);
+		parsedMessage = JSON.parse(receivedMessage);
+		logger.debug(`Parsed data: ${receivedMessage}`);
 	} catch (error: unknown) {
 		if (error instanceof Error) {
 			logger.warn(`Failed to parse message as JSON: ${error.message}`);
@@ -77,14 +78,14 @@ const wsHandleMessage = async (
 
 	const type = parsedMessage['type'];
 
-	if (type === 'sensors') {
-		const data = await _saveSensorData(node, parsedMessage);
+	if (type === 'sensors' && 'id' in client) {
+		const data = await _saveSensorData(client, parsedMessage);
 		broadcastToAllExceptSender({
 			wss: webSocketServer,
 			sender,
 			message: JSON.stringify({
 				type: 'sensors',
-				nodeId: node.id,
+				nodeId: client.id,
 				created: new Date(),
 				data,
 			})
@@ -93,25 +94,26 @@ const wsHandleMessage = async (
 		return;
 	}
 
-	if (type === 'likes') {
-		const isLikeSaved = await _saveLike(node, remoteIpPortAndUserAgent);
+	if (type === 'likes' && 'nodeId' in parsedMessage && client.name === 'client') {
+		const nodeId = (parsedMessage['nodeId'] ?? '') as string;
+		const isLikeSaved = await _saveLike(nodeId, client as WebBrowserClient);
+
 		if (isLikeSaved == null) {
 			sender.send(JSON.stringify({
 				error: true,
 				type: 'likes',
-				nodeId: node.id,
+				nodeId,
 				message:'You have already liked'
 			}));
 			return;
 		}
 
-		broadcastToAllExceptSender({
+		broadcast({
 			wss: webSocketServer,
-			sender,
 			message: JSON.stringify({
 				type: 'likes',
-				nodeId: node.id,
-				likes: await countNodeLikesByNodeId(node.id),
+				nodeId,
+				likes: await countNodeLikesByNodeId(nodeId),
 			})
 		});
 
