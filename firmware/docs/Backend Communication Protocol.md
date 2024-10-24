@@ -3,6 +3,7 @@
 All frames will have a special key to auth on the backend side.
 
 Node ID (unique serial number): N*rrrrmmdd(00-FF)*
+
 Gateway ID (unique serial number): G*rrrrmmdd(00-FF)*
 
 The gateway initialises the connection by sending the `Init Frame`. If the gateway is not paired to any account, the backend returns the pairing code, which the gateway displays on the LCD screen.
