@@ -183,17 +183,16 @@ const saveNodeData = async (nodeId: string, data: NodeDataToSave) => {
  * @param nodeId ID of the node.
  * @param likeData Data to save.
  */
-const saveNodeLike = async ({nodeId, likeData}: { nodeId: string, likeData: {ipAddr: string, remotePort: number, userAgent: string} }) => {
+const saveNodeLike = async ({nodeId, likeData}: { nodeId: string, likeData: {ipAddr: string, userAgent: string} }) => {
 	try {
-		await prisma.nodeLike.create({
+		const saved = await prisma.nodeLike.create({
 			data: {
 				nodeId,
 				ipAddr: likeData.ipAddr,
-				remotePort: likeData.remotePort,
 				userAgent: likeData.userAgent
 			}
 		});
-		return true;
+		return saved != null;
 	} catch (error) {
 		logger.error(error);
 		return null;
@@ -203,23 +202,25 @@ const saveNodeLike = async ({nodeId, likeData}: { nodeId: string, likeData: {ipA
 };
 
 /**
- * Returns node likes by node ID, user agent, IP address and remote port.
+ * Returns node likes by node ID, user agent and IP address.
  * @param nodeId ID of the node.
  * @param userAgent User agent string.
  * @param ipAddr IP address.
- * @param remotePort Remote port.
  */
-const getNodeLikesByNodeIdUserAgentIpAndPort = async (
-	{nodeId, userAgent, ipAddr, remotePort}:
-		{nodeId: string, userAgent: string, ipAddr: string, remotePort: number}
+const getNodeLikesByNodeIdUserAgentAndRemoteIp = async (
+	{nodeId, userAgent, ipAddr}:
+		{nodeId: string, userAgent: string, ipAddr: string}
 ) => {
 	try {
+		const node = await getNodeById(nodeId);
+		if (node == null || !node.isPaired) {
+			return null;
+		}
 		return prisma.nodeLike.findMany({
 			where: {
 				nodeId,
 				userAgent,
-				ipAddr,
-				remotePort
+				ipAddr
 			}
 		});
 	} catch (error) {
@@ -256,6 +257,6 @@ export {
 	pairNodeWithUser,
 	saveNodeData,
 	saveNodeLike,
-	getNodeLikesByNodeIdUserAgentIpAndPort,
+	getNodeLikesByNodeIdUserAgentAndRemoteIp,
 	countNodeLikesByNodeId
 };

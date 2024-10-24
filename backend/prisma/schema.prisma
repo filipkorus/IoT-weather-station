@@ -54,13 +54,12 @@ model NodeData {
 }
 
 model NodeLike {
-  id         Int      @id @default(autoincrement())
-  ipAddr     String
-  remotePort Int
-  userAgent  String
-  created    DateTime @default(now())
-  Node       Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
-  nodeId     String
+  id        Int      @id @default(autoincrement())
+  ipAddr    String
+  userAgent String
+  created   DateTime @default(now())
+  Node      Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  nodeId    String
 
-  @@unique([ipAddr, remotePort, userAgent, nodeId])
+  @@unique([ipAddr, userAgent, nodeId])
 }
