@@ -1,11 +1,11 @@
 import http from 'http';
 import wsVerifyApiKey from './wsVerifyApiKey';
-import {Node} from '@prisma/client';
-import {setNodeIsOnline} from '../../routes/node/node.service';
+import {Gateway} from '@prisma/client';
+import {setGatewayIsOnline} from '../../routes/gateway/gateway.service';
 import WebBrowserClient from '../../types/WebBrowserClient';
 
 // This function is used to authenticate WebSocket connections.
-const wsAuthenticate = async (request: http.IncomingMessage, callback: (error: Error | null, client: Node | WebBrowserClient | null) => void) => {
+const wsAuthenticate = async (request: http.IncomingMessage, callback: (error: Error | null, client: Gateway | WebBrowserClient | null) => void) => {
 	const apiKey = request.headers['authorization'];
 	if (apiKey == null) {
 		return callback(new Error('No Authorization header'), null);
@@ -20,7 +20,7 @@ const wsAuthenticate = async (request: http.IncomingMessage, callback: (error: E
 		return callback(new Error('Invalid API key'), null);
 	}
 
-	await setNodeIsOnline(node.id, true);
+	await setGatewayIsOnline(node.id, true);
 
 	callback(null, node );
 };

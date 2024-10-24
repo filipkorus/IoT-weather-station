@@ -1,21 +1,23 @@
-import {Node} from '@prisma/client';
+import {Gateway, Node} from '@prisma/client';
 import WebSocket from 'ws';
 import {
-	countNodeLikesByNodeId,
-	getNodeLikesByNodeIdUserAgentAndRemoteIp,
-	saveNodeData,
-	saveNodeLike
-} from '../../routes/node/node.service';
+	countGatewayLikesByGatewayId,
+	getGatewayLikesByGatewayIdUserAgentAndRemoteIp,
+	saveGatewayLike
+} from '../../routes/gateway/gateway.service';
 import {broadcast, broadcastToAllExceptSender} from './broadcast';
 import logger from '../logger';
 import WebBrowserClient from '../../types/WebBrowserClient';
+import {saveNodeData} from '../../routes/gateway/node.servcie';
 
-const _saveSensorData = async (node: Node, message: object) => {
-	if (!('temperature' in message && 'humidity' in message && 'pressure' in message && 'snowDepth' in message && 'pm1' in message && 'pm25' in message && 'pm10' in message)) {
-		return;
+const _saveSensorData = async ({nodeId, gatewayId, message}: {nodeId: string, gatewayId: string, message: object}) => {
+	if (!('batteryLevel' in message && 'temperature' in message && 'humidity' in message && 'pressure' in message && 'snowDepth' in message && 'pm1' in message && 'pm25' in message && 'pm10' in message)) {
+		logger.debug('Invalid sensor data');
+		return null;
 	}
 
 	const data = {
+		batteryLevel: message['batteryLevel'] as number,
 		temperature: message['temperature'] as number,
 		humidity: message['humidity'] as number,
 		pressure: message['pressure'] as number,
@@ -25,18 +27,22 @@ const _saveSensorData = async (node: Node, message: object) => {
 		pm10: message['pm10'] as number,
 	};
 
-	await saveNodeData(node.id, data);
+	await saveNodeData({
+		nodeId,
+		gatewayId,
+		data
+	});
 
 	return data;
 };
 
-const _saveLike = async (nodeId: string, client: WebBrowserClient) => {
+const _saveLike = async ({gatewayId, client}: {gatewayId: string, client: WebBrowserClient}) => {
 	const likeData = {
 		userAgent: client.userAgent,
 		ipAddr: client.ipAddr
 	};
-	const likes = await getNodeLikesByNodeIdUserAgentAndRemoteIp({
-		nodeId,
+	const likes = await getGatewayLikesByGatewayIdUserAgentAndRemoteIp({
+		gatewayId: gatewayId,
 		...likeData
 	});
 
@@ -45,7 +51,7 @@ const _saveLike = async (nodeId: string, client: WebBrowserClient) => {
 		return null;
 	}
 
-	return await saveNodeLike({nodeId, likeData});
+	return await saveGatewayLike({gatewayId, likeData});
 };
 
 /**
@@ -57,7 +63,7 @@ const _saveLike = async (nodeId: string, client: WebBrowserClient) => {
  */
 const wsHandleMessage = async (
 	{webSocketServer, sender, client, receivedMessage}:
-		{webSocketServer: WebSocket.Server, sender: WebSocket, client: Node | WebBrowserClient, receivedMessage: string}
+		{webSocketServer: WebSocket.Server, sender: WebSocket, client: Gateway | WebBrowserClient, receivedMessage: string}
 ) => {
 	let parsedMessage: object = {};
 
@@ -78,32 +84,43 @@ const wsHandleMessage = async (
 
 	const type = parsedMessage['type'];
 
-	if (type === 'sensors' && 'id' in client) {
-		const data = await _saveSensorData(client, parsedMessage);
+	if (type === 'sensors' && 'id' in client && 'nodeId' in parsedMessage) {
+		const nodeId = parsedMessage['nodeId'] as string;
+		const gatewayId = client.id;
+
+		const sensorData = await _saveSensorData({
+			nodeId,
+			gatewayId,
+			message: parsedMessage
+		});
 		broadcastToAllExceptSender({
 			wss: webSocketServer,
 			sender,
 			message: JSON.stringify({
-				type: 'sensors',
-				nodeId: client.id,
+				type: 'sensors-to-client',
+				gatewayId,
+				nodeId,
 				created: new Date(),
-				data,
+				data: sensorData
 			})
 		});
 
 		return;
 	}
 
-	if (type === 'likes' && 'nodeId' in parsedMessage && client.name === 'client') {
-		const nodeId = (parsedMessage['nodeId'] ?? '') as string;
-		const isLikeSaved = await _saveLike(nodeId, client as WebBrowserClient);
+	if (type === 'likes' && 'gatewayId' in parsedMessage && client.name === 'client') {
+		const gatewayId = (parsedMessage['gatewayId'] ?? '') as string;
+		const isLikeSaved = await _saveLike({
+			gatewayId,
+			client: client as WebBrowserClient
+		});
 
 		if (isLikeSaved == null) {
 			sender.send(JSON.stringify({
 				error: true,
-				type: 'likes',
-				nodeId,
-				message:'You have already liked'
+				type: 'likes-error-response',
+				gatewayId,
+				message: 'You have already liked'
 			}));
 			return;
 		}
@@ -112,8 +129,8 @@ const wsHandleMessage = async (
 			wss: webSocketServer,
 			message: JSON.stringify({
 				type: 'likes',
-				nodeId,
-				likes: await countNodeLikesByNodeId(nodeId),
+				gatewayId,
+				likes: await countGatewayLikesByGatewayId(gatewayId),
 			})
 		});
 
