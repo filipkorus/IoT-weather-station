@@ -48,17 +48,18 @@ model Node {
 }
 
 model NodeData {
-  id          Int      @id @default(autoincrement())
-  created     DateTime @default(now())
-  Node        Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
-  nodeId      String
-  temperature Float?
-  humidity    Float?
-  pressure    Float?
-  snowDepth   Float?
-  pm1         Float?
-  pm25        Float?
-  pm10        Float?
+  id           Int      @id @default(autoincrement())
+  created      DateTime @default(now())
+  batteryLevel Float?
+  Node         Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  nodeId       String
+  temperature  Float?
+  humidity     Float?
+  pressure     Float?
+  snowDepth    Float?
+  pm1          Float?
+  pm25         Float?
+  pm10         Float?
 }
 
 model GatewayLike {

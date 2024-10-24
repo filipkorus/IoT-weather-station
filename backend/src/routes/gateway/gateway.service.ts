@@ -5,6 +5,29 @@ import generatePairingCode from '../../utils/generatePairingCode';
 const prisma = new PrismaClient();
 
 /**
+ * Creates gateway in the database.
+ *
+ * @param apiKey API key of the gateway.
+ * @param gatewayId ID of the gateway.
+ * @returns Gateway Gateway object if successful, otherwise null.
+ */
+const createGateway = async ({apiKey, gatewayId}: {apiKey: string, gatewayId: string}): Promise<Gateway | null> => {
+	try {
+		return prisma.gateway.create({
+			data: {
+				id: gatewayId,
+				apiKey
+			}
+		});
+	} catch (error) {
+		logger.error(error);
+		return null;
+	} finally {
+		await prisma.$disconnect();
+	}
+}
+
+/**
  * Returns gateway by its API key.
  *
  * @param apiKey API key of the gateway.
@@ -54,7 +77,13 @@ const getGatewayById = async (gatewayId: string): Promise<Gateway | null> => {
  */
 const setGatewayIsOnline = async (gatewayId: string, isOnline: boolean): Promise<void> => {
 	try {
-		await prisma.gateway.update({where: {id: gatewayId}, data: {isOnline, lastOnline: new Date()}});
+		const updateIsOnlinePromise = prisma.gateway.update({where: {id: gatewayId}, data: {isOnline, lastOnline: new Date()}});
+		const updateLastOnlinePromise = prisma.gateway.update({where: {id: gatewayId}, data: {lastOnline: new Date()}});
+		if (isOnline) {
+			await Promise.all([updateIsOnlinePromise]);
+		} else {
+			await Promise.all([updateIsOnlinePromise, updateLastOnlinePromise]);
+		}
 	} catch (error) {
 		logger.error(error);
 	} finally {
@@ -226,6 +255,7 @@ const countGatewayLikesByGatewayId = async (gatewayId: string) => {
 };
 
 export {
+	createGateway,
 	getGatewayByApiKey,
 	getGatewayById,
 	setGatewayIsOnline,
