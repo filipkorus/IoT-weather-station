@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import {HelloWorldHandler} from './main.controller';
 import requireAuth from '../middlewares/requireAuth';
-import nodeRouter from './node/node.router';
+import nodeRouter from './gateway/gateway.router';
 import authRouter from './auth/auth.router';
 import userRouter from './user/user.router';
 

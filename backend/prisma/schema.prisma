@@ -12,7 +12,7 @@ model User {
   username     String         @unique
   passwordHash String
   joined       DateTime       @default(now())
-  nodes        Node[]
+  gateways     Gateway[]
   RefreshToken RefreshToken[]
 }
 
@@ -25,23 +25,33 @@ model RefreshToken {
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model Node {
-  id          String     @id
-  name        String?
-  apiKey      String     @unique @default(uuid())
-  pairingCode String?    @unique
-  isPaired    Boolean    @default(false)
-  isOnline    Boolean    @default(false)
+model Gateway {
+  id          String        @id
+  name        String        @default("Unnamed Gateway")
+  apiKey      String        @unique @default(uuid())
+  pairingCode String?       @unique
+  isPaired    Boolean       @default(false)
+  isOnline    Boolean       @default(false)
   lastOnline  DateTime?
+  user        User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int?
-  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  NodeData    NodeData[]
-  NodeLikes   NodeLike[]
+  nodes       Node[]
+  likes       GatewayLike[]
+}
+
+model Node {
+  id        String     @id
+  name      String     @default("Unnamed Node")
+  Gateway   Gateway?   @relation(fields: [gatewayId], references: [id])
+  gatewayId String?
+  NodeData  NodeData[]
 }
 
 model NodeData {
   id          Int      @id @default(autoincrement())
   created     DateTime @default(now())
+  Node        Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  nodeId      String
   temperature Float?
   humidity    Float?
   pressure    Float?
@@ -49,17 +59,15 @@ model NodeData {
   pm1         Float?
   pm25        Float?
   pm10        Float?
-  nodeId      String
-  Node        Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
 }
 
-model NodeLike {
+model GatewayLike {
   id        Int      @id @default(autoincrement())
   ipAddr    String
   userAgent String
   created   DateTime @default(now())
-  Node      Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
-  nodeId    String
+  Gateway   Gateway  @relation(fields: [gatewayId], references: [id], onDelete: Cascade)
+  gatewayId String
 
-  @@unique([ipAddr, userAgent, nodeId])
+  @@unique([ipAddr, userAgent, gatewayId])
 }
