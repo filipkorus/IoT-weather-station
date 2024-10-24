@@ -10,12 +10,14 @@ import logger from '../logger';
 import WebBrowserClient from '../../types/WebBrowserClient';
 import {saveNodeData} from '../../routes/gateway/node.servcie';
 
-const _saveSensorData = async ({nodeId, message}: {nodeId: string, message: object}) => {
-	if (!('temperature' in message && 'humidity' in message && 'pressure' in message && 'snowDepth' in message && 'pm1' in message && 'pm25' in message && 'pm10' in message)) {
+const _saveSensorData = async ({nodeId, gatewayId, message}: {nodeId: string, gatewayId: string, message: object}) => {
+	if (!('batteryLevel' in message && 'temperature' in message && 'humidity' in message && 'pressure' in message && 'snowDepth' in message && 'pm1' in message && 'pm25' in message && 'pm10' in message)) {
+		logger.debug('Invalid sensor data');
 		return null;
 	}
 
 	const data = {
+		batteryLevel: message['batteryLevel'] as number,
 		temperature: message['temperature'] as number,
 		humidity: message['humidity'] as number,
 		pressure: message['pressure'] as number,
@@ -27,6 +29,7 @@ const _saveSensorData = async ({nodeId, message}: {nodeId: string, message: obje
 
 	await saveNodeData({
 		nodeId,
+		gatewayId,
 		data
 	});
 
@@ -87,6 +90,7 @@ const wsHandleMessage = async (
 
 		const sensorData = await _saveSensorData({
 			nodeId,
+			gatewayId,
 			message: parsedMessage
 		});
 		broadcastToAllExceptSender({
@@ -114,7 +118,7 @@ const wsHandleMessage = async (
 		if (isLikeSaved == null) {
 			sender.send(JSON.stringify({
 				error: true,
-				type: 'likes-response',
+				type: 'likes-error-response',
 				gatewayId,
 				message: 'You have already liked'
 			}));

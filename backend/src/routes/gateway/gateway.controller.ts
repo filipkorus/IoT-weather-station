@@ -70,28 +70,3 @@ export const InitGatewayHandler = async (req: Request, res: Response) => {
 
 	return FORBIDDEN(res, 'Pairing code created', {pairingCode: updatedGateway.pairingCode});
 };
-
-export const CreateNodeHandler = async (req: Request, res: Response) => {
-	const RequestSchema = z.object({
-		id: z.string({required_error: 'Node ID is required'}).trim()
-	});
-
-	const validatedRequest = validateObject(RequestSchema, req.body);
-	if (validatedRequest.data == null) {
-		return MISSING_BODY_FIELDS(res, validatedRequest.errors);
-	}
-
-	const createdNode = await createNode({
-		nodeId: validatedRequest.data.id,
-		gatewayId: res.locals.gateway.id
-	});
-	if (createdNode == null) {
-		return SERVER_ERROR(res, `Error: Node (id=${validatedRequest.data.id}) could not be created`);
-	}
-
-	return CREATED(res, 'Node created', {
-		id: createdNode.id,
-		name: createdNode.name,
-		gatewayId: createdNode.gatewayId
-	});
-}
