@@ -148,7 +148,7 @@ This endpoint requires the user to be logged in, i.e. have a valid access token 
   
 ### 4. Fetch Gateway Public Details
 
-**URL**: `/api/gateway/:gatewayId/public`
+**URL**: `/api/public-gateway/:gatewayId
 **Method**: `GET`
 
 #### Request
