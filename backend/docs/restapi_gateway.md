@@ -83,3 +83,130 @@ This endpoint requires the user to be logged in, i.e. have a valid access token 
     "message": "Server Error: Gateway could not be paired"
   }
   ```
+
+### 3. Fetch Gateway Details
+
+**URL**: `/api/gateway/:gatewayId`
+**Method**: `GET`
+
+#### Request
+**Description**: This endpoint is used to fetch the details of a gateway device when gateway ID is provided. Else, it returns the details of all gateways associated with the logged user.
+
+This endpoint requires the user to be logged in, i.e. have a valid access token in the Authorization header (`Bearer accesstoken`).
+
+#### Response
+- When `gatewayId` is provided:
+  - **Status Code**: `200 OK` is returned if the gateway details are successfully fetched.
+  ```json
+  {
+    "gateway": {
+        "id": "string (gateway ID)",
+        "name": "string (gateway name)",
+        "isPaired": "boolean (gateway pairing status)",
+        "isOnline": "boolean (gateway online status)",
+        "lastOnline": "string (last online timestamp)",
+        "userId": "string (user ID of the gateway owner)",
+        "nodes": [{
+            "id": "string (node ID)",
+            "name": "string (node name)",
+            "gatewayId": "string (gateway ID)"
+        }]
+    }
+  }
+  ```
+    - **Status Code**: `404 Not Found` is returned if the gateway is not found.
+    ```json
+    {
+        "message": "Gateway (id={gatewayId}) not found"
+    }
+    ```
+- When `gatewayId` is not provided:
+  - **Status Code**: `200 OK` is returned if gateways details are successfully fetched.
+  ```json
+  {
+    "gateways": [{
+        "id": "string (gateway ID)",
+        "name": "string (gateway name)",
+        "isPaired": "boolean (gateway pairing status)",
+        "isOnline": "boolean (gateway online status)",
+        "lastOnline": "string (last online timestamp)",
+        "userId": "string (user ID of the gateway owner)",
+        "nodes": [{
+            "id": "string (node ID)",
+            "name": "string (node name)",
+            "gatewayId": "string (gateway ID)"
+        }]
+    }]
+  }
+  ```
+    - **Status Code**: `500 Internal Server Error` is returned if the server could not fetch the gateways.
+    ```json
+    {
+        "message": "Server Error: Gateways could not be retrieved"
+    }
+    ```
+  
+### 4. Fetch Gateway Public Details
+
+**URL**: `/api/gateway/:gatewayId/public`
+**Method**: `GET`
+
+#### Request
+**Description**: This endpoint is used to fetch the public details of a gateway device when gateway ID is provided. Else, it returns the public details of all gateways.
+
+This endpoint does not require to be logged in.
+
+#### Response
+- When `gatewayId` is provided:
+  - **Status Code**: `200 OK` is returned if gateways public details are successfully fetched.
+  ```json
+  {
+    "gateway": {
+        "id": "string (gateway ID)",
+        "name": "string (gateway name)",
+        "isPaired": "boolean (gateway pairing status)",
+        "isOnline": "boolean (gateway online status)",
+        "lastOnline": "string (last online timestamp)",
+        "userId": "string (user ID of the gateway owner)",
+        "nodes": [{
+            "id": "string (node ID)",
+            "name": "string (node name)",
+            "gatewayId": "string (gateway ID)"
+        }],
+        "likes": "number (number of likes)"
+    }
+  }
+  ```
+  - **Status Code**: `404 Not Found` is returned if the gateway is not found.
+    ```json
+    {
+        "message": "Gateway (id=${gatewayId}) not found"
+    }
+    ```
+- When `gatewayId` is not provided:
+    - **Status Code**: `200 OK` is returned if gateways public details are successfully fetched.
+    ```json
+    {
+        "gateways": [{
+            "id": "string (gateway ID)",
+            "name": "string (gateway name)",
+            "isPaired": "boolean (gateway pairing status)",
+            "isOnline": "boolean (gateway online status)",
+            "lastOnline": "string (last online timestamp)",
+            "userId": "string (user ID of the gateway owner)",
+            "nodes": [{
+                "id": "string (node ID)",
+                "name": "string (node name)",
+                "gatewayId": "string (gateway ID)"
+            }],
+            "likes": "number (number of likes)"
+        }]
+    }
+    ```
+    - **Status Code**: `500 Internal Server Error` is returned if the server could not fetch the gateways.
+    ```json
+    {
+        "message": "Server Error: Gateways could not be retrieved"
+    }
+    ```
+  
