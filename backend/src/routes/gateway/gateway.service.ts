@@ -70,6 +70,27 @@ const getGatewayById = async (gatewayId: string): Promise<Gateway | null> => {
 };
 
 /**
+ * Returns gateways by user ID.
+ *
+ * @param userId ID of the user.
+ * @returns Gateway[] Array of Gateway objects if found, otherwise null.
+ */
+const getGatewaysByUserId = async (userId: number): Promise<Gateway[] | null> => {
+	try {
+		return prisma.gateway.findMany({
+			where: {userId},
+			orderBy: {lastOnline: 'desc'},
+			include: {nodes: true}
+		});
+	} catch (error) {
+		logger.error(error);
+		return null;
+	} finally {
+		await prisma.$disconnect();
+	}
+}
+
+/**
  * Sets gateway's online status.
  *
  * @param gatewayId ID of the node.
@@ -254,15 +275,67 @@ const countGatewayLikesByGatewayId = async (gatewayId: string) => {
 	}
 };
 
+/**
+ * Returns paired gateway public data with nodes and like count by gateway ID.
+ * @param gatewayId ID of the gateway.
+ * @returns Gateway Gateway object with nodes and like count if successful, otherwise null.
+ */
+const getPairedGatewayPublicDataWithNodesAndLikes = async (gatewayId: string) => {
+	try {
+		const gatewayPromise = prisma.gateway.findFirst({
+			where: {id: gatewayId, isPaired: true},
+			include: {nodes: true}
+		});
+		const likesPromise = prisma.gatewayLike.count({where: {gatewayId}});
+		const [gateway, likes] = await Promise.all([gatewayPromise, likesPromise]);
+
+		if (gateway == null) {
+			return null;
+		}
+
+		const {apiKey, pairingCode, ...rest} = gateway;
+		return {
+			...rest,
+			likes: likes ?? 0
+		};
+	} catch (error) {
+		logger.error(error);
+		return null;
+	} finally {
+		await prisma.$disconnect();
+	}
+};
+
+/**
+ * Returns all paired gateways.
+ * @returns Gateway[] Array of Gateway objects if successful, otherwise null.
+ */
+const getPairedGateways = async () => {
+	try {
+		return prisma.gateway.findMany({
+			where: {isPaired: true},
+			select: {id: true, name: true, isOnline: true, lastOnline: true}
+		});
+	} catch (error) {
+		logger.error(error);
+		return null;
+	} finally {
+		await prisma.$disconnect();
+	}
+}
+
 export {
 	createGateway,
 	getGatewayByApiKey,
 	getGatewayById,
+	getGatewaysByUserId,
 	setGatewayIsOnline,
 	createGatewayPairingCode,
 	getGatewayByPairingCode,
 	pairGatewayWithUserAccount,
 	saveGatewayLike,
 	getGatewayLikesByGatewayIdUserAgentAndRemoteIp,
-	countGatewayLikesByGatewayId
+	countGatewayLikesByGatewayId,
+	getPairedGatewayPublicDataWithNodesAndLikes,
+	getPairedGateways
 };
