@@ -52,6 +52,11 @@ const saveNodeData = async ({nodeId, gatewayId, data}: {nodeId: string, gatewayI
 	}
 };
 
+/**
+ * Retrieves node by ID.
+ * @param nodeId ID of the node.
+ * @returns {Promise<Node|null>} Node.
+ */
 const getNodeById = async (nodeId: string): Promise<Node | null> => {
 	try {
 		return prisma.node.findUnique({where: {id: nodeId}});
@@ -63,8 +68,25 @@ const getNodeById = async (nodeId: string): Promise<Node | null> => {
 	}
 };
 
+/**
+ * Retrieves nodes by gateway ID.
+ * @param gatewayId ID of the gateway.
+ * @returns {Promise<Node[]|null>} Nodes.
+ */
+const getNodesByGatewayId = async (gatewayId: string): Promise<Node[] | null> => {
+	try {
+		return prisma.node.findMany({where: {gatewayId}});
+	} catch (error) {
+		logger.error(error);
+		return null;
+	} finally {
+		await prisma.$disconnect();
+	}
+};
+
 export {
 	createNode,
 	saveNodeData,
-	getNodeById
+	getNodeById,
+	getNodesByGatewayId
 };
