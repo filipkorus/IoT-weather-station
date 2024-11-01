@@ -1,5 +1,6 @@
 import React from 'react';
 import {Box, Typography} from '@mui/material';
+
 // import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
 // import {useNavigate} from "react-router-dom";
 
