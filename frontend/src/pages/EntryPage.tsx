@@ -7,13 +7,13 @@ const EntryPage: React.FC = () => {
     const navigate = useNavigate();
     return (
         <Box>
-            {/* Górny kontener z napisem "Witamy" */}
+
             <Box
                 sx={{
-                    backgroundColor: '#1f4152', // Kolor tła
-                    padding: '16px', // Padding
-                    textAlign: 'center', // Wyśrodkowanie tekstu
-                    marginBottom: '16px', // Odstęp od dolnej części
+                    backgroundColor: '#1f4152',
+                    padding: '16px',
+                    textAlign: 'center',
+                    marginBottom: '16px',
                     borderRadius: '8px'
                 }}
             >
@@ -21,7 +21,7 @@ const EntryPage: React.FC = () => {
                     variant="h4"
                     sx={{
                         color: 'white',
-                        fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } // Dostosowanie rozmiaru czcionki
+                        fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }
                     }}
                 >
                     ❄️Witamy na Narciarskiej Stacji Pomiarowo Pogodowej!❄️
