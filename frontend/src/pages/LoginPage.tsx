@@ -1,12 +1,73 @@
 // login page only for users of sensors and hardware not for potential custoomers of skiing resort
-import React from 'react';
-import { Typography } from '@mui/material';
-
+import {Container, CssBaseline, Box,Typography,TextField,Button,Grid,} from "@mui/material";
+import React, { useState } from "react";
+import {Link, useNavigate} from "react-router-dom";
+import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
 const LoginPage: React.FC = () => {
+    const [name, setName] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleLogin = () => {};
+    const navigate = useNavigate();
     return (
-        <div>
-            <Typography variant="h2">To jest podstrona login!</Typography>
-        </div>
+        <>
+            <Container maxWidth="xs">
+                <CssBaseline />
+                <Box
+                    sx={{
+                        mt: 20,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                ><Box
+                    component="img"
+                    src="public/icon.png" // Ścieżka do obrazka w folderze public
+                    sx={{
+                        width: '25%', // Możesz ustawić na '100%' lub inną wartość
+                        height: 'auto',
+                        mb: 2, // Odstęp poniżej obrazka
+                    }}
+                />
+                    <Typography variant="h4">Logowanie</Typography>
+                    <Box sx={{ mt: 3 }} maxWidth="xs">
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    name="name"
+                                    required
+                                    fullWidth
+                                    id="name"
+                                    label="Nazwa"
+                                    autoFocus
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} maxWidth="xs">
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="password"
+                                    label="Hasło"
+                                    type="password"
+                                    id="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </Grid>
+                        </Grid>
+
+                        <Grid container justifyContent="flex" sx={{justifyContent: 'center'}}>
+                        <LoginRegisterButton title="Zaloguj się" onClick={(handleLogin)} sx={{height: {xs: '40px', md:'50px'}}} ></LoginRegisterButton>
+
+                        <LoginRegisterButton title="Nie masz jeszcze konta? Zarejestruj się" onClick={() => navigate('/register')}  sx={{ height: { xs: '40px', md: '50px' }}}  variant="outlined" ></LoginRegisterButton>
+                    </Grid>
+                    </Box>
+                </Box>
+            </Container>
+        </>
     );
 };
 

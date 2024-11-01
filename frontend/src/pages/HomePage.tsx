@@ -5,7 +5,7 @@ import {Typography, Box, Button, TableFooter} from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import Buttons from "@/components/Buttons.tsx";
 import { useNavigate } from 'react-router-dom';
-import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
+// import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
 
 
 const HomePage: React.FC = () => {
@@ -32,16 +32,16 @@ const HomePage: React.FC = () => {
             <Grid container spacing={3} rowSpacing={{ xs: 3, sm: 2, md: 5 }}>
                 <Grid xs={12} sm={6} md={12} sx={{height: '30%'}}>
                     {/*<Paper elevation={3} sx={{backgroundColor: '#9bcce5', boxShadow: 5, padding: '20px', height: '30%' }}>*/}
-                        {/* Główna struktura dla Nazwy stoku i przycisków */}
+
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             {/* Nazwa stoku po lewej stronie */}
                             <Typography variant="h5" sx={{color: 'white'}}>Nazwa stoku</Typography>
 
                             {/* Przyciski po prawej stronie */}
-                            <Box sx={{ display: 'flex', gap: 2 }}>
-                                <LoginRegisterButton  title="Logowanie" onClick={() => navigate('/login')}/>
-                                <LoginRegisterButton title="Rejestracja" onClick={() => navigate('/register')}/>
-                            </Box>
+                            {/*<Box sx={{ display: 'flex', gap: 2 }}>*/}
+                            {/*    <LoginRegisterButton  title="Logowanie" onClick={() => navigate('/login')}/>*/}
+                            {/*    <LoginRegisterButton title="Rejestracja" onClick={() => navigate('/register')}/>*/}
+                            {/*</Box>*/}
                         </Box>
                     {/*</Paper>*/}
                 </Grid>
