@@ -13,7 +13,7 @@ import {
 	getGatewayById,
 	getGatewayByPairingCode, getPairedGatewayPublicDataWithNodesAndLikes,
 	getGatewaysByUserId,
-	pairGatewayWithUserAccount, getPairedGateways
+	pairGatewayWithUserAccount, getPairedGateways, updateGatewayName
 } from './gateway.service';
 import {getUserById} from '../user/user.service';
 
@@ -41,6 +41,30 @@ export const GetGatewayHandler = async (req: Request, res: Response) => {
 
 	const {apiKey, pairingCode, ...rest} = gateway;
 	return SUCCESS(res, 'Gateway retrieved', {gateway: rest});
+};
+
+export const RenameGatewayHandler = async (req: Request, res: Response) => {
+	const RequestSchema = z.object({
+		name: z.string({required_error: 'Name is required'}).trim().min(3).max(50)
+	});
+
+	const validatedRequest = validateObject(RequestSchema, req.body);
+	if (validatedRequest.data == null) {
+		return MISSING_BODY_FIELDS(res, validatedRequest.errors);
+	}
+
+	const gatewayId = req.params.id;
+	const gateway = await getGatewayById(gatewayId);
+	if (gateway == null || gateway.userId !== res.locals.user.id) {
+		return NOT_FOUND(res, `Gateway (id=${gatewayId}) not found`);
+	}
+
+	const updatedGateway = await updateGatewayName(gatewayId, validatedRequest.data.name);
+	if (updatedGateway == null) {
+		return SERVER_ERROR(res, 'Server Error: Gateway name could not be updated');
+	}
+
+	return SUCCESS(res, 'Gateway name updated', {name: updatedGateway.name});
 };
 
 export const GatewayPairingCodeHandler = async (req: Request, res: Response) => {
