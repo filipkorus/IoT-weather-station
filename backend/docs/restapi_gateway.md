@@ -146,7 +146,53 @@ This endpoint requires the user to be logged in, i.e. have a valid access token 
     }
     ```
   
-### 4. Fetch Gateway Public Details
+### 4. Update Gateway Name
+
+**URL**: `/api/gateway/:gatewayId`
+**Method**: `PUT`
+
+#### Request
+**Description**: This endpoint is used to update the name of a gateway device when gateway ID is provided.
+
+This endpoint requires the user to be logged in, i.e. have a valid access token in the Authorization header (`Bearer accesstoken`).
+
+- **Body Parameters**:
+  ```json
+  {
+    "name": "string (new gateway name)"
+  }
+  ```
+  
+#### Response
+- **Status Code**: `200 OK` is returned if the gateway name is successfully updated.
+  ```json
+  {
+    "message": "Gateway name updated"
+  }
+  ```
+- **Status Code**: `400 Bad Request` is returned if the `name` body field is missing or invalid.
+  ```json
+  {
+    "message": "Missing or invalid body fields.",
+    "errors": {
+      "name": ["error message"]
+    }
+  }
+  ```
+- **Status Code**: `404 Not Found` is returned if the gateway is not found.
+  ```json
+  {
+    "message": "Gateway (id={gatewayId}) not found"
+  }
+  ```
+- **Status Code**: `500 Internal Server Error` is returned if the gateway name could not be updated due to a server error.
+  ```json
+  {
+    "message": "Server Error: Gateway name could not be updated"
+  }
+  ```
+  
+### 5. Fetch Gateway Public Details
 
 **URL**: `/api/public-gateway/:gatewayId`
 **Method**: `GET`
