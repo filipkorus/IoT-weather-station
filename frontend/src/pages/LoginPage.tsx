@@ -14,7 +14,7 @@ const LoginPage: React.FC = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {};
+  // const handleLogin = () => {};
   const navigate = useNavigate();
   return (
     <>
