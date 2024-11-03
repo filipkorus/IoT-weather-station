@@ -28,6 +28,27 @@ const createGateway = async ({apiKey, gatewayId}: {apiKey: string, gatewayId: st
 }
 
 /**
+ * Updates gateway name in the database.
+ *
+ * @param gatewayId ID of the gateway.
+ * @param name New name of the gateway.
+ * @returns Gateway Gateway object if successful, otherwise null.
+ */
+const updateGatewayName = async (gatewayId: string, name: string): Promise<Gateway | null> => {
+	try {
+		return prisma.gateway.update({
+			data: {name},
+			where: {id: gatewayId}
+		});
+	} catch (error) {
+		logger.error(error);
+		return null;
+	} finally {
+		await prisma.$disconnect();
+	}
+};
+
+/**
  * Returns gateway by its API key.
  *
  * @param apiKey API key of the gateway.
@@ -326,6 +347,7 @@ const getPairedGateways = async () => {
 
 export {
 	createGateway,
+	updateGatewayName,
 	getGatewayByApiKey,
 	getGatewayById,
 	getGatewaysByUserId,
