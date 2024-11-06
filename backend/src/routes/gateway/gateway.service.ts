@@ -252,7 +252,28 @@ const saveGatewayLike = async ({gatewayId, likeData}: { gatewayId: string, likeD
 };
 
 /**
- * Returns node likes by node ID, user agent and IP address.
+ * Removes gateway like from the database.
+ * @param likeId ID of the like.
+ * @returns Boolean Boolean indicating if like was removed.
+ */
+const removeGatewayLike = async (likeId: number) => {
+	try {
+		const deleted = await prisma.gatewayLike.delete({
+			where: {
+				id: likeId
+			}
+		});
+		return deleted != null;
+	} catch (error) {
+		logger.error(error);
+		return null;
+	} finally {
+		await prisma.$disconnect();
+	}
+};
+
+/**
+ * Returns node likes by node ID, user agent and IP address from current day.
  * @param nodeId ID of the node.
  * @param userAgent User agent string.
  * @param ipAddr IP address.
@@ -270,7 +291,11 @@ const getGatewayLikesByGatewayIdUserAgentAndRemoteIp = async (
 			where: {
 				gatewayId,
 				userAgent,
-				ipAddr
+				ipAddr,
+				created: { // ensure that the like was made today
+					gte: new Date(new Date().setHours(0, 0, 0, 0)),
+					lte: new Date(new Date().setHours(23, 59, 59, 999))
+				}
 			}
 		});
 	} catch (error) {
@@ -282,12 +307,18 @@ const getGatewayLikesByGatewayIdUserAgentAndRemoteIp = async (
 };
 
 /**
- * Counts gateway likes by gateway ID.
+ * Counts gateway likes by gateway ID from current day.
  * @param gatewayId ID of the gateway.
  */
 const countGatewayLikesByGatewayId = async (gatewayId: string) => {
 	try {
-		return prisma.gatewayLike.count({where: {gatewayId}});
+		return prisma.gatewayLike.count({where: {
+			gatewayId,
+			created: { // check if current day is the same as the day of the like
+				gte: new Date(new Date().setHours(0, 0, 0, 0)),
+				lte: new Date(new Date().setHours(23, 59, 59, 999))
+			}
+		}});
 	} catch (error) {
 		logger.error(error);
 		return null;
@@ -307,17 +338,20 @@ const getPairedGatewayPublicDataWithNodesAndLikes = async (gatewayId: string) =>
 			where: {id: gatewayId, isPaired: true},
 			include: {nodes: true}
 		});
-		const likesPromise = prisma.gatewayLike.count({where: {gatewayId}});
+		const likesPromise = countGatewayLikesByGatewayId(gatewayId);
 		const [gateway, likes] = await Promise.all([gatewayPromise, likesPromise]);
 
 		if (gateway == null) {
 			return null;
 		}
 
+		// const x = like
+
 		const {apiKey, pairingCode, ...rest} = gateway;
 		return {
 			...rest,
-			likes: likes ?? 0
+			likes: likes ?? 0,
+			haveYouLiked: false
 		};
 	} catch (error) {
 		logger.error(error);
@@ -356,6 +390,7 @@ export {
 	getGatewayByPairingCode,
 	pairGatewayWithUserAccount,
 	saveGatewayLike,
+	removeGatewayLike,
 	getGatewayLikesByGatewayIdUserAgentAndRemoteIp,
 	countGatewayLikesByGatewayId,
 	getPairedGatewayPublicDataWithNodesAndLikes,

@@ -219,7 +219,8 @@ This endpoint does not require to be logged in.
             "name": "string (node name)",
             "gatewayId": "string (gateway ID)"
         }],
-        "likes": "number (number of likes)"
+        "likes": "number (number of likes)",
+        "haveYouLiked": false // boolean indication whether the user has already liked the gateway today
     }
   }
   ```

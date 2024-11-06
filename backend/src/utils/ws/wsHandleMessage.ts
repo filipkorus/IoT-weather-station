@@ -3,6 +3,7 @@ import WebSocket from 'ws';
 import {
 	countGatewayLikesByGatewayId,
 	getGatewayLikesByGatewayIdUserAgentAndRemoteIp,
+	removeGatewayLike,
 	saveGatewayLike
 } from '../../routes/gateway/gateway.service';
 import {broadcast, broadcastToAllExceptSender} from './broadcast';
@@ -36,13 +37,13 @@ const _saveSensorData = async ({nodeId, gatewayId, message}: {nodeId: string, ga
 	return data;
 };
 
-const _saveLike = async ({gatewayId, client}: {gatewayId: string, client: WebBrowserClient}) => {
+const _like = async ({gatewayId, client}: {gatewayId: string, client: WebBrowserClient}) => {
 	const likeData = {
 		userAgent: client.userAgent,
 		ipAddr: client.ipAddr
 	};
 	const likes = await getGatewayLikesByGatewayIdUserAgentAndRemoteIp({
-		gatewayId: gatewayId,
+		gatewayId,
 		...likeData
 	});
 
@@ -52,6 +53,24 @@ const _saveLike = async ({gatewayId, client}: {gatewayId: string, client: WebBro
 	}
 
 	return await saveGatewayLike({gatewayId, likeData});
+};
+
+const _removeLike = async ({gatewayId, client}: {gatewayId: string, client: WebBrowserClient}) => {
+	const likeData = {
+		userAgent: client.userAgent,
+		ipAddr: client.ipAddr
+	};
+	const likes = await getGatewayLikesByGatewayIdUserAgentAndRemoteIp({
+		gatewayId,
+		...likeData
+	});
+
+	// Check if the user did not like the node
+	if (likes == null || likes.length === 0) {
+		return null;
+	}
+
+	return await removeGatewayLike(likes[0].id);
 };
 
 /**
@@ -110,7 +129,7 @@ const wsHandleMessage = async (
 
 	if (type === 'likes' && 'gatewayId' in parsedMessage && client.name === 'client') {
 		const gatewayId = (parsedMessage['gatewayId'] ?? '') as string;
-		const isLikeSaved = await _saveLike({
+		const isLikeSaved = await _like({
 			gatewayId,
 			client: client as WebBrowserClient
 		});
@@ -121,6 +140,35 @@ const wsHandleMessage = async (
 				type: 'likes-error-response',
 				gatewayId,
 				message: 'You have already liked'
+			}));
+			return;
+		}
+
+		broadcast({
+			wss: webSocketServer,
+			message: JSON.stringify({
+				type: 'likes',
+				gatewayId,
+				likes: await countGatewayLikesByGatewayId(gatewayId),
+			})
+		});
+
+		return;
+	}
+
+	if (type === 'dislike' && 'gatewayId' in parsedMessage && client.name === 'client') {
+		const gatewayId = (parsedMessage['gatewayId'] ?? '') as string;
+		const isLikeRemoved = await _removeLike({
+			gatewayId,
+			client: client as WebBrowserClient
+		});
+
+		if (isLikeRemoved == null) {
+			sender.send(JSON.stringify({
+				error: true,
+				type: 'dislike-error-response',
+				gatewayId,
+				message: 'You have not liked yet'
 			}));
 			return;
 		}
