@@ -24,7 +24,7 @@ const App = () => {
         <Route path="/temperature" element={<TemperaturePage />} />
         <Route path="/snow" element={<SnowPage />} />
         <Route path="/airquality" element={<AirQualityPage />} />
-        <Route path="/account" element={<AccountPage/>} />
+        <Route path="/account" element={<AccountPage />} />
       </Routes>
     </BrowserRouter>
   );
