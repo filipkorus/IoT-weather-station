@@ -122,4 +122,4 @@ const PressureChart: React.FC = () => {
     );
 };
 
-export default PressureChart;
+export default ChartSkeleton;
