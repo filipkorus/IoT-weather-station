@@ -3,7 +3,8 @@ import {
   Box,
   Typography,
   FormControlLabel,
-  Checkbox,
+  Radio,
+  RadioGroup,
   Paper,
 } from "@mui/material";
 import {
@@ -67,7 +68,7 @@ const data: PressureDataRange = {
   ],
 };
 
-const PressureChart: React.FC = () => {
+const ChartSkeleton: React.FC = () => {
   const [timeRange, setTimeRange] = useState<"24h" | "7d" | "30d">("24h"); // Użycie ograniczonego typu
 
   // Funkcja zmieniająca zakres czasu
@@ -79,66 +80,73 @@ const PressureChart: React.FC = () => {
   const selectedData = data[timeRange]; // Teraz TypeScript wie, że timeRange jest jednym z kluczy data
 
   return (
-    <Box sx={{ padding: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Wykres ciśnienia
-      </Typography>
+      <Box sx={{ padding: 3 }}>
+        <Typography variant="h4" gutterBottom sx={{ textAlign: "center" }}>
+          Wykres ciśnienia
+        </Typography>
 
-      <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={timeRange === "24h"}
-              onChange={handleChange}
-              value="24h"
-            />
-          }
-          label="Ostatnie 24h"
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={timeRange === "7d"}
-              onChange={handleChange}
-              value="7d"
-            />
-          }
-          label="Ostatnie 7 dni"
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={timeRange === "30d"}
-              onChange={handleChange}
-              value="30d"
-            />
-          }
-          label="Ostatnie 30 dni"
-        />
-      </Box>
-
-      <Paper elevation={3} sx={{ padding: 2, backgroundColor: "#f0f0f0" }}>
-        <LineChart
-          width={600}
-          height={300}
-          data={selectedData}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+        {/* Grupa radio do wyboru zakresu czasu */}
+        <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" }, // Wersja na małych ekranach: kolumnowo, na dużych: poziomo
+              gap: 2,
+              marginBottom: 2,
+              justifyContent: "center", // Wyśrodkowanie na dużych ekranach
+            }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="value"
-            stroke="#8884d8"
-            activeDot={{ r: 8 }}
-          />
-        </LineChart>
-      </Paper>
-    </Box>
+          <RadioGroup
+              row
+              value={timeRange}
+              onChange={handleChange}
+              sx={{
+                color:"#1f4152",
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" }, // Flex column na telefonach
+                gap: 2,
+              }}
+          >
+            <FormControlLabel
+                control={<Radio />}
+                label="Ostatnie 24h"
+                value="24h"
+            />
+            <FormControlLabel
+                control={<Radio />}
+                label="Ostatnie 7 dni"
+                value="7d"
+            />
+            <FormControlLabel
+                control={<Radio />}
+                label="Ostatnie 30 dni"
+                value="30d"
+            />
+          </RadioGroup>
+        </Box>
+
+        {/* Wykres */}
+        <Paper elevation={3} sx={{ padding: 2, backgroundColor: "#f0f0f0" }}>
+          <LineChart
+              width={window.innerWidth < 600 ? 350 : 600} // Mniejszy wykres na telefonach
+              height={300}
+              data={selectedData}
+              margin={{ top: 5, right: 30,  bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#8884d8"
+                activeDot={{ r: 8 }}
+            />
+          </LineChart>
+        </Paper>
+      </Box>
   );
 };
 
-export default PressureChart;
+export default ChartSkeleton;
