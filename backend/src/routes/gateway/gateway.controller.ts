@@ -70,7 +70,7 @@ export const RenameGatewayHandler = async (req: Request, res: Response) => {
 
 export const GatewayPairingCodeHandler = async (req: Request, res: Response) => {
 	const RequestSchema = z.object({
-		pairingCode: z.string({required_error: 'Pairing code is required'}).trim().length(6)
+		pairingCode: z.string({required_error: 'Pairing code is required'}).trim().length(6).regex(/^\d{6}$/, { message: 'Pairing code must be a 6-digit number' })
 	});
 
 	const validatedRequest = validateObject(RequestSchema, req.body);
@@ -79,11 +79,7 @@ export const GatewayPairingCodeHandler = async (req: Request, res: Response) => 
 	}
 
 	const gateway = await getGatewayByPairingCode(validatedRequest.data.pairingCode);
-	if (gateway == null) {
-		return NOT_FOUND(res, 'Incorrect pairing code');
-	}
-
-	if (gateway.isPaired) {
+	if (gateway == null || gateway.isPaired) {
 		return NOT_FOUND(res, 'Incorrect pairing code');
 	}
 
