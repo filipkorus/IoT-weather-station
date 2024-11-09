@@ -2,6 +2,7 @@ import React from "react";
 import { Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
+import ChartSkeleton from "@/components/ChartSkeleton.tsx";
 
 const SnowPage: React.FC = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const SnowPage: React.FC = () => {
         title="Powrót"
         onClick={() => navigate("/slopedata")}
       ></BackButton>
+        <ChartSkeleton/>
     </div>
   );
 };

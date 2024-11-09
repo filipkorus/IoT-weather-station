@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
     Dialog,
-    DialogTitle,
     DialogContent,
     DialogActions,
     TextField,
@@ -24,8 +23,18 @@ const PairAStation: React.FC = () => {
     };
 
     const handleSubmit = () => {
-        console.log("Wprowadzony kod:", code);
+        console.log("Wprowadzony kod:", code.replace(/\s/g, "")); // Usuwanie spacji przed wysłaniem
         handleClose();
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        // Usuwamy wszystko, co nie jest cyfrą
+        const value = e.target.value.replace(/[^0-9]/g, "");
+
+        // Dzielimy wartość na dwie grupy: pierwsze 3 cyfry i następne 3
+        const formattedValue = value.slice(0, 3) + (value.length > 3 ? " " + value.slice(3, 6) : "");
+
+        setCode(formattedValue); // Zaktualizowanie stanu z nowym formatowaniem
     };
 
     return (
@@ -47,7 +56,6 @@ const PairAStation: React.FC = () => {
                 Sparuj Nową Stację
             </Button>
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Wprowadź kod</DialogTitle>
                 <DialogContent>
                     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                         <Typography variant="body1" sx={{ mb: 1 }}>
@@ -57,28 +65,43 @@ const PairAStation: React.FC = () => {
                             autoFocus
                             margin="dense"
                             type="text"
-                            fullWidth
-                            variant="outlined"
                             value={code}
-                            onChange={(e) => setCode(e.target.value)} // Aktualizacja stanu kodu
-                            inputProps={{ maxLength: 6 }} // Ograniczenie do 6 znaków
+                            onChange={handleChange} // Użycie walidacji
+                            inputProps={{
+                                maxLength: 7, // Maksymalnie 6 cyfr + jedna spacja
+                                inputMode: "numeric", // Tylko liczby
+                            }}
                             sx={{
-                                position: "relative",
-                                "&::before": {
-                                    content: '"_ _ _ _ _ _"',
-                                    position: "absolute",
-                                    left: 0,
-                                    top: "50%",
-                                    transform: "translateY(-50%)",
-                                    color: "#ccc", // Kolor podkreślników
-                                    pointerEvents: "none",
-                                    fontSize: "1.2rem", // Rozmiar czcionki
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                borderColor: "#1f4152",
+                                "& .MuiInputBase-root": {
+                                    borderRadius: "16px",
+                                    backgroundColor: "#ffffff",
+                                    padding: "10px 12px",
+                                    width: "100%",
+                                },
+                                "& input": {
+                                    fontSize: "2rem",
+                                    textColor:"#1f4152",
+                                    letterSpacing: "0.2rem", // Większe odstępy między cyframi
+                                    textAlign: "center", // Wyśrodkowanie cyfr
+                                    border: "none", // Brak obramowania
+                                    outline: "none", // Brak obramowania przy fokusu
+                                    backgroundColor: "transparent",
+                                },
+                                "& .MuiInput-underline:before": {
+                                    borderBottom: "none",
+                                },
+                                "& .MuiInput-underline:after": {
+                                    borderBottom: "none", // Usuwamy obramowanie
                                 },
                             }}
                         />
                     </Box>
                 </DialogContent>
-                <DialogActions>
+                <DialogActions sx={{ justifyContent: "space-between" }}>
                     <Button onClick={handleClose} color="primary">
                         Anuluj
                     </Button>
