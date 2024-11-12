@@ -8,10 +8,6 @@ import WebBrowserClient from '../../types/WebBrowserClient';
 const wsAuthenticate = async (request: http.IncomingMessage, callback: (error: Error | null, client: Gateway | WebBrowserClient | null) => void) => {
 	const apiKey = request.headers['authorization'];
 	if (apiKey == null) {
-		return callback(new Error('No Authorization header'), null);
-	}
-
-	if (apiKey === 'client') {
 		return callback(null, {name: 'client', ipAddr: 'client', userAgent: 'client'});
 	}
 
