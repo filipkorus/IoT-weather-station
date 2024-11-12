@@ -2,7 +2,7 @@
 
 This API provides functionalities for the web browser client WebSocket server. Below are the details of each type of message.
 
-'Authentication' is done using the `client` (yes, this is the key) 'key' in the `Authorization` header.
+Every client trying to connect without an API key in the `Authorization` header, is assumed to be a web browser client.
 
 ### 1. Receiving live sensor data (from the Server, to the Web Browser Client)
 
