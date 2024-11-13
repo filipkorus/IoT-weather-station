@@ -1,4 +1,4 @@
-import {Gateway, Node, NodeData, PrismaClient} from "@prisma/client";
+import {Gateway, NodeData, PrismaClient} from "@prisma/client";
 import logger from '../../utils/logger';
 import generatePairingCode from '../../utils/generatePairingCode';
 
@@ -253,14 +253,22 @@ const saveGatewayLike = async ({gatewayId, likeData}: { gatewayId: string, likeD
 
 /**
  * Removes gateway like from the database.
- * @param likeId ID of the like.
- * @returns Boolean Boolean indicating if like was removed.
+ * @param gatewayId ID of the gateway.
+ * @param userAgent User agent string.
+ * @param ipAddr IP address.
  */
-const removeGatewayLike = async (likeId: number) => {
+const removeGatewayLike = async ({gatewayId, userAgent, ipAddr}:
+	                                 {gatewayId: string, userAgent: string, ipAddr: string}) => {
 	try {
-		const deleted = await prisma.gatewayLike.delete({
+		const deleted = await prisma.gatewayLike.deleteMany({
 			where: {
-				id: likeId
+				gatewayId,
+				userAgent,
+				ipAddr,
+				created: { // ensure that the like was made today
+					gte: new Date(new Date().setHours(1, 0, 0, 0)),
+					lte: new Date(new Date().setHours(24, 59, 59, 999))
+				}
 			}
 		});
 		return deleted != null;
@@ -273,7 +281,7 @@ const removeGatewayLike = async (likeId: number) => {
 };
 
 /**
- * Returns node likes by node ID, user agent and IP address from current day.
+ * Returns node likes count by gateway ID, user agent and remote IP.
  * @param nodeId ID of the node.
  * @param userAgent User agent string.
  * @param ipAddr IP address.
@@ -287,14 +295,14 @@ const getGatewayLikesByGatewayIdUserAgentAndRemoteIp = async (
 		if (gateway == null || !gateway.isPaired) {
 			return null;
 		}
-		return prisma.gatewayLike.findMany({
+		return prisma.gatewayLike.count({
 			where: {
 				gatewayId,
 				userAgent,
 				ipAddr,
 				created: { // ensure that the like was made today
-					gte: new Date(new Date().setHours(0, 0, 0, 0)),
-					lte: new Date(new Date().setHours(23, 59, 59, 999))
+					gte: new Date(new Date().setHours(1, 0, 0, 0)),
+					lte: new Date(new Date().setHours(24, 59, 59, 999))
 				}
 			}
 		});

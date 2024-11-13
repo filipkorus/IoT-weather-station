@@ -128,11 +128,11 @@ export const GetPublicGatewayDataHandler = async (req: Request, res: Response) =
 		const [gatewaysData, like, gatewaySensorData] = await Promise.all([gatewaysDataPromise, likePromise, gatewaySensorDataPromise]);
 
 		const gatewaysDataWithSensorData = gatewaysData
-				.filter((gatewayData, idx) => gatewayData != null && gatewaySensorData[idx] != null && like[idx] != null)
+				.filter((gatewayData, idx) => gatewayData != null && gatewaySensorData[idx] != null && like[idx] !== null)
 				.map((gatewayData, index) => {
 					return {
 						...gatewayData,
-						haveYouLiked: like[index] != null && (like[index] as Array<unknown>).length > 0,
+						haveYouLiked: like[index] !== null && like[index] !== 0,
 						sensorData: gatewaySensorData[index]
 					};
 				});
@@ -155,7 +155,7 @@ export const GetPublicGatewayDataHandler = async (req: Request, res: Response) =
 	return SUCCESS(res, 'Public gateway data retrieved', {
 		gateway: {
 			...gateway,
-			haveYouLiked: like != null && like.length > 0,
+			haveYouLiked: like !== null && like !== 0,
 			sensorData: gatewaySensorData
 		}
 	});
