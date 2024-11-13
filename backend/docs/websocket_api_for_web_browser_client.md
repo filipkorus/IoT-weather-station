@@ -14,8 +14,7 @@ Every client trying to connect without an API key in the `Authorization` header,
   "type": "sensors-to-client",
   "gatewayId": "Grrrrmmdd(00-FF)", // string (Gateway ID)
   "nodeId": "Nrrrrmmdd(00-FF)",    // string (Node ID)
-  "created": "datetime string",    // string (Date and time of the measurement)
-  "data": {
+  "sensorData": {
     "batteryLevel":  5.5,   // float (Battery level in volts)
     "temperature": 25.5,    // float (Temperature in Celsius)
     "humidity":  70.5,      // float (Humidity in percentage)
@@ -23,7 +22,8 @@ Every client trying to connect without an API key in the `Authorization` header,
     "snowDepth":  42.0,     // float (Snow depth in cm)
     "pm1": 10.0,            // float (PM1 in µg/m³)
     "pm25":  25.0,          // float (PM2.5 in µg/m³)
-    "pm10": 50.0            // float (PM10 in µg/m³)
+    "pm10": 50.0,            // float (PM10 in µg/m³)
+    "created": "2024-11-13T15:41:34.588Z" // string - timestamp of the sensor data",    // string (Date and time of the measurement)
   }
 }
 ```

@@ -119,8 +119,10 @@ const wsHandleMessage = async (
 				type: 'sensors-to-client',
 				gatewayId,
 				nodeId,
-				created: new Date(),
-				data: sensorData
+				sensorData: {
+					...sensorData,
+					created: new Date()
+				}
 			})
 		});
 
