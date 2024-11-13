@@ -1,8 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
-interface CommonData {
-    created: string;
+interface _CommonDataNoCreated {
     batteryLevel: number;
     temperature: number;
     humidity: number;
@@ -13,10 +12,14 @@ interface CommonData {
     pm10: number;
 }
 
+interface _CommonData extends _CommonDataNoCreated {
+    created: string;
+}
+
 interface SensorsToClient {
     gatewayId: string;
     created: string;
-    data: CommonData; // we want to keep length up to 5
+    data: _CommonDataNoCreated; // we want to keep length up to 5
 }
 
 interface Likes {
@@ -26,8 +29,7 @@ interface Likes {
 
 interface LiveData {
     [gatewayId: string]: {
-        created: string;
-        data: Array<CommonData>; // we want to keep length up to 5
+        data: Array<_CommonData>; // we want to keep length up to 5
         likes: number;
         haveYouLiked: boolean;
     };
@@ -43,25 +45,21 @@ const liveDataSlice = createSlice({
     reducers: {
         sensorsToClient: (state, action) => {
             const data = action.payload as SensorsToClient;
-            console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            console.log("data:");
-            console.log(data);
-
             // Set or update the gateway data
-            if (state[data.gatewayId].data.length >= 5) {
+            if (state[data.gatewayId]?.data?.length >= 5) {
                 state[data.gatewayId].data.shift();
                 if (state[data.gatewayId].data.length >= 5) {
                     state[data.gatewayId].data.shift();
                 }
             }
-            state[data.gatewayId].created = data.created;
-            if (!state[data.gatewayId].data) {
+
+            if (!state[data.gatewayId]?.data) {
+                if (!state[data.gatewayId]) {
+                    state[data.gatewayId] = { data: [], likes: 0, haveYouLiked: false };
+                }
                 state[data.gatewayId].data = [];
             }
-            console.log("data.data:");
-            console.log(data.data);
-
-            state[data.gatewayId].data.push(data.data);
+            state[data.gatewayId].data.push({ ...data.data, created: data.created });
         },
         likes: (state, action) => {
             const data = action.payload as Likes;
