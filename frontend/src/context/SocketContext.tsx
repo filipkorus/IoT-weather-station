@@ -15,30 +15,37 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const [socket, setSocket] = useState<WebSocket | null>(null);
 
     useEffect(() => {
-        // Create a new WebSocket instance
-        const socketInstance = new WebSocket(SOCKET_URL);
+        if (socket === null) {
+            // Create a new WebSocket instance
+            const socketInstance = new WebSocket(SOCKET_URL);
 
-        socketInstance.onopen = () => {
-            console.log("WebSocket connection established");
-            setSocket(socketInstance); // Set the WebSocket instance in state
-        };
+            socketInstance.onopen = () => {
+                console.log("WebSocket connection established");
+                setSocket(socketInstance); // Set the WebSocket instance in state
+            };
 
-        socketInstance.onclose = () => {
-            console.log("WebSocket connection closed");
-            setSocket(null); // Clear the socket from state on close
-        };
+            socketInstance.onclose = () => {
+                console.log("WebSocket connection closed");
+                setSocket(null); // Clear the socket from state on close
+            };
 
-        socketInstance.onerror = (error) => {
-            console.error("WebSocket error:", error);
-        };
+            socketInstance.onerror = (error) => {
+                console.error("WebSocket error:", error);
+            };
+            // Define the onmessage event listener for receiving data
+            socketInstance.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log("Received message:", data);
+            };
+        }
 
         // Clean up the WebSocket connection when the component unmounts
         return () => {
-            if (socketInstance.readyState === WebSocket.OPEN) {
-                socketInstance.close();
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.close();
             }
         };
-    }, []);
+    }, [socket]);
 
     return <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>;
 };
