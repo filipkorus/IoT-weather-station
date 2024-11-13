@@ -6,7 +6,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import Buttons from "@/components/Buttons.tsx";
 import { useNavigate } from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
-// import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
+import WeatherForecast from "@/components/WeatherForecast.tsx";
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -46,7 +46,10 @@ const HomePage: React.FC = () => {
             <Typography variant="h5" sx={{ color: "white" }}>
               Nazwa stoku
             </Typography>
-              <BackButton title="Powrót" onClick={() => navigate("/")}></BackButton>
+            <BackButton
+              title="Powrót"
+              onClick={() => navigate("/")}
+            ></BackButton>
           </Box>
           {/*</Paper>*/}
         </Grid>
@@ -146,7 +149,6 @@ const HomePage: React.FC = () => {
           />
         </Grid>
 
-        {/* Square Tile - Snow Level */}
         <Grid xs={6} sm={6} md={3}>
           <Buttons
             title="Poziom śniegu"
@@ -155,34 +157,9 @@ const HomePage: React.FC = () => {
             onClick={() => navigate("/snow")}
           />
         </Grid>
-
-        {/* Heart Tile */}
-        <Grid xs={12} sm={6} md={6}>
-          <Paper
-            elevation={3}
-            sx={{
-              boxShadow: 5,
-              padding: "20px",
-              height: "80%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-around",
-            }}
-          >
-            <Typography variant="body2">ikonka jaka pogoda bd</Typography>
-            {/* Box dla pm 1.0 */}
-            <Box sx={{ textAlign: "center" }}>
-              <Typography variant="body2">temperatura</Typography>
-              <Typography variant="h6">minimalna zapowiadan</Typography>
-            </Box>
-
-            <Box sx={{ textAlign: "center" }}>
-              <Typography variant="body2">Czy będą opady</Typography>
-              <Typography variant="h6">Tak/Nie</Typography>
-            </Box>
-          </Paper>
+        <Grid xs={12} sm={12} md={6} lg={6}>
+          <WeatherForecast />
         </Grid>
-
         <Grid xs={12} sm={12} md={12}>
           <Paper
             elevation={3}
