@@ -48,7 +48,7 @@ const _like = async ({gatewayId, client}: {gatewayId: string, client: WebBrowser
 	});
 
 	// Check if the user has already liked the node
-	if (likes != null && likes.length > 0) {
+	if (likes !== null && likes !== 0) {
 		return null;
 	}
 
@@ -57,20 +57,18 @@ const _like = async ({gatewayId, client}: {gatewayId: string, client: WebBrowser
 
 const _removeLike = async ({gatewayId, client}: {gatewayId: string, client: WebBrowserClient}) => {
 	const likeData = {
+		gatewayId,
 		userAgent: client.userAgent,
 		ipAddr: client.ipAddr
 	};
-	const likes = await getGatewayLikesByGatewayIdUserAgentAndRemoteIp({
-		gatewayId,
-		...likeData
-	});
+	const likes = await getGatewayLikesByGatewayIdUserAgentAndRemoteIp(likeData);
 
 	// Check if the user did not like the node
-	if (likes == null || likes.length === 0) {
+	if (likes === null || likes === 0) {
 		return null;
 	}
 
-	return await removeGatewayLike(likes[0].id);
+	return await removeGatewayLike(likeData);
 };
 
 /**
