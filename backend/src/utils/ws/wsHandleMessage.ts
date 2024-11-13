@@ -1,4 +1,4 @@
-import {Gateway, Node} from '@prisma/client';
+import {Gateway} from '@prisma/client';
 import WebSocket from 'ws';
 import {
 	countGatewayLikesByGatewayId,
