@@ -202,7 +202,7 @@ const HomePage: React.FC = () => {
                         </Box>
                     </Paper>
                 </Grid>
-                <TableFooter sx={{ color: "white" }}>Pomiar pobrano: XXXXXXXXX</TableFooter>
+                <Typography sx={{ color: "white" }}>Pomiar pobrano: XXXXXXXXX</Typography>
             </Grid>
         </Box>
     );
