@@ -19,7 +19,6 @@ const useHandleDataFromSocket = (socket: WebSocket | null) => {
         // Define the onmessage event listener for receiving data
         socket.onmessage = (event) => {
             const data: MessageData = JSON.parse(event.data);
-            console.log("Received message:", data);
             if (data?.type === "sensors-to-client") {
                 dispatch(sensorsToClient(data));
             }

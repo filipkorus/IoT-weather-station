@@ -48,7 +48,6 @@ export default function StationList() {
             <Typography variant="h6" sx={{ mb: 2 }}>
                 Jesteś ciekaw warunków na swoim ulubionym stoku? Wybierz stację z listy, aby je poznać:
             </Typography>
-            <pre>{JSON.stringify(liveData, null, 2)}</pre>
             <List>
                 {stations.map((station, index) => (
                     <ListItemButton
