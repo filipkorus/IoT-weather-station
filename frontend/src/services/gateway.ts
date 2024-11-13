@@ -1,5 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "./baseQuery";
+import { likesFromREST } from "@/store/slices/liveDataSlice";
 
 interface Gateway {
     id: string;
@@ -36,6 +37,21 @@ export const gatewayApi = createApi({
                 url: `/public-gateway/${gatewayId}`,
                 method: "GET",
             }),
+            // `onQueryStarted` is triggered when the query is initiated
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
+                    // Await the result of the query
+                    const {
+                        data: {
+                            gateway: { likes, id, haveYouLiked },
+                        },
+                    } = await queryFulfilled;
+                    // Automatically dispatch your action with the fetched data
+                    dispatch(likesFromREST({ likes, gatewayId: id, haveYouLiked }));
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            },
             providesTags: ["Gateway"],
         }),
         getAllPublicGateways: builder.query<{ gateways: PublicGateway[] }, void>({

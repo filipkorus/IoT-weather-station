@@ -1,4 +1,4 @@
-import { sensorsToClient } from "@/store/slices/liveDataSlice";
+import { likes, sensorsToClient } from "@/store/slices/liveDataSlice";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
@@ -21,6 +21,9 @@ const useHandleDataFromSocket = (socket: WebSocket | null) => {
             const data: MessageData = JSON.parse(event.data);
             if (data?.type === "sensors-to-client") {
                 dispatch(sensorsToClient(data));
+            }
+            if (data?.type === "likes") {
+                dispatch(likes(data));
             }
         };
 

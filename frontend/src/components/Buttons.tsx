@@ -3,7 +3,7 @@ import { Button, Box, Typography } from "@mui/material";
 
 interface ButtonsProps {
   title: string;
-  value?: number;
+  value?: number | string;
   unit?: string;
   onClick: () => void;
 }
@@ -26,16 +26,10 @@ const Buttons: React.FC<ButtonsProps> = ({ title, value, unit, onClick }) => {
       onClick={onClick}
     >
       <Box>
-        <Typography
-          variant="h6"
-          sx={{ fontSize: { xs: "1.1rem", sm: "2rem" } }}
-        >
+        <Typography variant="h6" sx={{ fontSize: { xs: "1.1rem", sm: "2rem" } }}>
           {title}
         </Typography>
-        <Typography
-          variant="h2"
-          sx={{ textTransform: "none", fontSize: { xs: "1.5rem", sm: "2rem" } }}
-        >
+        <Typography variant="h2" sx={{ textTransform: "none", fontSize: { xs: "1.5rem", sm: "2rem" } }}>
           {value} {unit}
         </Typography>
       </Box>

@@ -24,11 +24,11 @@ const App: React.FC = () => {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/slopedata/:id" element={<HomePage />} />
-                <Route path="/humidity" element={<HumidityPage />} />
-                <Route path="/pressure" element={<PressurePage />} />
-                <Route path="/temperature" element={<TemperaturePage />} />
-                <Route path="/snow" element={<SnowPage />} />
-                <Route path="/airquality" element={<AirQualityPage />} />
+                <Route path="/humidity/:id" element={<HumidityPage />} />
+                <Route path="/pressure/:id" element={<PressurePage />} />
+                <Route path="/temperature/:id" element={<TemperaturePage />} />
+                <Route path="/snow/:id" element={<SnowPage />} />
+                <Route path="/airquality/:id" element={<AirQualityPage />} />
                 <Route path="/account" element={<AccountPage />} />
             </Routes>
         </BrowserRouter>

@@ -7,22 +7,29 @@ import Buttons from "@/components/Buttons.tsx";
 import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
 import useStationInfo from "@/hooks/useStationInfo";
+import useLikes from "@/hooks/useLikes";
 import WeatherForecast from "@/components/WeatherForecast.tsx";
 
 const HomePage: React.FC = () => {
     // id from url params, redirects to '/' if not provided
-    const stationInfo = useStationInfo(useParams().id);
-    console.log("stationInfo:");
-    console.log(stationInfo);
+    const id = useParams().id;
+    const stationInfo = useStationInfo(id);
+    const { likes, disableButton, haveYouLiked, likeAction } = useLikes(id);
 
-    const navigate = useNavigate();
-    const [isButtonClicked, setIsButtonClicked] = useState(false);
-
-    const handleClick = () => {
-        setIsButtonClicked(true); // Toggle the state
+    const stationInfoForDisplay = {
+        name: stationInfo?.name ?? "Nazwa stoku",
+        humidity: Math.round(stationInfo?.humidity) ?? "brak danych",
+        pressure: Math.round(stationInfo?.pressure) ?? "brak danych",
+        pm1: stationInfo?.pm1 ? Math.round(stationInfo?.pm1 / 10) / 10 : "brak danych",
+        pm25: stationInfo?.pm25 ? Math.round(stationInfo?.pm25 / 10) / 10 : "brak danych",
+        pm10: stationInfo?.pm10 ? Math.round(stationInfo?.pm10 / 10) / 10 : "brak danych",
+        temperature: Math.round(stationInfo?.temperature) ?? "brak danych",
+        snowDepth: stationInfo?.snowDepth ? Math.round(stationInfo?.snowDepth / 10) / 10 : "brak danych",
+        likes: likes ?? "brak danych",
+        created: stationInfo.created,
     };
 
-    // const buttonColor = isButtonClicked ? '#bd0d0d' : '#60020e'; // Change color based on state
+    const navigate = useNavigate();
 
     return (
         <Box
@@ -41,32 +48,39 @@ const HomePage: React.FC = () => {
                 <Grid xs={12} sm={6} md={12} sx={{ height: "30%" }}>
                     {/*<Paper elevation={3} sx={{backgroundColor: '#9bcce5', boxShadow: 5, padding: '20px', height: '30%' }}>*/}
 
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            {/* Nazwa stoku po lewej stronie */}
-            <Typography variant="h5" sx={{ color: "white" }}>
-              Nazwa stoku
-            </Typography>
-            <BackButton
-              title="Powrót"
-              onClick={() => navigate("/")}
-            ></BackButton>
-          </Box>
-          {/*</Paper>*/}
-        </Grid>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                        }}
+                    >
+                        {/* Nazwa stoku po lewej stronie */}
+                        <Typography variant="h5" sx={{ color: "white" }}>
+                            {stationInfoForDisplay.name}
+                        </Typography>
+                        <BackButton title="Powrót" onClick={() => navigate("/")}></BackButton>
+                    </Box>
+                    {/*</Paper>*/}
+                </Grid>
 
                 <Grid xs={6} sm={6} md={3}>
-                    <Buttons title="Wilgotność" value={70} unit="%" onClick={() => navigate("/humidity")} />
+                    <Buttons
+                        title="Wilgotność"
+                        value={stationInfoForDisplay.humidity}
+                        unit="%"
+                        onClick={() => navigate(`/humidity/${id}`)}
+                    />
                 </Grid>
 
                 {/* Square Tile - Pressure */}
                 <Grid xs={6} sm={6} md={3}>
-                    <Buttons title="Ciśnienie" value={1000} unit="hPa" onClick={() => navigate("/pressure")} />
+                    <Buttons
+                        title="Ciśnienie"
+                        value={stationInfoForDisplay.pressure}
+                        unit="hPa"
+                        onClick={() => navigate(`/pressure/${id}`)}
+                    />
                 </Grid>
 
                 {/* Long Tile - PM Levels */}
@@ -86,12 +100,12 @@ const HomePage: React.FC = () => {
                                 backgroundColor: "#1f4152",
                             },
                         }}
-                        onClick={() => navigate("/airquality")}
+                        onClick={() => navigate(`/airquality/${id}`)}
                     >
                         {/* Box dla pm 1.0 */}
                         <Box sx={{ textAlign: "center", flex: 1 }}>
                             <Typography variant="body2">pm 1.0</Typography>
-                            <Typography variant="h4">20</Typography>
+                            <Typography variant="h4">{stationInfoForDisplay.pm1}</Typography>
                             <Typography
                                 variant="h4"
                                 sx={{
@@ -106,7 +120,7 @@ const HomePage: React.FC = () => {
                         {/* Box dla pm 2.5 */}
                         <Box sx={{ textAlign: "center", flex: 1 }}>
                             <Typography variant="body2">pm 2.5</Typography>
-                            <Typography variant="h4">25</Typography>
+                            <Typography variant="h4">{stationInfoForDisplay.pm25}</Typography>
                             <Typography
                                 variant="h4"
                                 sx={{
@@ -121,7 +135,7 @@ const HomePage: React.FC = () => {
                         {/* Box dla pm 10 */}
                         <Box sx={{ textAlign: "center", flex: 1 }}>
                             <Typography variant="body2">pm 10</Typography>
-                            <Typography variant="h4">50</Typography>
+                            <Typography variant="h4">{stationInfoForDisplay.pm10}</Typography>
                             <Typography
                                 variant="h4"
                                 sx={{
@@ -137,56 +151,65 @@ const HomePage: React.FC = () => {
 
                 {/* Square Tile - Temperature */}
                 <Grid xs={6} sm={6} md={3}>
-                    <Buttons title="Temperatura" value={0} unit="°C" onClick={() => navigate("/pressure")} />
+                    <Buttons
+                        title="Temperatura"
+                        value={stationInfoForDisplay.temperature}
+                        unit="°C"
+                        onClick={() => navigate(`/temperature/${id}`)}
+                    />
                 </Grid>
 
-        <Grid xs={6} sm={6} md={3}>
-          <Buttons
-            title="Poziom śniegu"
-            value={2}
-            unit="m"
-            onClick={() => navigate("/snow")}
-          />
-        </Grid>
-        <Grid xs={12} sm={12} md={6} lg={6}>
-          <WeatherForecast />
-        </Grid>
-        <Grid xs={12} sm={12} md={12}>
-          <Paper
-            elevation={3}
-            sx={{
-              boxShadow: 5,
-              padding: "20px",
-              textAlign: "center",
-              height: "80%",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Box sx={{ width: "100%", mb: 2 }}>
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{
-                  boxShadow: 5,
-                  padding: "20px",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: isButtonClicked ? "#bd0d0d" : "#60020e", // Kolor zmienia się w zależności od stanu
-                  "&:hover": {
-                    backgroundColor: isButtonClicked ? "#bd0d0d" : "#60020e", // Kolor po najechaniu
-                  },
-                }}
-                onClick={handleClick} // Użyj funkcji handleClick
-              >
-                <FavoriteIcon sx={{ marginRight: "8px" }} /> {/* Ikona serca */}
-                <Typography variant="h6">Podoba mi się ten stok!</Typography>
-              </Button>
-            </Box>
+                {/* Square Tile - Snow Level */}
+                <Grid xs={6} sm={6} md={3}>
+                    <Buttons
+                        title="Poziom śniegu"
+                        value={stationInfoForDisplay.snowDepth}
+                        unit="m"
+                        onClick={() => navigate(`/snow/${id}`)}
+                    />
+                </Grid>
+
+                <Grid xs={12} sm={12} md={6} lg={6}>
+                    <WeatherForecast />
+                </Grid>
+
+                <Grid xs={12} sm={12} md={12}>
+                    <Paper
+                        elevation={3}
+                        sx={{
+                            boxShadow: 5,
+                            padding: "20px",
+                            textAlign: "center",
+                            height: "80%",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <Box sx={{ width: "100%", mb: 2 }}>
+                            <Button
+                                variant="contained"
+                                fullWidth
+                                disabled={disableButton}
+                                sx={{
+                                    boxShadow: 5,
+                                    padding: "20px",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    backgroundColor: haveYouLiked ? "#bd0d0d" : "#60020e", // Kolor zmienia się w zależności od stanu
+                                    "&:hover": {
+                                        backgroundColor: haveYouLiked ? "#bd0d0d" : "#60020e", // Kolor po najechaniu
+                                    },
+                                }}
+                                onClick={likeAction} // Użyj funkcji likeAction
+                            >
+                                <FavoriteIcon sx={{ marginRight: "8px" }} /> {/* Ikona serca */}
+                                <Typography variant="h6">Podoba mi się ten stok!</Typography>
+                            </Button>
+                        </Box>
 
                         {/* Sekcja licznika polubień */}
                         <Box
@@ -198,11 +221,11 @@ const HomePage: React.FC = () => {
                                 textAlign: "center",
                             }}
                         >
-                            <Typography variant="body2">Licznik polubień</Typography>
+                            <Typography variant="body2">Licznik polubień: {stationInfoForDisplay.likes}</Typography>
                         </Box>
                     </Paper>
                 </Grid>
-                <Typography sx={{ color: "white" }}>Pomiar pobrano: XXXXXXXXX</Typography>
+                <Typography sx={{ color: "white" }}>Pomiar pobrano: {stationInfoForDisplay.created}</Typography>
             </Grid>
         </Box>
     );
