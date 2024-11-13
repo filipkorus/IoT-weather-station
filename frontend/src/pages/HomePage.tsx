@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Grid from "@mui/material/Unstable_Grid2"; // For Grid 2.0
 import Paper from "@mui/material/Paper";
-import { Typography, Box, Button, TableFooter } from "@mui/material";
+import { Typography, Box, Button } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Buttons from "@/components/Buttons.tsx";
 import { useNavigate, useParams } from "react-router-dom";
