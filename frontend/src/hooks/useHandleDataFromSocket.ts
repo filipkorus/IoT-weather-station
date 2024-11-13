@@ -8,9 +8,6 @@ interface MessageData {
 }
 
 const useHandleDataFromSocket = (socket: WebSocket | null) => {
-    console.log("socket:");
-    console.log(socket);
-
     const dispatch = useDispatch();
 
     useEffect(() => {
