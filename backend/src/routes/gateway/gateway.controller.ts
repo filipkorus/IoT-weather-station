@@ -11,9 +11,14 @@ import validateObject from '../../utils/validateObject';
 import {
 	createGatewayPairingCode,
 	getGatewayById,
-	getGatewayByPairingCode, getPairedGatewayPublicDataWithNodesAndLikes,
+	getGatewayByPairingCode,
+	getPairedGatewayPublicDataWithNodesAndLikes,
 	getGatewaysByUserId,
-	pairGatewayWithUserAccount, getPairedGateways, updateGatewayName, getGatewayLikesByGatewayIdUserAgentAndRemoteIp
+	pairGatewayWithUserAccount,
+	getPairedGateways,
+	updateGatewayName,
+	getGatewayLikesByGatewayIdUserAgentAndRemoteIp,
+	getLastNGatewaySensorDataRecords
 } from './gateway.service';
 import {getUserById} from '../user/user.service';
 import {remoteIpAndUserAgent} from '../../utils/ws/wsRemoteIpAndUserAgent';
@@ -97,6 +102,8 @@ export const GatewayPairingCodeHandler = async (req: Request, res: Response) => 
 
 export const GetPublicGatewayDataHandler = async (req: Request, res: Response) => {
 	const gatewayId = req.params.id;
+	const {ipAddr, userAgent} = remoteIpAndUserAgent(req);
+
 	if (gatewayId == null) {
 		// return all public gateways
 		const gateways = await getPairedGateways();
@@ -104,15 +111,34 @@ export const GetPublicGatewayDataHandler = async (req: Request, res: Response) =
 			return SERVER_ERROR(res, 'Server Error: Public gateways could not be retrieved');
 		}
 
-		const gatewaysDataPromise = await Promise.all(
+		const gatewaysDataPromise = Promise.all(
 			gateways.map(gateway => getPairedGatewayPublicDataWithNodesAndLikes(gateway.id))
 		);
+		const likePromise = Promise.all(
+			gateways.map(gateway => getGatewayLikesByGatewayIdUserAgentAndRemoteIp({
+				gatewayId: gateway.id,
+				userAgent,
+				ipAddr
+			}))
+		);
+		const gatewaySensorDataPromise = Promise.all(
+			gateways.map(gateway => getLastNGatewaySensorDataRecords(gateway.id))
+		);
 
-		const gatewaysData = gatewaysDataPromise.filter(gatewayData => gatewayData != null);
-		return SUCCESS(res, 'Public gateways data retrieved', {gateways: gatewaysData});
+		const [gatewaysData, like, gatewaySensorData] = await Promise.all([gatewaysDataPromise, likePromise, gatewaySensorDataPromise]);
+
+		const gatewaysDataWithSensorData = gatewaysData
+				.filter((gatewayData, idx) => gatewayData != null && gatewaySensorData[idx] != null && like[idx] != null)
+				.map((gatewayData, index) => {
+					return {
+						...gatewayData,
+						haveYouLiked: like[index] != null && (like[index] as Array<unknown>).length > 0,
+						sensorData: gatewaySensorData[index]
+					};
+				});
+
+		return SUCCESS(res, 'Public gateways data retrieved', {gateways: gatewaysDataWithSensorData});
 	}
-
-	const {ipAddr, userAgent} = remoteIpAndUserAgent(req);
 
 	const gatewayDataPromise = getPairedGatewayPublicDataWithNodesAndLikes(gatewayId);
 	const likePromise = getGatewayLikesByGatewayIdUserAgentAndRemoteIp({
@@ -120,7 +146,8 @@ export const GetPublicGatewayDataHandler = async (req: Request, res: Response) =
 		userAgent,
 		ipAddr
 	});
-	const [gateway, like] = await Promise.all([gatewayDataPromise, likePromise]);
+	const gatewaySensorDataPromise = getLastNGatewaySensorDataRecords(gatewayId);
+	const [gateway, like, gatewaySensorData] = await Promise.all([gatewayDataPromise, likePromise, gatewaySensorDataPromise]);
 	if (gateway == null) {
 		return NOT_FOUND(res, `Public gateway (id=${gatewayId}) not found`);
 	}
@@ -128,7 +155,8 @@ export const GetPublicGatewayDataHandler = async (req: Request, res: Response) =
 	return SUCCESS(res, 'Public gateway data retrieved', {
 		gateway: {
 			...gateway,
-			haveYouLiked: like != null
+			haveYouLiked: like != null && like.length > 0,
+			sensorData: gatewaySensorData
 		}
 	});
 };
