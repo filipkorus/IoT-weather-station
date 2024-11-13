@@ -220,7 +220,20 @@ This endpoint does not require to be logged in.
             "gatewayId": "string (gateway ID)"
         }],
         "likes": "number (number of likes)",
-        "haveYouLiked": false // boolean indication whether the user has already liked the gateway today
+        "haveYouLiked": false, // boolean indication whether the user has already liked the gateway today
+        "sensorData": [{ // last 5 sensor readings
+            "id": 123, // number - sensor data ID
+            "created": "2024-11-13T15:41:34.588Z", // string - timestamp of the sensor data
+            "batteryLevel": 2.33, // number - battery level in volts
+            "nodeId": "string (node ID)",
+            "temperature": 23.5, // number - temperature in Celsius
+            "humidity": 60, // number - humidity in percentage
+            "pressure": 1013.25, // number - pressure in hPa
+            "snowDepth": 0, // number - snow depth in mm (or cm)
+            "pm1": 5, // number - PM1.0 in µg/m³
+            "pm25": 12, // number - PM2.5 in µg/m³
+            "pm10": 18 // number - PM10 in µg/m³
+        }]
     }
   }
   ```
@@ -246,7 +259,21 @@ This endpoint does not require to be logged in.
                 "name": "string (node name)",
                 "gatewayId": "string (gateway ID)"
             }],
-            "likes": "number (number of likes)"
+            "likes": "number (number of likes)",
+            "haveYouLiked": false, // boolean indication whether the user has already liked the gateway today
+            "sensorData": [{ // last 5 sensor readings
+                "id": 123, // number - sensor data ID
+                "created": "2024-11-13T15:41:34.588Z", // string - timestamp of the sensor data
+                "batteryLevel": 2.33, // number - battery level in volts
+                "nodeId": "string (node ID)",
+                "temperature": 23.5, // number - temperature in Celsius
+                "humidity": 60, // number - humidity in percentage
+                "pressure": 1013.25, // number - pressure in hPa
+                "snowDepth": 0, // number - snow depth in mm (or cm)
+                "pm1": 5, // number - PM1.0 in µg/m³
+                "pm25": 12, // number - PM2.5 in µg/m³
+                "pm10": 18 // number - PM10 in µg/m³
+            }]
         }]
     }
     ```

@@ -345,8 +345,6 @@ const getPairedGatewayPublicDataWithNodesAndLikes = async (gatewayId: string) =>
 			return null;
 		}
 
-		// const x = like
-
 		const {apiKey, pairingCode, ...rest} = gateway;
 		return {
 			...rest,
@@ -360,6 +358,33 @@ const getPairedGatewayPublicDataWithNodesAndLikes = async (gatewayId: string) =>
 		await prisma.$disconnect();
 	}
 };
+
+/**
+ * Returns gateway sensor data.
+ * @param gatewayId ID of the gateway.
+ * @param recordsLimit Number of records to return.
+ * @returns NodeData[] Array of NodeData objects if successful, otherwise null.
+ */
+const getLastNGatewaySensorDataRecords = async (gatewayId: string, recordsLimit: number = 5): Promise<NodeData[] | null> => {
+	try {
+		return prisma.nodeData.findMany({
+			where: {
+				Node: {
+					gatewayId: gatewayId,
+				},
+			},
+			orderBy: {
+				created: 'desc',
+			},
+			take: recordsLimit,
+		});
+	} catch (error) {
+		logger.error(error);
+		return null;
+	} finally {
+		await prisma.$disconnect();
+	}
+}
 
 /**
  * Returns all paired gateways.
@@ -394,5 +419,6 @@ export {
 	getGatewayLikesByGatewayIdUserAgentAndRemoteIp,
 	countGatewayLikesByGatewayId,
 	getPairedGatewayPublicDataWithNodesAndLikes,
+	getLastNGatewaySensorDataRecords,
 	getPairedGateways
 };
