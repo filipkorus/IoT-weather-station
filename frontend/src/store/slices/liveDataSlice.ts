@@ -47,9 +47,9 @@ const liveDataSlice = createSlice({
             const data = action.payload as SensorsToClient;
             // Set or update the gateway data
             if (state[data.gatewayId]?.data?.length >= 5) {
-                state[data.gatewayId].data.shift();
+                state[data.gatewayId].data.pop();
                 if (state[data.gatewayId].data.length >= 5) {
-                    state[data.gatewayId].data.shift();
+                    state[data.gatewayId].data.pop();
                 }
             }
 
@@ -59,7 +59,7 @@ const liveDataSlice = createSlice({
                 }
                 state[data.gatewayId].data = [];
             }
-            state[data.gatewayId].data.push({ ...data.data, created: data.created });
+            state[data.gatewayId].data.unshift({ ...data.data, created: data.created });
         },
         likes: (state, action) => {
             const data = action.payload as Likes;
