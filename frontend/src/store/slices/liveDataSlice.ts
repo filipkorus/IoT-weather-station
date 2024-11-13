@@ -35,6 +35,8 @@ interface LiveData {
     };
 }
 
+const stateDataGatewayIdInitState = { data: [], likes: 0, haveYouLiked: false };
+
 // Set initial state to an empty LiveData object
 const initialState: LiveData = {};
 
@@ -55,7 +57,7 @@ const liveDataSlice = createSlice({
 
             if (!state[data.gatewayId]?.data) {
                 if (!state[data.gatewayId]) {
-                    state[data.gatewayId] = { data: [], likes: 0, haveYouLiked: false };
+                    state[data.gatewayId] = { ...stateDataGatewayIdInitState };
                 }
                 state[data.gatewayId].data = [];
             }
@@ -68,11 +70,21 @@ const liveDataSlice = createSlice({
                 state[data.gatewayId].likes = data.likes;
             }
         },
+        likesFromREST: (state, action) => {
+            const data = action.payload as { likes: number; gatewayId: string; haveYouLiked: boolean };
+
+            if (!state[data.gatewayId]) {
+                state[data.gatewayId] = { ...stateDataGatewayIdInitState };
+            }
+
+            state[data.gatewayId].likes = data.likes;
+            state[data.gatewayId].haveYouLiked = data.haveYouLiked;
+        },
     },
 });
 
 // Export the action for dispatching
-export const { sensorsToClient } = liveDataSlice.actions;
+export const { sensorsToClient, likes, likesFromREST } = liveDataSlice.actions;
 
 // Export the reducer to be added to the store
 export default liveDataSlice.reducer;

@@ -16,7 +16,7 @@ const HomePage: React.FC = () => {
         setIsButtonClicked(true); // Toggle the state
     };
 
-    // const buttonColor = isButtonClicked ? '#bd0d0d' : '#60020e'; // Change color based on state
+    const navigate = useNavigate();
 
     return (
         <Box padding={3} sx={{
