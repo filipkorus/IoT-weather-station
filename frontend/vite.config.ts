@@ -19,6 +19,7 @@ export default defineConfig({
             "@/types": "/src/types",
             "@/utils": "/src/utils",
             "@/store": "/src/store",
+            "@/services": "/src/services",
         },
     },
     server: {

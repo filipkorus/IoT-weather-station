@@ -4,36 +4,42 @@ import Paper from "@mui/material/Paper";
 import { Typography, Box, Button, TableFooter } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Buttons from "@/components/Buttons.tsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
+import useStationInfo from "@/hooks/useStationInfo";
 import WeatherForecast from "@/components/WeatherForecast.tsx";
 
 const HomePage: React.FC = () => {
-  const navigate = useNavigate();
-  const [isButtonClicked, setIsButtonClicked] = useState(false);
+    // id from url params, redirects to '/' if not provided
+    const stationInfo = useStationInfo(useParams().id);
+    console.log("stationInfo:");
+    console.log(stationInfo);
 
-  const handleClick = () => {
-    setIsButtonClicked(true); // Toggle the state
-  };
+    const navigate = useNavigate();
+    const [isButtonClicked, setIsButtonClicked] = useState(false);
 
-  // const buttonColor = isButtonClicked ? '#bd0d0d' : '#60020e'; // Change color based on state
+    const handleClick = () => {
+        setIsButtonClicked(true); // Toggle the state
+    };
 
-  return (
-    <Box
-      padding={3}
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        backgroundColor: "#9bcce5",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        minHeight: "90vh",
-      }}
-    >
-      <Grid container spacing={3} rowSpacing={{ xs: 3, sm: 2, md: 5 }}>
-        <Grid xs={12} sm={6} md={12} sx={{ height: "30%" }}>
-          {/*<Paper elevation={3} sx={{backgroundColor: '#9bcce5', boxShadow: 5, padding: '20px', height: '30%' }}>*/}
+    // const buttonColor = isButtonClicked ? '#bd0d0d' : '#60020e'; // Change color based on state
+
+    return (
+        <Box
+            padding={3}
+            sx={{
+                display: "flex",
+                alignItems: "center",
+                backgroundColor: "#9bcce5",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                minHeight: "90vh",
+            }}
+        >
+            <Grid container spacing={3} rowSpacing={{ xs: 3, sm: 2, md: 5 }}>
+                <Grid xs={12} sm={6} md={12} sx={{ height: "30%" }}>
+                    {/*<Paper elevation={3} sx={{backgroundColor: '#9bcce5', boxShadow: 5, padding: '20px', height: '30%' }}>*/}
 
           <Box
             sx={{
@@ -54,100 +60,85 @@ const HomePage: React.FC = () => {
           {/*</Paper>*/}
         </Grid>
 
-        <Grid xs={6} sm={6} md={3}>
-          <Buttons
-            title="Wilgotność"
-            value={70}
-            unit="%"
-            onClick={() => navigate("/humidity")}
-          />
-        </Grid>
+                <Grid xs={6} sm={6} md={3}>
+                    <Buttons title="Wilgotność" value={70} unit="%" onClick={() => navigate("/humidity")} />
+                </Grid>
 
-        {/* Square Tile - Pressure */}
-        <Grid xs={6} sm={6} md={3}>
-          <Buttons
-            title="Ciśnienie"
-            value={1000}
-            unit="hPa"
-            onClick={() => navigate("/pressure")}
-          />
-        </Grid>
+                {/* Square Tile - Pressure */}
+                <Grid xs={6} sm={6} md={3}>
+                    <Buttons title="Ciśnienie" value={1000} unit="hPa" onClick={() => navigate("/pressure")} />
+                </Grid>
 
-        {/* Long Tile - PM Levels */}
-        <Grid xs={12} md={6}>
-          <Button
-            variant="contained"
-            fullWidth
-            sx={{
-              backgroundColor: "#0d598f",
-              boxShadow: 5,
-              padding: "20px",
-              height: "80%",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              "&:hover": {
-                backgroundColor: "#1f4152",
-              },
-            }}
-            onClick={() => navigate("/airquality")}
-          >
-            {/* Box dla pm 1.0 */}
-            <Box sx={{ textAlign: "center", flex: 1 }}>
-              <Typography variant="body2">pm 1.0</Typography>
-              <Typography variant="h4">20</Typography>
-              <Typography
-                variant="h4"
-                sx={{
-                  fontSize: { xs: "1.5rem", sm: "2rem" },
-                  textTransform: "none",
-                }}
-              >
-                µg/m³
-              </Typography>
-            </Box>
+                {/* Long Tile - PM Levels */}
+                <Grid xs={12} md={6}>
+                    <Button
+                        variant="contained"
+                        fullWidth
+                        sx={{
+                            backgroundColor: "#0d598f",
+                            boxShadow: 5,
+                            padding: "20px",
+                            height: "80%",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            "&:hover": {
+                                backgroundColor: "#1f4152",
+                            },
+                        }}
+                        onClick={() => navigate("/airquality")}
+                    >
+                        {/* Box dla pm 1.0 */}
+                        <Box sx={{ textAlign: "center", flex: 1 }}>
+                            <Typography variant="body2">pm 1.0</Typography>
+                            <Typography variant="h4">20</Typography>
+                            <Typography
+                                variant="h4"
+                                sx={{
+                                    fontSize: { xs: "1.5rem", sm: "2rem" },
+                                    textTransform: "none",
+                                }}
+                            >
+                                µg/m³
+                            </Typography>
+                        </Box>
 
-            {/* Box dla pm 2.5 */}
-            <Box sx={{ textAlign: "center", flex: 1 }}>
-              <Typography variant="body2">pm 2.5</Typography>
-              <Typography variant="h4">25</Typography>
-              <Typography
-                variant="h4"
-                sx={{
-                  fontSize: { xs: "1.5rem", sm: "2rem" },
-                  textTransform: "none",
-                }}
-              >
-                µg/m³
-              </Typography>
-            </Box>
+                        {/* Box dla pm 2.5 */}
+                        <Box sx={{ textAlign: "center", flex: 1 }}>
+                            <Typography variant="body2">pm 2.5</Typography>
+                            <Typography variant="h4">25</Typography>
+                            <Typography
+                                variant="h4"
+                                sx={{
+                                    fontSize: { xs: "1.5rem", sm: "2rem" },
+                                    textTransform: "none",
+                                }}
+                            >
+                                µg/m³
+                            </Typography>
+                        </Box>
 
-            {/* Box dla pm 10 */}
-            <Box sx={{ textAlign: "center", flex: 1 }}>
-              <Typography variant="body2">pm 10</Typography>
-              <Typography variant="h4">50</Typography>
-              <Typography
-                variant="h4"
-                sx={{
-                  fontSize: { xs: "1.5rem", sm: "2rem" },
-                  textTransform: "none",
-                }}
-              >
-                µg/m³
-              </Typography>
-            </Box>
-          </Button>
-        </Grid>
+                        {/* Box dla pm 10 */}
+                        <Box sx={{ textAlign: "center", flex: 1 }}>
+                            <Typography variant="body2">pm 10</Typography>
+                            <Typography variant="h4">50</Typography>
+                            <Typography
+                                variant="h4"
+                                sx={{
+                                    fontSize: { xs: "1.5rem", sm: "2rem" },
+                                    textTransform: "none",
+                                }}
+                            >
+                                µg/m³
+                            </Typography>
+                        </Box>
+                    </Button>
+                </Grid>
 
-        {/* Square Tile - Temperature */}
-        <Grid xs={6} sm={6} md={3}>
-          <Buttons
-            title="Temperatura"
-            value={0}
-            unit="°C"
-            onClick={() => navigate("/pressure")}
-          />
-        </Grid>
+                {/* Square Tile - Temperature */}
+                <Grid xs={6} sm={6} md={3}>
+                    <Buttons title="Temperatura" value={0} unit="°C" onClick={() => navigate("/pressure")} />
+                </Grid>
 
         <Grid xs={6} sm={6} md={3}>
           <Buttons
@@ -197,26 +188,24 @@ const HomePage: React.FC = () => {
               </Button>
             </Box>
 
-            {/* Sekcja licznika polubień */}
-            <Box
-              sx={{
-                border: "1px solid",
-                padding: "10px",
-                borderRadius: "5px",
-                width: "50%",
-                textAlign: "center",
-              }}
-            >
-              <Typography variant="body2">Licznik polubień</Typography>
-            </Box>
-          </Paper>
-        </Grid>
-        <TableFooter sx={{ color: "white" }}>
-          Pomiar pobrano: XXXXXXXXX
-        </TableFooter>
-      </Grid>
-    </Box>
-  );
+                        {/* Sekcja licznika polubień */}
+                        <Box
+                            sx={{
+                                border: "1px solid",
+                                padding: "10px",
+                                borderRadius: "5px",
+                                width: "50%",
+                                textAlign: "center",
+                            }}
+                        >
+                            <Typography variant="body2">Licznik polubień</Typography>
+                        </Box>
+                    </Paper>
+                </Grid>
+                <TableFooter sx={{ color: "white" }}>Pomiar pobrano: XXXXXXXXX</TableFooter>
+            </Grid>
+        </Box>
+    );
 };
 
 export default HomePage;
