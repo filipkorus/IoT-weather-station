@@ -3,7 +3,6 @@ import { Box, Typography } from "@mui/material";
 import StationList from "@/components/StationList.tsx";
 import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
 import { useNavigate } from "react-router-dom";
-import ReduxTest from "@/components/ReduxTest.tsx";
 
 const EntryPage: React.FC = () => {
     const navigate = useNavigate();
@@ -76,7 +75,6 @@ const EntryPage: React.FC = () => {
                     onClick={() => navigate("/register")}
                     sx={{ width: { xs: "100px", md: "150px" } }}
                 ></LoginRegisterButton>
-                <ReduxTest />
             </Box>
         </Box>
     );

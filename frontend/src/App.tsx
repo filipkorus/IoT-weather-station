@@ -10,24 +10,29 @@ import SnowPage from "@/pages/SnowPage.tsx";
 import AirQualityPage from "@/pages/AirQualityPage.tsx";
 import EntryPage from "@/pages/EntryPage.tsx";
 import AccountPage from "@/pages/AccountPage.tsx";
+import { useSocket } from "./hooks/useSocket";
+import useHandleDataFromSocket from "./hooks/useHandleDataFromSocket";
 
-const App = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<EntryPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/slopedata" element={<HomePage />} />
-        <Route path="/humidity" element={<HumidityPage />} />
-        <Route path="/pressure" element={<PressurePage />} />
-        <Route path="/temperature" element={<TemperaturePage />} />
-        <Route path="/snow" element={<SnowPage />} />
-        <Route path="/airquality" element={<AirQualityPage />} />
-        <Route path="/account" element={<AccountPage />} />
-      </Routes>
-    </BrowserRouter>
-  );
+const App: React.FC = () => {
+    const { socket } = useSocket();
+    useHandleDataFromSocket(socket);
+
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<EntryPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/slopedata/:id" element={<HomePage />} />
+                <Route path="/humidity/:id" element={<HumidityPage />} />
+                <Route path="/pressure/:id" element={<PressurePage />} />
+                <Route path="/temperature/:id" element={<TemperaturePage />} />
+                <Route path="/snow/:id" element={<SnowPage />} />
+                <Route path="/airquality/:id" element={<AirQualityPage />} />
+                <Route path="/account" element={<AccountPage />} />
+            </Routes>
+        </BrowserRouter>
+    );
 };
 
 export default App;
