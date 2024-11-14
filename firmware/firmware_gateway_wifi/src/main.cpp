@@ -6,56 +6,11 @@
 #include <ArduinoJson.h>
 #include <GlobalVar.h>
 #include <WebSocketsClient.h>
-#include <esp_now.h>
 #include <LiquidCrystal_I2C.h>
 
 #define USE_SERIAL Serial
 WebSocketsClient webSocket;
 LiquidCrystal_I2C lcd(0x27, 12, 2);
-
-typedef struct struct_message
-{
-  char nodeId[16];
-  float batteryLevel;
-  float temperature;
-  float humidity;
-  float pressure;
-  float snowDepth;
-  float pm1;
-  float pm25;
-  float pm10;
-} struct_message;
-
-struct_message myData;
-
-void OnDataRecv(const uint8_t *mac_addr, const uint8_t *incomingData, int len)
-{
-  char macStr[18];
-  Serial.print("Packet received from: ");
-  snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
-           mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
-  Serial.println(macStr);
-  memcpy(&myData, incomingData, sizeof(myData));
-  Serial.print("Board ID: ");
-  Serial.println(myData.nodeId);
-
-  DynamicJsonDocument doc(2048);
-  doc["type"] = "sensors";
-  doc["nodeId"] = myData.nodeId;
-  doc["batteryLevel"] = myData.batteryLevel;
-  doc["temperature"] = myData.temperature;
-  doc["humidity"] = myData.humidity;
-  doc["pressure"] = myData.pressure;
-  doc["snowDepth"] = myData.snowDepth;
-  doc["pm1"] = myData.pm1;
-  doc["pm25"] = myData.pm25;
-  doc["pm10"] = myData.pm10;
-  char buff[2048];
-  serializeJson(doc, buff);
-  webSocket.sendTXT(buff);
-
-  Serial.println();
-}
 
 void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
 {
@@ -190,6 +145,7 @@ void setup()
 {
   WiFi.mode(WIFI_STA);
   Serial.begin(115200);
+  Serial2.begin(115200);
   lcd.init();
   lcd.backlight();
   lcd.setCursor(0, 0);
@@ -225,14 +181,6 @@ void setup()
   }
 
   WebSocketInit();
-
-  if (esp_now_init() != ESP_OK)
-  {
-    Serial.println("Error initializing ESP-NOW");
-    return;
-  }
-
-  esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
 }
 
 void loop()
