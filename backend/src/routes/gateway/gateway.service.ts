@@ -23,7 +23,7 @@ const createGateway = async ({apiKey, gatewayId}: {apiKey: string, gatewayId: st
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 }
 
@@ -36,17 +36,40 @@ const createGateway = async ({apiKey, gatewayId}: {apiKey: string, gatewayId: st
  */
 const updateGatewayName = async (gatewayId: string, name: string): Promise<Gateway | null> => {
 	try {
-		return prisma.gateway.update({
+		return await prisma.gateway.update({
 			data: {name},
+			where: { id: gatewayId }
+		});
+	} catch (error) {
+		logger.error(error);
+		return null;
+	} finally {
+		prisma.$disconnect();
+	}
+};
+
+/**
+ * Updates gateway location in the database.
+ *
+ * @param gatewayId ID of the gateway.
+ * @param latitude Latitude of the gateway.
+ * @param longitude Longitude of the gateway.
+ * @returns Gateway Gateway object if successful, otherwise null.
+ */
+const updateGatewayLocation = async (gatewayId: string, {latitude, longitude} :{latitude: number, longitude: number}): Promise<Gateway | null> => {
+	try {
+		return await prisma.gateway.update({
+			data: {latitude, longitude},
 			where: {id: gatewayId}
 		});
 	} catch (error) {
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 };
+
 
 /**
  * Returns gateway by its API key.
@@ -67,7 +90,7 @@ const getGatewayByApiKey = async (apiKey: string): Promise<Gateway | null> => {
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 };
 
@@ -86,7 +109,7 @@ const getGatewayById = async (gatewayId: string): Promise<Gateway | null> => {
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 };
 
@@ -107,7 +130,7 @@ const getGatewaysByUserId = async (userId: number): Promise<Gateway[] | null> =>
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 }
 
@@ -129,7 +152,7 @@ const setGatewayIsOnline = async (gatewayId: string, isOnline: boolean): Promise
 	} catch (error) {
 		logger.error(error);
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 };
 
@@ -166,7 +189,7 @@ const createGatewayPairingCode = async (gatewayId: string) => {
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 };
 
@@ -183,7 +206,7 @@ const checkIfPairingCodeExists = async (pairingCode: string) => {
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 };
 
@@ -202,7 +225,7 @@ const getGatewayByPairingCode = async (pairingCode: string) => {
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 };
 
@@ -224,7 +247,7 @@ const pairGatewayWithUserAccount = async ({pairingCode, userId}: { pairingCode: 
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 };
 
@@ -247,7 +270,7 @@ const saveGatewayLike = async ({gatewayId, likeData}: { gatewayId: string, likeD
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 };
 
@@ -276,7 +299,7 @@ const removeGatewayLike = async ({gatewayId, userAgent, ipAddr}:
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 };
 
@@ -310,7 +333,7 @@ const getGatewayLikesByGatewayIdUserAgentAndRemoteIp = async (
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 };
 
@@ -331,7 +354,7 @@ const countGatewayLikesByGatewayId = async (gatewayId: string) => {
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 };
 
@@ -363,7 +386,7 @@ const getPairedGatewayPublicDataWithNodesAndLikes = async (gatewayId: string) =>
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 };
 
@@ -390,7 +413,7 @@ const getLastNGatewaySensorDataRecords = async (gatewayId: string, recordsLimit:
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 }
 
@@ -408,13 +431,14 @@ const getPairedGateways = async () => {
 		logger.error(error);
 		return null;
 	} finally {
-		await prisma.$disconnect();
+		prisma.$disconnect();
 	}
 }
 
 export {
 	createGateway,
 	updateGatewayName,
+	updateGatewayLocation,
 	getGatewayByApiKey,
 	getGatewayById,
 	getGatewaysByUserId,

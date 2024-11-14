@@ -1,4 +1,5 @@
 import {
+	BAD_REQUEST,
 	FORBIDDEN,
 	MISSING_BODY_FIELDS,
 	NOT_FOUND,
@@ -18,7 +19,7 @@ import {
 	getPairedGateways,
 	updateGatewayName,
 	getGatewayLikesByGatewayIdUserAgentAndRemoteIp,
-	getLastNGatewaySensorDataRecords
+	getLastNGatewaySensorDataRecords, updateGatewayLocation
 } from './gateway.service';
 import {getUserById} from '../user/user.service';
 import {remoteIpAndUserAgent} from '../../utils/ws/wsRemoteIpAndUserAgent';
@@ -49,9 +50,11 @@ export const GetGatewayHandler = async (req: Request, res: Response) => {
 	return SUCCESS(res, 'Gateway retrieved', {gateway: rest});
 };
 
-export const RenameGatewayHandler = async (req: Request, res: Response) => {
+export const UpdateGatewayHandler = async (req: Request, res: Response) => {
 	const RequestSchema = z.object({
-		name: z.string({required_error: 'Name is required'}).trim().min(3).max(50)
+		name: z.string().trim().min(3).max(50).optional(),
+		latitude: z.number().min(-90).max(90).optional(),
+		longitude: z.number().min(-180).max(180).optional()
 	});
 
 	const validatedRequest = validateObject(RequestSchema, req.body);
@@ -65,12 +68,43 @@ export const RenameGatewayHandler = async (req: Request, res: Response) => {
 		return NOT_FOUND(res, `Gateway (id=${gatewayId}) not found`);
 	}
 
-	const updatedGateway = await updateGatewayName(gatewayId, validatedRequest.data.name);
-	if (updatedGateway == null) {
-		return SERVER_ERROR(res, 'Server Error: Gateway name could not be updated');
+	let updatedNameGateway;
+	if (validatedRequest.data.name != null && validatedRequest.data.name !== gateway.name) {
+		updatedNameGateway = await updateGatewayName(gatewayId, validatedRequest.data.name);
 	}
 
-	return SUCCESS(res, 'Gateway name updated', {name: updatedGateway.name});
+	let updatedLocationGateway;
+	if (validatedRequest.data.latitude != null && validatedRequest.data.longitude != null) {
+		updatedLocationGateway = await updateGatewayLocation(gatewayId, {
+			latitude: validatedRequest.data.latitude,
+			longitude: validatedRequest.data.longitude
+		});
+	}
+
+	if (updatedNameGateway == null && updatedLocationGateway == null) {
+		return SUCCESS(res, 'No changes made');
+	}
+
+	if (updatedLocationGateway != null && updatedNameGateway != null) {
+		return SUCCESS(res, 'Gateway name and location updated', {
+			name: updatedNameGateway.name,
+			latitude: updatedLocationGateway.latitude,
+			longitude: updatedLocationGateway.longitude
+		});
+	}
+
+	if (updatedLocationGateway != null) {
+		return SUCCESS(res, 'Gateway location updated', {
+			latitude: updatedLocationGateway.latitude,
+			longitude: updatedLocationGateway.longitude
+		});
+	}
+
+	if (updatedNameGateway != null) {
+		return SUCCESS(res, 'Gateway name updated', {name: updatedNameGateway.name});
+	}
+
+	return BAD_REQUEST(res, 'No changes made');
 };
 
 export const GatewayPairingCodeHandler = async (req: Request, res: Response) => {

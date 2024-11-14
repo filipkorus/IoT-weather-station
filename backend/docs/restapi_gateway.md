@@ -102,6 +102,8 @@ This endpoint requires the user to be logged in, i.e. have a valid access token 
     "gateway": {
         "id": "string (gateway ID)",
         "name": "string (gateway name)",
+        "latitude": "number (latitude) - can be null",
+        "longitude": "number (longitude) - can be null",
         "isPaired": "boolean (gateway pairing status)",
         "isOnline": "boolean (gateway online status)",
         "lastOnline": "string (last online timestamp)",
@@ -127,6 +129,8 @@ This endpoint requires the user to be logged in, i.e. have a valid access token 
     "gateways": [{
         "id": "string (gateway ID)",
         "name": "string (gateway name)",
+        "latitude": "number (latitude) - can be null",
+        "longitude": "number (longitude) - can be null",
         "isPaired": "boolean (gateway pairing status)",
         "isOnline": "boolean (gateway online status)",
         "lastOnline": "string (last online timestamp)",
@@ -146,39 +150,52 @@ This endpoint requires the user to be logged in, i.e. have a valid access token 
     }
     ```
   
-### 4. Update Gateway Name
+### 4. Update Gateway Name, Latitude, and Longitude
 
 **URL**: `/api/gateway/:gatewayId`
 **Method**: `PUT`
 
 #### Request
-**Description**: This endpoint is used to update the name of a gateway device when gateway ID is provided.
+**Description**: This endpoint is used to update the name, latitude, and longitude of a gateway device when gateway ID is provided.
 
 This endpoint requires the user to be logged in, i.e. have a valid access token in the Authorization header (`Bearer accesstoken`).
 
 - **Body Parameters**:
   ```json
   {
-    "name": "string (new gateway name)"
+    "name": "string (new gateway name) - optional",
+    "latitude": "number (new latitude) - optional",
+    "longitude": "number (new longitude) - optional"
   }
   ```
   
 #### Response
-- **Status Code**: `200 OK` is returned if the gateway name is successfully updated.
+- **Status Code**: `200 OK` is returned if the gateway name and/or latitude and longitude are successfully updated.
   ```json
   {
-    "message": "Gateway name updated"
+    "message": "Gateway name and location updated" // or "Gateway name updated" or "Gateway location updated"
   }
   ```
-- **Status Code**: `400 Bad Request` is returned if the `name` body field is missing or invalid.
+
+- **Status Code**: `400 Bad Request` is returned if the `name`, `latitude`, and `longitude` body fields are invalid.
   ```json
   {
     "message": "Missing or invalid body fields.",
     "errors": {
-      "name": ["error message"]
+      "name": ["error message"],
+      "latitude": ["error message"],
+      "longitude": ["error message"]
     }
   }
   ```
+
+- **Status Code**: `400 Bad Request` is also returned if no changes were made to the gateway.
+  ```json
+  {
+    "message": "No changes made"
+  }
+  ```
+
 - **Status Code**: `404 Not Found` is returned if the gateway is not found.
   ```json
   {
@@ -210,6 +227,8 @@ This endpoint does not require to be logged in.
     "gateway": {
         "id": "string (gateway ID)",
         "name": "string (gateway name)",
+        "latitude": "number (latitude) - can be null",
+        "longitude": "number (longitude) - can be null",
         "isPaired": "boolean (gateway pairing status)",
         "isOnline": "boolean (gateway online status)",
         "lastOnline": "string (last online timestamp)",
@@ -250,6 +269,8 @@ This endpoint does not require to be logged in.
         "gateways": [{
             "id": "string (gateway ID)",
             "name": "string (gateway name)",
+            "latitude": "number (latitude) - can be null",
+            "longitude": "number (longitude) - can be null",
             "isPaired": "boolean (gateway pairing status)",
             "isOnline": "boolean (gateway online status)",
             "lastOnline": "string (last online timestamp)",
