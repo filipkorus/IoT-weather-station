@@ -14,7 +14,7 @@ import { useSocket } from "./hooks/useSocket";
 import useHandleDataFromSocket from "./hooks/useHandleDataFromSocket";
 
 const App: React.FC = () => {
-    const socket = useSocket();
+    const { socket } = useSocket();
     useHandleDataFromSocket(socket);
 
     return (
