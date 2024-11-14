@@ -3,8 +3,16 @@ import { wsPathBase } from "@/config/constants";
 
 const SOCKET_URL = wsPathBase; // Include token as a query parameter
 
+export type SocketContextType = {
+    socket: WebSocket | null;
+    sendMessage: (_: string) => void;
+};
+
 // Define the context type (WebSocket or null initially)
-export const SocketContext = createContext<WebSocket | null>(null);
+export const SocketContext = createContext<SocketContextType>({
+    socket: null,
+    sendMessage: () => {},
+});
 
 // Define types for the props of SocketProvider
 interface SocketProviderProps {
@@ -48,5 +56,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         };
     }, [socket]);
 
-    return <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>;
+    // Define sendMessage function to send data if the WebSocket is open
+    const sendMessage = (message: string) => {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(message);
+        } else {
+            console.error("WebSocket is not open. Cannot send message:", message);
+        }
+    };
+
+    return <SocketContext.Provider value={{ socket, sendMessage }}>{children}</SocketContext.Provider>;
 };
