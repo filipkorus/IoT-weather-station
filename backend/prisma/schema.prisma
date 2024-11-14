@@ -28,6 +28,8 @@ model RefreshToken {
 model Gateway {
   id          String        @id
   name        String        @default("Unnamed Gateway")
+  latitude    Float?
+  longitude   Float?
   apiKey      String        @unique @default(uuid())
   pairingCode String?       @unique
   isPaired    Boolean       @default(false)
