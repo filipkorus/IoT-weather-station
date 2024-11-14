@@ -1,10 +1,12 @@
 import { likes, sensorsToClient } from "@/store/slices/liveDataSlice";
+import { setGatewayId } from "@/store/slices/sendLikeSlice";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 // Define the type of the data you're receiving via the socket
 interface MessageData {
     type: string;
+    gatewayId: string;
 }
 
 const useHandleDataFromSocket = (socket: WebSocket | null) => {
@@ -24,6 +26,8 @@ const useHandleDataFromSocket = (socket: WebSocket | null) => {
             }
             if (data?.type === "likes") {
                 dispatch(likes(data));
+                // purpose of like sending
+                dispatch(setGatewayId(data.gatewayId));
             }
         };
 
