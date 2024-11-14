@@ -3,6 +3,7 @@ import counterReducer from "./slices/counterSlice.ts";
 import { authApi } from "../services/auth";
 import { gatewayApi } from "@/services/gateway.ts";
 import liveDataReducer from "./slices/liveDataSlice.ts";
+import sendLikeSlice from "./slices/sendLikeSlice.ts";
 
 // Create the Redux store
 export const store = configureStore({
@@ -11,6 +12,7 @@ export const store = configureStore({
         [authApi.reducerPath]: authApi.reducer,
         [gatewayApi.reducerPath]: gatewayApi.reducer,
         liveData: liveDataReducer,
+        sendLike: sendLikeSlice,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(authApi.middleware).concat(gatewayApi.middleware), // Add middlewares
