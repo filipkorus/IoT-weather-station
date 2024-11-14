@@ -43,12 +43,36 @@ app.use('*', (req, res) => NOT_FOUND(res));
 /* WebSocket server */
 const wss = new WebSocketServer({ noServer: true });
 
+const isClientGateway = (client: Gateway | WebBrowserClient): client is Gateway => 'id' in client;
+const isClientWebBrowser = (client: Gateway | WebBrowserClient): client is WebBrowserClient => 'userAgent' in client;
+
 wss.on('connection', async (ws: WebSocket, request: http.IncomingMessage, client: Gateway | WebBrowserClient) => {
-	const webBrowserClientInfo = wsRemoteIpAndUserAgent(ws, request);
-	if ('userAgent' in client) { // check if client is a WebBrowserClient and overwrite its properties
-		client.ipAddr = webBrowserClientInfo.ipAddr;
-		client.userAgent = webBrowserClientInfo.userAgent;
+	let isClientAlive = true;
+	if (isClientWebBrowser(client)) { // check if client is a WebBrowserClient and overwrite its properties
+		const {ipAddr, userAgent} = wsRemoteIpAndUserAgent(ws, request);
+		client.ipAddr = ipAddr;
+		client.userAgent = userAgent;
 	}
+
+	if (isClientGateway(client)) { // check if client is a Gateway
+		ws.on('pong', async () => { isClientAlive = true; });
+		logger.info(`Gateway (id=${client.id}) connected`);
+	}
+
+	// Ping clients to check connectivity
+	const interval = setInterval(async () => {
+		// Only ping gateways
+		if (!isClientGateway(client)) { return; }
+
+		if (!isClientAlive) {
+			logger.info(`Gateway (id=${client.id}) is unresponsive. Terminating connection...`);
+			ws.terminate(); // Forcefully close connection if no pong is received
+			return;
+		}
+
+		isClientAlive = false;
+		ws.ping(); // Send ping message to client (Gateway)
+	}, config.PING_INTERVAL_MS);
 
 	ws.on('message', (message: WebSocket.RawData, isBinary: boolean) => {
 		logger.verbose(`Received message: ${message}`);
@@ -63,8 +87,10 @@ wss.on('connection', async (ws: WebSocket, request: http.IncomingMessage, client
 
 	ws.on('error', onSocketPostError);
 	ws.on('close', () => {
-		if ('id' in client) {
-			logger.debug(`Node (id=${client.id}) disconnected`);
+		clearInterval(interval);
+
+		if (isClientGateway(client)) {
+			logger.debug(`Gateway (id=${client.id}) disconnected`);
 			setGatewayIsOnline(client.id, false);
 		}
 	});

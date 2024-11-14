@@ -11,6 +11,7 @@ const config = {
 		FILE: 'app.log'
 	},
 	DATABASE_URL: process.env.DATABASE_URL,
+	PING_INTERVAL_MS: parseInt(process.env.PING_INTERVAL_MS ?? '5000'),
 	JWT: {
 		ACCESS_TOKEN: {
 			SECRET: 'q8j23_dnej823y_h2s8427vf131k_94_k2d4',
