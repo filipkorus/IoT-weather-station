@@ -207,7 +207,7 @@ const HomePage: React.FC = () => {
                                 onClick={likeAction} // Użyj funkcji likeAction
                             >
                                 <FavoriteIcon sx={{ marginRight: "8px" }} /> {/* Ikona serca */}
-                                <Typography variant="h6">Podoba mi się ten stok!</Typography>
+                                <Typography variant="h6">{haveYouLiked ? 'Kliknij, aby cofnąć polubienie' : 'Podoba mi się ten stok!'}</Typography>
                             </Button>
                         </Box>
 

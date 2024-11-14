@@ -144,7 +144,7 @@ const WeatherForecast: React.FC = () => {
               },
             }}
           >
-            Przewidywana widoczność:
+            Widoczność:
           </Typography>
           <Typography
             variant="h4"
