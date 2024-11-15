@@ -42,7 +42,6 @@ const HomePage: React.FC = () => {
               alignItems: "center",
             }}
           >
-            {/* Nazwa stoku po lewej stronie */}
             <Typography variant="h5" sx={{ color: "white" }}>
               Nazwa stoku
             </Typography>
@@ -63,7 +62,7 @@ const HomePage: React.FC = () => {
           />
         </Grid>
 
-        {/* Square Tile - Pressure */}
+
         <Grid xs={6} sm={6} md={3}>
           <Buttons
             title="Ciśnienie"
@@ -73,7 +72,6 @@ const HomePage: React.FC = () => {
           />
         </Grid>
 
-        {/* Long Tile - PM Levels */}
         <Grid xs={12} md={6}>
           <Button
             variant="contained"
@@ -92,7 +90,7 @@ const HomePage: React.FC = () => {
             }}
             onClick={() => navigate("/airquality")}
           >
-            {/* Box dla pm 1.0 */}
+
             <Box sx={{ textAlign: "center", flex: 1 }}>
               <Typography variant="body2">pm 1.0</Typography>
               <Typography variant="h4">20</Typography>
@@ -107,7 +105,7 @@ const HomePage: React.FC = () => {
               </Typography>
             </Box>
 
-            {/* Box dla pm 2.5 */}
+
             <Box sx={{ textAlign: "center", flex: 1 }}>
               <Typography variant="body2">pm 2.5</Typography>
               <Typography variant="h4">25</Typography>
@@ -122,7 +120,7 @@ const HomePage: React.FC = () => {
               </Typography>
             </Box>
 
-            {/* Box dla pm 10 */}
+
             <Box sx={{ textAlign: "center", flex: 1 }}>
               <Typography variant="body2">pm 10</Typography>
               <Typography variant="h4">50</Typography>
@@ -139,7 +137,7 @@ const HomePage: React.FC = () => {
           </Button>
         </Grid>
 
-        {/* Square Tile - Temperature */}
+
         <Grid xs={6} sm={6} md={3}>
           <Buttons
             title="Temperatura"
@@ -185,9 +183,9 @@ const HomePage: React.FC = () => {
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "center",
-                  backgroundColor: isButtonClicked ? "#bd0d0d" : "#60020e", // Kolor zmienia się w zależności od stanu
+                  backgroundColor: isButtonClicked ? "#bd0d0d" : "#60020e",
                   "&:hover": {
-                    backgroundColor: isButtonClicked ? "#bd0d0d" : "#60020e", // Kolor po najechaniu
+                    backgroundColor: isButtonClicked ? "#bd0d0d" : "#60020e",
                   },
                 }}
                 onClick={handleClick} // Użyj funkcji handleClick
@@ -197,7 +195,7 @@ const HomePage: React.FC = () => {
               </Button>
             </Box>
 
-            {/* Sekcja licznika polubień */}
+
             <Box
               sx={{
                 border: "1px solid",
