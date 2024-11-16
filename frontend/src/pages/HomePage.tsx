@@ -46,7 +46,7 @@ const HomePage: React.FC = () => {
                     {/*</Paper>*/}
                 </Grid>
 
-                <Grid xs={6} sm={6} md={3}>
+                <Grid xs={6} sm={6} md={3} lg={3}>
                     <Buttons
                         title="Wilgotność"
                         value={70}

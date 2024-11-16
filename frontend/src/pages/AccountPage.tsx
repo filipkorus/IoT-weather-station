@@ -1,66 +1,63 @@
 import React from "react";
-import { Box, Typography, Button } from "@mui/material";
-import PairAStation from "@/components/PairAStation"; // Upewnij się, że ścieżka do komponentu jest poprawna
+import { Box, Button } from "@mui/material";
+import PairAStation from "@/components/PairAStation";
+import Banner from "@/components/Banner.tsx";
+import StationList from "@/components/StationList.tsx";
+import {useNavigate} from "react-router-dom";
 
 const AccountPage: React.FC = () => {
-    const handleLogout = () => {
-        // Funkcja do obsługi wylogowywania
-        console.log("Wylogowano użytkownika");
-    };
 
+    const navigate = useNavigate();
     return (
         <Box
             sx={{
-                display: "flex", // Ustawienie w poziomie
-                flexDirection: { xs: "column", sm: "row" }, // Zmieniamy kierunek w zależności od rozmiaru ekranu
-                justifyContent: "space-between", // Rozdzielenie kontenerów
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row", md:"column", lg:"row"},
+                justifyContent: "space-between",
                 padding: "2%",
                 backgroundColor: "#9bcce5",
-                minHeight: "90vh",
+                minHeight: { lg: "90vh", xs: "95vh" }, // Minimalna wysokość całej sekcji
                 borderRadius: "8px",
-                gap: { lg: "1%", xl:"1%" }, // Przerwa między kontenerami w pionie na dużych ekranach
+                gap: { lg: "1%", xl: "1%" },
             }}
         >
-            {/* Pierwszy kontener - powitanie i informacja */}
+            {/* Pierwszy kontener z listą stacji */}
             <Box
                 sx={{
-                    width: { xs: "90%", sm: "48%" }, // Szerokość 100% na telefonach, 48% na większych ekranach
+                    width: { xs: "90%", sm: "48%", md:"95%" },
                     backgroundColor: "#ffffff",
                     borderRadius: "8px",
                     padding: "16px",
                     boxShadow: 2,
-                    marginBottom: { xs: "16px", sm: "0" }, // Dodanie marginesu na telefonach
+                    marginBottom: { xs: "16px", sm: "0" },
                 }}
             >
-                <Typography variant="h4" sx={{ marginBottom: "16px" }}>
-                    Witaj na swoim koncie
-                </Typography>
-
-                <Typography variant="body1" sx={{ marginBottom: "24px" }}>
-                    Tutaj możesz zarządzać swoimi stacjami i parować nowe urządzenia.
-                </Typography>
+                <Banner message="❄️Witaj na swoim koncie❄️" />
+                <StationList headerText="Twoje stacje:" />
             </Box>
 
-            {/* Drugi kontener - przycisk do sparowania nowej stacji */}
             <Box
                 sx={{
-                    width: { xs: "90%", sm: "48%" }, // Szerokość 100% na telefonach, 48% na większych ekranach
+                    width: { xs: "90%", sm: "48%", md:"95%"  },
                     backgroundColor: "#ffffff",
                     borderRadius: "8px",
                     padding: "16px",
                     boxShadow: 2,
                     display: "flex",
-                    justifyContent: "center", // Wyśrodkowanie przycisku
-                    alignItems: "center", // Wyśrodkowanie w pionie
-                    flexDirection: "column", // Ustawienie zawartości w kolumnie
-                    gap: "16px", // Przerwa pomiędzy elementami
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: "16px",
+                    minHeight: {lg:"85vh", xs:"50vh"}
                 }}
             >
-                <PairAStation /> {/* Wstawienie komponentu PairAStation */}
+
+                <PairAStation />
+
 
                 <Button
                     variant="outlined"
-                    onClick={handleLogout}
+                    onClick={() => navigate(`/`)}
                     sx={{
                         width: "100%",
                         padding: "10px",

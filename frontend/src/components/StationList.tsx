@@ -10,7 +10,12 @@ import usePublicStations from "@/hooks/usePublicStations";
 import { useSelector } from "react-redux";
 import { getLiveData } from "@/store/slices/liveDataSlice";
 
-export default function StationList() {
+// Dodanie typu dla propów
+interface StationListProps {
+    headerText?: string; // Opcjonalny tekst nagłówka
+}
+
+const StationList: React.FC<StationListProps> = ({ headerText }) => {
     const stations = usePublicStations();
     const navigate = useNavigate();
     const liveData = useSelector(getLiveData);
@@ -26,38 +31,35 @@ export default function StationList() {
                 overflowY: "auto",
                 maxHeight: { lg: "70vh", xs: "80vh" },
                 "&::-webkit-scrollbar": {
-                    // Styl paska przewijania dla WebKit (Chrome, Safari)
                     width: "8px",
                 },
                 "&::-webkit-scrollbar-track": {
-                    // Styl ścieżki paska przewijania
                     backgroundColor: "#6e7e86",
                     borderRadius: "8px",
                 },
                 "&::-webkit-scrollbar-thumb": {
-                    // Styl uchwytu paska przewijania
                     backgroundColor: "#1f4152",
                     borderRadius: "8px",
                 },
                 "&::-webkit-scrollbar-thumb:hover": {
-                    // Styl po najechaniu kursorem
                     backgroundColor: "#ffffff",
                 },
             }}
         >
+            {/* Dynamiczny nagłówek */}
             <Typography variant="h6" sx={{ mb: 2 }}>
-                Jesteś ciekaw warunków na swoim ulubionym stoku? Wybierz stację z listy, aby je poznać:
+                {headerText || "Jesteś ciekaw warunków na swoim ulubionym stoku? Wybierz stację z listy, aby je poznać:"}
             </Typography>
+
             <List>
                 {stations.map((station, index) => (
                     <ListItemButton
                         key={index}
-                        onClick={() => navigate(`/slopedata/${station.id}`)} //trzeba zrobic osobne przekierowania slopedata:id do kazdego stoku
+                        onClick={() => navigate(`/slopedata/${station.id}`)}
                         sx={{
                             mb: 2,
                             "&:hover": {
                                 backgroundColor: "#d8eaf6",
-                                // padding:'1%'
                             },
                         }}
                     >
@@ -70,4 +72,6 @@ export default function StationList() {
             </List>
         </Box>
     );
-}
+};
+
+export default StationList;
