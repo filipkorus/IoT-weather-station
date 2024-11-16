@@ -42,10 +42,11 @@ const HomePage: React.FC = () => {
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
                 minHeight: "90vh",
+                overflowY:"hidden"
             }}
         >
             <Grid container spacing={3} rowSpacing={{ xs: 3, sm: 2, md: 5 }}>
-                <Grid xs={12} sm={6} md={12} sx={{ height: "30%" }}>
+                <Grid xs={12} sm={6} md={12} lg={12} sx={{ height: "30%" }}>
                     {/*<Paper elevation={3} sx={{backgroundColor: '#9bcce5', boxShadow: 5, padding: '20px', height: '30%' }}>*/}
 
                     <Box
@@ -64,7 +65,7 @@ const HomePage: React.FC = () => {
                     {/*</Paper>*/}
                 </Grid>
 
-                <Grid xs={6} sm={6} md={3}>
+                <Grid xs={6} sm={6} md={3} lg={3}>
                     <Buttons
                         title="Wilgotność"
                         value={stationInfoForDisplay.humidity}
@@ -88,7 +89,13 @@ const HomePage: React.FC = () => {
                     <Button
                         variant="contained"
                         fullWidth
-                        sx={{
+                        sx={{typography: {
+                                xs: "body1",
+                                sm: "h6",
+                                md: "h5",
+                                lg: "h4",
+                                xl: "h3",
+                            },
                             backgroundColor: "#0d598f",
                             boxShadow: 5,
                             padding: "20px",
@@ -105,11 +112,21 @@ const HomePage: React.FC = () => {
                         {/* Box dla pm 1.0 */}
                         <Box sx={{ textAlign: "center", flex: 1 }}>
                             <Typography variant="body2">pm 1.0</Typography>
-                            <Typography variant="h4">{stationInfoForDisplay.pm1}</Typography>
+                            <Typography  sx={{typography: {
+                                    xs: "body1",
+                                    sm: "h6",
+                                    md: "h5",
+                                    lg: "h4",
+                                    xl: "h3",
+                                },}}>{stationInfoForDisplay.pm1}</Typography>
                             <Typography
-                                variant="h4"
-                                sx={{
-                                    fontSize: { xs: "1.5rem", sm: "2rem" },
+                                sx={{typography: {
+                                        xs: "body1",
+                                        sm: "h6",
+                                        md: "h5",
+                                        lg: "h4",
+                                        xl: "h3",
+                                    },
                                     textTransform: "none",
                                 }}
                             >
@@ -120,11 +137,21 @@ const HomePage: React.FC = () => {
                         {/* Box dla pm 2.5 */}
                         <Box sx={{ textAlign: "center", flex: 1 }}>
                             <Typography variant="body2">pm 2.5</Typography>
-                            <Typography variant="h4">{stationInfoForDisplay.pm25}</Typography>
+                            <Typography  sx={{typography: {
+                                    xs: "body1",
+                                    sm: "h6",
+                                    md: "h5",
+                                    lg: "h4",
+                                    xl: "h3",
+                                },}}>{stationInfoForDisplay.pm25}</Typography>
                             <Typography
-                                variant="h4"
-                                sx={{
-                                    fontSize: { xs: "1.5rem", sm: "2rem" },
+                                sx={{typography: {
+                                        xs: "body1",
+                                        sm: "h6",
+                                        md: "h5",
+                                        lg: "h4",
+                                        xl: "h3",
+                                    },
                                     textTransform: "none",
                                 }}
                             >
@@ -135,11 +162,21 @@ const HomePage: React.FC = () => {
                         {/* Box dla pm 10 */}
                         <Box sx={{ textAlign: "center", flex: 1 }}>
                             <Typography variant="body2">pm 10</Typography>
-                            <Typography variant="h4">{stationInfoForDisplay.pm10}</Typography>
+                            <Typography  sx={{typography: {
+                                    xs: "body1",
+                                    sm: "h6",
+                                    md: "h5",
+                                    lg: "h4",
+                                    xl: "h3",
+                                },}}>{stationInfoForDisplay.pm10}</Typography>
                             <Typography
-                                variant="h4"
-                                sx={{
-                                    fontSize: { xs: "1.5rem", sm: "2rem" },
+                                sx={{typography: {
+                                        xs: "body1",
+                                        sm: "h6",
+                                        md: "h5",
+                                        lg: "h4",
+                                        xl: "h3",
+                                    },
                                     textTransform: "none",
                                 }}
                             >
