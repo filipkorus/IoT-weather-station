@@ -252,11 +252,33 @@ const pairGatewayWithUserAccount = async ({pairingCode, userId}: { pairingCode: 
 };
 
 /**
+ * Deletes old gateway likes from the database.
+ */
+const deleteOldGatewayLikes = async () => {
+	try {
+		return prisma.gatewayLike.deleteMany({
+			where: {
+				created: {
+					lt: new Date(new Date().setHours(1, 0, 0, 0))
+				}
+			}
+		});
+	} catch (error) {
+		logger.error(error);
+		return null;
+	} finally {
+		prisma.$disconnect();
+	}
+};
+
+/**
  * Saves gateway like to the database.
  * @param gatewayId ID of the gateway.
  * @param likeData Data to save.
  */
 const saveGatewayLike = async ({gatewayId, likeData}: { gatewayId: string, likeData: {ipAddr: string, userAgent: string} }) => {
+	await deleteOldGatewayLikes();
+
 	try {
 		const saved = await prisma.gatewayLike.create({
 			data: {

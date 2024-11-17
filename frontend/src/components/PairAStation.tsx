@@ -1,24 +1,16 @@
 import React, { useState } from "react";
-import {
-    Dialog,
-    DialogContent,
-    DialogActions,
-    TextField,
-    Button,
-    Box,
-    Typography,
-} from "@mui/material";
+import { TextField, Button, Box, Typography } from "@mui/material";
 
 const PairAStation: React.FC = () => {
-    const [open, setOpen] = useState(false);
+    const [showForm, setShowForm] = useState(false);
     const [code, setCode] = useState("");
 
     const handleClickOpen = () => {
-        setOpen(true);
+        setShowForm(true);
     };
 
     const handleClose = () => {
-        setOpen(false);
+        setShowForm(false);
         setCode("");
     };
 
@@ -28,13 +20,10 @@ const PairAStation: React.FC = () => {
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Usuwamy wszystko, co nie jest cyfrą
         const value = e.target.value.replace(/[^0-9]/g, "");
-
-        // Dzielimy wartość na dwie grupy: pierwsze 3 cyfry i następne 3
-        const formattedValue = value.slice(0, 3) + (value.length > 3 ? " " + value.slice(3, 6) : "");
-
-        setCode(formattedValue); // Zaktualizowanie stanu z nowym formatowaniem
+        const formattedValue =
+            value.slice(0, 3) + (value.length > 3 ? " " + value.slice(3, 6) : "");
+        setCode(formattedValue);
     };
 
     return (
@@ -55,61 +44,89 @@ const PairAStation: React.FC = () => {
             >
                 Sparuj Nową Stację
             </Button>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogContent>
-                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <Typography variant="body1" sx={{ mb: 1 }}>
-                            Wprowadź kod
-                        </Typography>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            type="text"
-                            value={code}
-                            onChange={handleChange} // Użycie walidacji
-                            inputProps={{
-                                maxLength: 7, // Maksymalnie 6 cyfr + jedna spacja
-                                inputMode: "numeric", // Tylko liczby
-                            }}
+
+            {/* Formularz wyświetlany tylko gdy `showForm` jest true */}
+            {showForm && (
+                <Box
+                    sx={{
+                        width: "90%",
+                        marginTop: "16px",
+                        padding: "16px",
+                        borderRadius: "16px",
+                        boxShadow: 3,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        backgroundColor: "#9bcce5",
+                    }}
+                >
+                    <Typography variant="body1" sx={{ mb: 2 }}>
+                        Wprowadź kod z urządzenia:
+                    </Typography>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        type="text"
+                        value={code}
+                        onChange={handleChange}
+                        inputProps={{
+                            maxLength: 7,
+                            inputMode: "numeric",
+                        }}
+                        sx={{
+                            backgroundColor: "#fdfdfd",
+                            width: "100%",
+                            borderRadius: "8px",
+                            maxWidth: "300px",
+                            "& input": {
+                                fontSize: "1.5rem",
+                                letterSpacing: "0.2rem",
+                                textAlign: "center",
+                                border: "none",
+                                outline: "none",
+                            },
+                        }}
+                    />
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            width: "100%",
+                            maxWidth: "300px",
+                            marginTop: "16px",
+                        }}
+                    >
+                        <Button
+                            onClick={handleClose}
+                            variant="contained"
                             sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                borderColor: "#1f4152",
-                                "& .MuiInputBase-root": {
-                                    borderRadius: "16px",
-                                    backgroundColor: "#ffffff",
-                                    padding: "10px 12px",
-                                    width: "100%",
-                                },
-                                "& input": {
-                                    fontSize: "2rem",
-                                    textColor:"#1f4152",
-                                    letterSpacing: "0.2rem", // Większe odstępy między cyframi
-                                    textAlign: "center", // Wyśrodkowanie cyfr
-                                    border: "none", // Brak obramowania
-                                    outline: "none", // Brak obramowania przy fokusu
-                                    backgroundColor: "transparent",
-                                },
-                                "& .MuiInput-underline:before": {
-                                    borderBottom: "none",
-                                },
-                                "& .MuiInput-underline:after": {
-                                    borderBottom: "none", // Usuwamy obramowanie
+                                backgroundColor: "#fdfdfd",
+                                width: "48%",
+                                borderColor: "#d32f2f",
+                                color: "#d32f2f",
+                                "&:hover": {
+                                    backgroundColor: "#fdecea",
                                 },
                             }}
-                        />
+                        >
+                            Anuluj
+                        </Button>
+                        <Button
+                            onClick={handleSubmit}
+                            variant="contained"
+                            sx={{
+                                width: "48%",
+                                backgroundColor: "#0d598f",
+                                "&:hover": {
+                                    backgroundColor: "#084a73",
+                                },
+                            }}
+                        >
+                            Zatwierdź
+                        </Button>
                     </Box>
-                </DialogContent>
-                <DialogActions sx={{ justifyContent: "space-between" }}>
-                    <Button onClick={handleClose} color="primary">
-                        Anuluj
-                    </Button>
-                    <Button onClick={handleSubmit} color="primary">
-                        Zatwierdź
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                </Box>
+            )}
         </>
     );
 };
