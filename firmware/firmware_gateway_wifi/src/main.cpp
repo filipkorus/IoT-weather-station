@@ -183,8 +183,30 @@ void setup()
   WebSocketInit();
 }
 
+String receivedMessage = "";
 void loop()
 {
   webSocket.loop();
   // delay(2000);
+
+  // Check if data is available in the Serial buffer
+  while (Serial2.available())
+  {
+    char incomingChar = Serial2.read(); // Read each character from the buffer
+
+    if (incomingChar == '\n')
+    { // Check if the user pressed Enter (new line character)
+      // Print the message
+      Serial.println(receivedMessage);
+      webSocket.sendTXT(receivedMessage);
+
+      // Clear the message buffer for the next input
+      receivedMessage = "";
+    }
+    else
+    {
+      // Append the character to the message string
+      receivedMessage += incomingChar;
+    }
+  }
 }
