@@ -3,14 +3,15 @@ import Grid from "@mui/material/Unstable_Grid2"; // For Grid 2.0
 import Paper from "@mui/material/Paper";
 import { Typography, Box, Button } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import Buttons from "@/components/Buttons.tsx";
+import Buttons from "@/components/Buttons";
 import { useNavigate, useParams } from "react-router-dom";
-import BackButton from "@/components/BackButton.tsx";
+import BackButton from "@/components/BackButton";
 import useStationInfo from "@/hooks/useStationInfo";
 import useLikes from "@/hooks/useLikes";
-import WeatherForecast from "@/components/WeatherForecast.tsx";
+import WeatherForecast from "@/components/WeatherForecast";
 import { useDispatch } from "react-redux";
 import { setIdFromURL } from "@/store/slices/sendLikeSlice";
+import isNumeric from "@/utils/isNumeric";
 
 const HomePage: React.FC = () => {
     // id from url params, redirects to '/' if not provided
@@ -24,16 +25,18 @@ const HomePage: React.FC = () => {
         dispatch(setIdFromURL(id));
     }, [id, dispatch]);
 
+    const noData = "brak danych";
+
     const stationInfoForDisplay = {
-        name: stationInfo?.name ?? "Nazwa stoku",
-        humidity: Math.round(stationInfo?.humidity) ?? "brak danych",
-        pressure: Math.round(stationInfo?.pressure) ?? "brak danych",
-        pm1: stationInfo?.pm1 ? Math.round(stationInfo?.pm1 / 10) / 10 : "brak danych",
-        pm25: stationInfo?.pm25 ? Math.round(stationInfo?.pm25 / 10) / 10 : "brak danych",
-        pm10: stationInfo?.pm10 ? Math.round(stationInfo?.pm10 / 10) / 10 : "brak danych",
-        temperature: Math.round(stationInfo?.temperature) ?? "brak danych",
-        snowDepth: stationInfo?.snowDepth ? Math.round(stationInfo?.snowDepth / 10) / 10 : "brak danych",
-        likes: likes ?? "brak danych",
+        name: stationInfo?.name != null ?? "Nazwa stoku",
+        humidity: stationInfo?.humidity != null ? Math.round(stationInfo?.humidity) : noData,
+        pressure: stationInfo?.pressure != null ? Math.round(stationInfo?.pressure) : noData,
+        pm1: stationInfo?.pm1 != null ? Math.round(stationInfo?.pm1 / 10) / 10 : noData,
+        pm25: stationInfo?.pm25 != null ? Math.round(stationInfo?.pm25 / 10) / 10 : noData,
+        pm10: stationInfo?.pm10 != null ? Math.round(stationInfo?.pm10 / 10) / 10 : noData,
+        temperature: stationInfo?.temperature != null ? Math.round(stationInfo?.temperature) : noData,
+        snowDepth: stationInfo?.snowDepth != null ? Math.round(stationInfo?.snowDepth) : noData,
+        likes: likes != null ? likes : noData,
         created: stationInfo.created,
     };
 
@@ -50,7 +53,7 @@ const HomePage: React.FC = () => {
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
                 minHeight: "90vh",
-                overflowY:"hidden"
+                overflowY: "hidden",
             }}
         >
             <Grid container spacing={3} rowSpacing={{ xs: 3, sm: 2, md: 5 }}>
@@ -66,7 +69,7 @@ const HomePage: React.FC = () => {
                     >
                         {/* Nazwa stoku po lewej stronie */}
                         <Typography variant="h5" sx={{ color: "white" }}>
-                            {stationInfoForDisplay.name}
+                            <>{stationInfoForDisplay.name}</>
                         </Typography>
                         <BackButton title="Powrót" onClick={() => navigate("/")}></BackButton>
                     </Box>
@@ -97,7 +100,8 @@ const HomePage: React.FC = () => {
                     <Button
                         variant="contained"
                         fullWidth
-                        sx={{typography: {
+                        sx={{
+                            typography: {
                                 xs: "body1",
                                 sm: "h6",
                                 md: "h5",
@@ -120,76 +124,103 @@ const HomePage: React.FC = () => {
                         {/* Box dla pm 1.0 */}
                         <Box sx={{ textAlign: "center", flex: 1 }}>
                             <Typography variant="body2">pm 1.0</Typography>
-                            <Typography  sx={{typography: {
-                                    xs: "body1",
-                                    sm: "h6",
-                                    md: "h5",
-                                    lg: "h4",
-                                    xl: "h3",
-                                },}}>{stationInfoForDisplay.pm1}</Typography>
                             <Typography
-                                sx={{typography: {
+                                sx={{
+                                    typography: {
                                         xs: "body1",
                                         sm: "h6",
                                         md: "h5",
                                         lg: "h4",
                                         xl: "h3",
                                     },
-                                    textTransform: "none",
                                 }}
                             >
-                                µg/m³
+                                {stationInfoForDisplay.pm1}
                             </Typography>
+                            {isNumeric(stationInfoForDisplay.pm25) && (
+                                <Typography
+                                    sx={{
+                                        typography: {
+                                            xs: "body1",
+                                            sm: "h6",
+                                            md: "h5",
+                                            lg: "h4",
+                                            xl: "h3",
+                                        },
+                                        textTransform: "none",
+                                    }}
+                                >
+                                    µg/m³
+                                </Typography>
+                            )}
                         </Box>
 
                         {/* Box dla pm 2.5 */}
                         <Box sx={{ textAlign: "center", flex: 1 }}>
                             <Typography variant="body2">pm 2.5</Typography>
-                            <Typography  sx={{typography: {
-                                    xs: "body1",
-                                    sm: "h6",
-                                    md: "h5",
-                                    lg: "h4",
-                                    xl: "h3",
-                                },}}>{stationInfoForDisplay.pm25}</Typography>
                             <Typography
-                                sx={{typography: {
+                                sx={{
+                                    typography: {
                                         xs: "body1",
                                         sm: "h6",
                                         md: "h5",
                                         lg: "h4",
                                         xl: "h3",
                                     },
-                                    textTransform: "none",
                                 }}
                             >
-                                µg/m³
+                                {stationInfoForDisplay.pm25}
                             </Typography>
+                            {isNumeric(stationInfoForDisplay.pm25) && (
+                                <Typography
+                                    sx={{
+                                        typography: {
+                                            xs: "body1",
+                                            sm: "h6",
+                                            md: "h5",
+                                            lg: "h4",
+                                            xl: "h3",
+                                        },
+                                        textTransform: "none",
+                                    }}
+                                >
+                                    µg/m³
+                                </Typography>
+                            )}
                         </Box>
 
                         {/* Box dla pm 10 */}
                         <Box sx={{ textAlign: "center", flex: 1 }}>
                             <Typography variant="body2">pm 10</Typography>
-                            <Typography  sx={{typography: {
-                                    xs: "body1",
-                                    sm: "h6",
-                                    md: "h5",
-                                    lg: "h4",
-                                    xl: "h3",
-                                },}}>{stationInfoForDisplay.pm10}</Typography>
                             <Typography
-                                sx={{typography: {
+                                sx={{
+                                    typography: {
                                         xs: "body1",
                                         sm: "h6",
                                         md: "h5",
                                         lg: "h4",
                                         xl: "h3",
                                     },
-                                    textTransform: "none",
                                 }}
                             >
-                                µg/m³
+                                {stationInfoForDisplay.pm10}
                             </Typography>
+                            {isNumeric(stationInfoForDisplay.pm25) && (
+                                <Typography
+                                    sx={{
+                                        typography: {
+                                            xs: "body1",
+                                            sm: "h6",
+                                            md: "h5",
+                                            lg: "h4",
+                                            xl: "h3",
+                                        },
+                                        textTransform: "none",
+                                    }}
+                                >
+                                    µg/m³
+                                </Typography>
+                            )}
                         </Box>
                     </Button>
                 </Grid>
@@ -209,7 +240,7 @@ const HomePage: React.FC = () => {
                     <Buttons
                         title="Poziom śniegu"
                         value={stationInfoForDisplay.snowDepth}
-                        unit="m"
+                        unit="cm"
                         onClick={() => navigate(`/snow/${id}`)}
                     />
                 </Grid>
@@ -252,7 +283,9 @@ const HomePage: React.FC = () => {
                                 onClick={likeAction} // Użyj funkcji likeAction
                             >
                                 <FavoriteIcon sx={{ marginRight: "8px" }} /> {/* Ikona serca */}
-                                <Typography variant="h6">{haveYouLiked ? 'Kliknij, aby cofnąć polubienie' : 'Podoba mi się ten stok!'}</Typography>
+                                <Typography variant="h6">
+                                    {haveYouLiked ? "Kliknij, aby cofnąć polubienie" : "Podoba mi się ten stok!"}
+                                </Typography>
                             </Button>
                         </Box>
 
@@ -270,7 +303,18 @@ const HomePage: React.FC = () => {
                         </Box>
                     </Paper>
                 </Grid>
-                <Typography sx={{ color: "white" }}>Pomiar pobrano: {stationInfoForDisplay.created}</Typography>
+                {stationInfoForDisplay.created && (
+                    <Typography sx={{ color: "white" }}>
+                        Pomiar pobrano:{" "}
+                        {new Date(stationInfoForDisplay.created).toLocaleString("pl-PL", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        })}
+                    </Typography>
+                )}
             </Grid>
         </Box>
     );
