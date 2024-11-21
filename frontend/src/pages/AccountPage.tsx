@@ -3,16 +3,15 @@ import { Box, Button } from "@mui/material";
 import PairAStation from "@/components/PairAStation";
 import Banner from "@/components/Banner.tsx";
 import StationList from "@/components/StationList.tsx";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const AccountPage: React.FC = () => {
-
     const navigate = useNavigate();
     return (
         <Box
             sx={{
                 display: "flex",
-                flexDirection: { xs: "column", sm: "row", md:"column", lg:"row"},
+                flexDirection: { xs: "column", sm: "row", md: "column", lg: "row" },
                 justifyContent: "space-between",
                 padding: "2%",
                 backgroundColor: "#9bcce5",
@@ -24,7 +23,7 @@ const AccountPage: React.FC = () => {
             {/* Pierwszy kontener z listą stacji */}
             <Box
                 sx={{
-                    width: { xs: "90%", sm: "48%", md:"95%" },
+                    width: { xs: "90%", sm: "48%", md: "95%" },
                     backgroundColor: "#ffffff",
                     borderRadius: "8px",
                     padding: "16px",
@@ -38,7 +37,7 @@ const AccountPage: React.FC = () => {
 
             <Box
                 sx={{
-                    width: { xs: "90%", sm: "48%", md:"95%"  },
+                    width: { xs: "90%", sm: "48%", md: "95%" },
                     backgroundColor: "#ffffff",
                     borderRadius: "8px",
                     padding: "16px",
@@ -48,12 +47,10 @@ const AccountPage: React.FC = () => {
                     justifyContent: "space-between",
                     alignItems: "center",
                     gap: "16px",
-                    minHeight: {lg:"85vh", xs:"50vh"}
+                    minHeight: { lg: "85vh", xs: "50vh" },
                 }}
             >
-
                 <PairAStation />
-
 
                 <Button
                     variant="outlined"
