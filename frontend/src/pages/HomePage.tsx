@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import Grid from "@mui/material/Unstable_Grid2"; // For Grid 2.0
 import Paper from "@mui/material/Paper";
 import { Typography, Box, Button } from "@mui/material";
@@ -9,12 +9,20 @@ import BackButton from "@/components/BackButton.tsx";
 import useStationInfo from "@/hooks/useStationInfo";
 import useLikes from "@/hooks/useLikes";
 import WeatherForecast from "@/components/WeatherForecast.tsx";
+import { useDispatch } from "react-redux";
+import { setIdFromURL } from "@/store/slices/sendLikeSlice";
 
 const HomePage: React.FC = () => {
     // id from url params, redirects to '/' if not provided
     const id = useParams().id;
     const stationInfo = useStationInfo(id);
     const { likes, disableButton, haveYouLiked, likeAction } = useLikes(id);
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(setIdFromURL(id));
+    }, [id, dispatch]);
 
     const stationInfoForDisplay = {
         name: stationInfo?.name ?? "Nazwa stoku",

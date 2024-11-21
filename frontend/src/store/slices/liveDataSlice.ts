@@ -80,11 +80,22 @@ const liveDataSlice = createSlice({
             state[data.gatewayId].likes = data.likes;
             state[data.gatewayId].haveYouLiked = data.haveYouLiked;
         },
+        slopeDataFromREST: (state, action) => {
+            const data = action.payload as {
+                gateway: { id: string; likes: number; haveYouLiked: boolean; sensorData: Array<_CommonData> };
+            };
+
+            state[data.gateway.id] = {
+                likes: data.gateway.likes,
+                haveYouLiked: data.gateway.haveYouLiked,
+                data: data.gateway.sensorData,
+            };
+        },
     },
 });
 
 // Export the action for dispatching
-export const { sensorsToClient, likes, likesFromREST } = liveDataSlice.actions;
+export const { sensorsToClient, likes, likesFromREST, slopeDataFromREST } = liveDataSlice.actions;
 
 // Export the reducer to be added to the store
 export default liveDataSlice.reducer;
