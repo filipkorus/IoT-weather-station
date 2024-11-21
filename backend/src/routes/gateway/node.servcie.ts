@@ -34,6 +34,10 @@ type NodeDataToSave = Pick<NodeData, 'batteryLevel' | 'temperature' | 'humidity'
  */
 const saveNodeData = async ({nodeId, gatewayId, data}: {nodeId: string, gatewayId: string, data: NodeDataToSave}) => {
 	const node = await getNodeById(nodeId);
+	if (node?.gatewayId !== gatewayId) {
+		return false;
+	}
+
 	if (node == null) {
 		if (!(await createNode({gatewayId, nodeId}))) {
 			return false;
