@@ -12,6 +12,8 @@
 
 Adafruit_BME280 bme;
 LIDARLite myLidar;
+int cal_cnt = 0;
+#define STICK_HEIGHT 100 // in cm
 
 uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; // wpisac tu mac address
 
@@ -38,7 +40,7 @@ typedef struct struct_message
   float temperature;
   float humidity;
   float pressure;
-  float snowDepth;
+  int32_t snowDepth;
   uint32_t pm1;
   uint32_t pm25;
   uint32_t pm10;
@@ -69,6 +71,8 @@ void setup()
   // Init Serial Monitor
   Serial.begin(115200);
   Serial2.begin(9600);
+  pinMode(15, INPUT);
+  pinMode(2, INPUT_PULLUP);
 
   // Init BME280 sensor
   bool status = bme.begin(0x77);
@@ -118,8 +122,22 @@ void getReadings()
   temperature = bme.readTemperature();
   humidity = bme.readHumidity();
   pressure = (bme.readPressure() / 100.0F);
-  distance = myLidar.distance();
+
+  if (cal_cnt == 0)
+  {
+    distance = myLidar.distance(); // With bias correction
+  }
+  else
+  {
+    distance = myLidar.distance(false); // Without bias correction
+  }
+
+  // Increment reading counter
+  cal_cnt++;
+  cal_cnt = cal_cnt % 100;
 }
+
+bool firstLoop = true;
 
 void loop()
 {
@@ -170,6 +188,8 @@ void loop()
       // PMS = 0;
       TPS = 0;
       HDS = 0;
+      if (!firstLoop)
+        ESP.restart();
     }
   }
 
@@ -182,9 +202,11 @@ void loop()
   strcpy(Readings.nodeId, UID);
 
   // lidar distance
-  Readings.snowDepth = distance;
+  Readings.snowDepth = STICK_HEIGHT - distance;
+  Readings.batteryLevel = (analogRead(34) / 4095) * 2 * 3.3;
 
-  Readings.batteryLevel;
+  if (Readings.snowDepth < 5)
+    Readings.snowDepth = 0;
 
   // pm values - airQualitySensor
   Readings.pm1 = PMS1;
@@ -198,19 +220,26 @@ void loop()
   Serial.println(PMS1);
   Serial.println(PMS10);
   Serial.println(PMS2_5);
+  Serial.println(Readings.batteryLevel);
   Serial.println();
 
+  if (PMS2_5 != 0 && PMS10 != 0 && PMS1 != 0)
+    firstLoop = false;
+
   // Send message via ESP-NOW
-  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *)&Readings, sizeof(Readings));
-
-  if (result == ESP_OK)
+  if (!firstLoop)
   {
-    Serial.println("Sent with success");
-  }
-  else
-  {
-    Serial.println("Error sending the data");
+    esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *)&Readings, sizeof(Readings));
+
+    if (result == ESP_OK)
+    {
+      Serial.println("Sent with success");
+    }
+    else
+    {
+      Serial.println("Error sending the data");
+    }
   }
 
-  delay(10000);
+  delay(firstLoop ? 1000 : 10000);
 }

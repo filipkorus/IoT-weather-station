@@ -15,7 +15,7 @@ typedef struct struct_message
   float temperature;
   float humidity;
   float pressure;
-  float snowDepth;
+  int32_t snowDepth;
   uint32_t pm1;
   uint32_t pm25;
   uint32_t pm10;
