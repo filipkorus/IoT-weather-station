@@ -35,18 +35,22 @@ type NodeDataToSave = Pick<NodeData, 'batteryLevel' | 'temperature' | 'humidity'
 const saveNodeData = async ({nodeId, gatewayId, data}: {nodeId: string, gatewayId: string, data: NodeDataToSave}) => {
 	const node = await getNodeById(nodeId);
 	if (node == null) {
-		await createNode({gatewayId, nodeId});
+		if (!(await createNode({gatewayId, nodeId}))) {
+			return false;
+		}
 	}
 
 	try {
-		await prisma.nodeData.create({
+		const created = await prisma.nodeData.create({
 			data: {
 				nodeId,
 				...data
 			}
 		});
+		return created != null;
 	} catch (error) {
 		logger.error(error);
+		return false;
 	} finally {
 		await prisma.$disconnect();
 	}

@@ -28,11 +28,15 @@ const _saveSensorData = async ({nodeId, gatewayId, message}: {nodeId: string, ga
 		pm10: message['pm10'] as number,
 	};
 
-	await saveNodeData({
+	const saved = await saveNodeData({
 		nodeId,
 		gatewayId,
 		data
 	});
+
+	if (!saved) {
+		return null;
+	}
 
 	return data;
 };
@@ -110,6 +114,10 @@ const wsHandleMessage = async (
 			gatewayId,
 			message: parsedMessage
 		});
+		if (sensorData == null) {
+			return;
+		}
+
 		broadcastToAllExceptSender({
 			wss: webSocketServer,
 			sender,
