@@ -10,12 +10,15 @@ import {
 import React, { useState } from "react";
 import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
 import { useNavigate } from "react-router-dom";
+import useRegister from "@/hooks/auth/useRegister";
 
 const RegisterPage: React.FC = () => {
+  const { register, isRegistering } = useRegister();
+
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleRegister = async () => {};
+  const handleRegister = () => register({ username: name, password });
   const navigate = useNavigate();
   return (
     <>
@@ -77,6 +80,7 @@ const RegisterPage: React.FC = () => {
                 title="Zarejestruj się"
                 onClick={handleRegister}
                 sx={{ height: { xs: "40px", md: "50px" } }}
+                disabled={isRegistering}
               ></LoginRegisterButton>
 
               <LoginRegisterButton
