@@ -41,11 +41,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
                 console.error("WebSocket error:", error);
             };
 
-            // // Define the onmessage event listener for receiving data
-            // socketInstance.onmessage = (event) => {
-            //     const data = JSON.parse(event.data);
-            //     console.log("Received message:", data);
-            // };
+            // Define the onmessage event listener for receiving data
+            socketInstance.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log("Received message:", data);
+            };
         }
 
         // Clean up the WebSocket connection when the component unmounts
