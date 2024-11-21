@@ -4,6 +4,8 @@ WORKDIR /frontend
 
 COPY . .
 
-RUN npm install && npm run build && npm install -g serve
+RUN npm install
+RUN npm run build
+RUN npm install -g serve
 
 ENTRYPOINT ["serve", "-s", "dist"]
