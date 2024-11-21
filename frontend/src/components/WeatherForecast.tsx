@@ -17,7 +17,7 @@ const WeatherForecast: React.FC = () => {
     const [error, setError] = useState<string>("");
 
     useEffect(() => {
-        if (gatewayData?.gateway?.latitude && gatewayData?.gateway?.longitude) {
+        if (gatewayData?.gateway?.latitude != null && gatewayData?.gateway?.longitude != null) {
             setLatLong({ latitude: gatewayData?.gateway.latitude, longitude: gatewayData?.gateway.longitude });
         }
     }, [gatewayData]);
