@@ -2,14 +2,25 @@ import React, { useEffect, useState } from "react";
 import { Grid, Paper, Typography, Box } from "@mui/material";
 import { WeatherData } from "@/types/Weather.ts";
 import fetchWeatherPrediction from "@/utils/fetchWeatherPrediction.ts";
+import { useParams } from "react-router-dom";
+import { useGetPublicGatewayQuery } from "@/services/gateway";
 
 const WeatherForecast: React.FC = () => {
+  const id = useParams().id;
+  const { data: gatewayData } = useGetPublicGatewayQuery({ gatewayId: id ?? "" });
+  const [latLong, setLatLong] = useState<{ latitude: number; longitude: number }>({ latitude: 49.989, longitude: 19.984 });
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  
+  useEffect(() => {
+    if (gatewayData?.gateway?.latitude && gatewayData?.gateway?.longitude) {
+      setLatLong({ latitude: gatewayData?.gateway.latitude, longitude: gatewayData?.gateway.longitude });
+    }
+  }, [gatewayData]);
 
   useEffect(() => {
-    fetchWeatherPrediction({ latitude: 49.989, longitude: 19.984 }).then(
+    fetchWeatherPrediction(latLong).then(
       ({ data: weatherData, error }) => {
         if (error && error instanceof Error)  {
           setError("Błąd w zapytaniu API: " + error.message );
@@ -25,7 +36,7 @@ const WeatherForecast: React.FC = () => {
         setLoading(false);
       },
     );
-  }, []);
+  }, [latLong]);
 
   if (loading) return <div>Ładowanie danych...</div>;
   if (error) return <div>{error}</div>;
