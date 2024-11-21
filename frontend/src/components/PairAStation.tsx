@@ -21,8 +21,7 @@ const PairAStation: React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.replace(/[^0-9]/g, "");
-        const formattedValue =
-            value.slice(0, 3) + (value.length > 3 ? " " + value.slice(3, 6) : "");
+        const formattedValue = value.slice(0, 3) + (value.length > 3 ? " " + value.slice(3, 6) : "");
         setCode(formattedValue);
     };
 

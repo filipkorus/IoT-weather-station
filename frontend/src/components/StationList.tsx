@@ -48,7 +48,8 @@ const StationList: React.FC<StationListProps> = ({ headerText }) => {
         >
             {/* Dynamiczny nagłówek */}
             <Typography variant="h6" sx={{ mb: 2 }}>
-                {headerText || "Jesteś ciekaw warunków na swoim ulubionym stoku? Wybierz stację z listy, aby je poznać:"}
+                {headerText ||
+                    "Jesteś ciekaw warunków na swoim ulubionym stoku? Wybierz stację z listy, aby je poznać:"}
             </Typography>
 
             <List>
