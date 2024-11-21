@@ -6,18 +6,21 @@ interface LoginRegisterButtonProps {
   onClick: () => void;
   sx?: SxProps;
   variant?: "contained" | "outlined";
+  disabled?: boolean;
 }
 const LoginRegisterButton: React.FC<LoginRegisterButtonProps> = ({
   title,
   onClick,
   sx,
   variant = "contained",
+  disabled = false,
 }) => {
   return (
     <Button
       // variant="contained"
       variant={variant}
       fullWidth
+      disabled={disabled}
       sx={{
         boxShadow: 5,
         textAlign: "center",
