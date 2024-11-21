@@ -21,6 +21,8 @@ interface Gateway {
 interface PublicGateway extends Gateway {
     likes: number;
     haveYouLiked: boolean;
+    latitude: number;
+    longitude: number;
 }
 
 // interface PublicGatewayFromRequest extends PublicGateway {
