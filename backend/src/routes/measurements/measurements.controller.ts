@@ -6,6 +6,8 @@ import {
 } from '../../utils/httpCodeResponses/messages';
 import { Request, Response } from 'express';
 import { getMeasurementsByGatewayId, getMeasurementsByNodeId } from './measurements.service';
+import { getGatewayById } from '../gateway/gateway.service';
+import { getNodeById } from '../gateway/node.service';
 
 
 export const GetMeasurementsHandler = async (req: Request, res: Response) => {
@@ -23,6 +25,11 @@ export const GetMeasurementsHandler = async (req: Request, res: Response) => {
 
     try {
         if (path.includes('node')) {
+            const node = await getNodeById(id);
+            if (!node) {
+                NOT_FOUND(res, `Node ID: ${id} not found`);
+                return;
+            }
             const measurements = await getMeasurementsByNodeId(id, startDate, endDate);
             if (measurements) {
                 SUCCESS(res, `Measurements for Node ID: ${id}`, { measurements });
@@ -30,6 +37,11 @@ export const GetMeasurementsHandler = async (req: Request, res: Response) => {
                 NOT_FOUND(res, `No measurements found for Node ID: ${id}`);
             }
         } else if (path.includes('gateway')) {
+            const gateway = await getGatewayById(id);
+            if (!gateway) {
+                NOT_FOUND(res, `Gateway ID: ${id} not found`);
+                return;
+            }
             const measurements = await getMeasurementsByGatewayId(id, startDate, endDate);
             if (measurements) {
                 SUCCESS(res, `Measurements for Gateway ID: ${id}`, { measurements });
