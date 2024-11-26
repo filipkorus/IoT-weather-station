@@ -3,10 +3,15 @@ import { Box, Button } from "@mui/material";
 import PairAStation from "@/components/PairAStation";
 import Banner from "@/components/Banner.tsx";
 import StationList from "@/components/StationList.tsx";
-import { useNavigate } from "react-router-dom";
+import useLogout from "@/hooks/auth/useLogout";
 
 const AccountPage: React.FC = () => {
-    const navigate = useNavigate();
+    const { isLoggingOut, logout } = useLogout();
+
+    const handleLogout = () => {
+        logout();
+    };
+
     return (
         <Box
             sx={{
@@ -54,7 +59,8 @@ const AccountPage: React.FC = () => {
 
                 <Button
                     variant="outlined"
-                    onClick={() => navigate(`/`)}
+                    onClick={handleLogout}
+                    disabled={isLoggingOut}
                     sx={{
                         width: "100%",
                         padding: "10px",

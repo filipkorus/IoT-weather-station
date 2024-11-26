@@ -3,6 +3,7 @@ import {Container, CssBaseline, Box,Typography,TextField,Grid,} from "@mui/mater
 import React, { useState } from "react";
 import  {useNavigate} from "react-router-dom";
 import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
+import useLogin from "@/hooks/auth/useLogin";
 const LoginPage: React.FC = () => {
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
@@ -42,6 +43,12 @@ const LoginPage: React.FC = () => {
                                     autoFocus
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault(); // Optional: Prevent unintended form submission if needed
+                                            handleLogin();
+                                        }
+                                    }}
                                 />
                             </Grid>
 
@@ -55,6 +62,12 @@ const LoginPage: React.FC = () => {
                                     id="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault(); // Optional: Prevent unintended form submission if needed
+                                            handleLogin();
+                                        }
+                                    }}
                                 />
                             </Grid>
                         </Grid>
