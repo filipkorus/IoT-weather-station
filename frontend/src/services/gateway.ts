@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQuery } from "./baseQuery";
+import { baseQueryWithReauth } from "./baseQueryWithReauth";
 import { likesFromREST, slopeDataFromREST } from "@/store/slices/liveDataSlice";
 
 interface Gateway {
@@ -32,7 +32,7 @@ interface PublicGateway extends Gateway {
 // Define a service using a base URL and expected endpoints
 export const gatewayApi = createApi({
     reducerPath: "gatewayApi",
-    baseQuery,
+    baseQuery: baseQueryWithReauth,
     endpoints: (builder) => ({
         getPublicGateway: builder.query<{ gateway: PublicGateway }, { gatewayId: string }>({
             query: ({ gatewayId }) => ({

@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQuery } from "./baseQuery";
+import { baseQueryWithReauth } from "./baseQueryWithReauth";
 
 export interface UsernamePassword {
     username: string;
@@ -9,7 +9,7 @@ export interface UsernamePassword {
 // Define a service using a base URL and expected endpoints
 export const authApi = createApi({
     reducerPath: "authApi",
-    baseQuery,
+    baseQuery: baseQueryWithReauth,
     endpoints: (builder) => ({
         register: builder.mutation<void, UsernamePassword>({
             query: ({ username, password }) => ({
