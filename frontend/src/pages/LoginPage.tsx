@@ -3,9 +3,15 @@ import { Container, CssBaseline, Box, Typography, TextField, Grid } from "@mui/m
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
+import useLogin from "@/hooks/auth/useLogin";
 const LoginPage: React.FC = () => {
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
+
+    const { isLoggingIn, login } = useLogin();
+    const handleLogin = () => {
+        login({ username: name, password });
+    };
 
     // const handleLogin = () => {};
     const navigate = useNavigate();
@@ -43,6 +49,12 @@ const LoginPage: React.FC = () => {
                                     autoFocus
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault(); // Optional: Prevent unintended form submission if needed
+                                            handleLogin();
+                                        }
+                                    }}
                                 />
                             </Grid>
 
@@ -56,6 +68,12 @@ const LoginPage: React.FC = () => {
                                     id="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault(); // Optional: Prevent unintended form submission if needed
+                                            handleLogin();
+                                        }
+                                    }}
                                 />
                             </Grid>
                         </Grid>
@@ -63,8 +81,8 @@ const LoginPage: React.FC = () => {
                         <Grid container justifyContent="flex" sx={{ justifyContent: "center" }}>
                             <LoginRegisterButton
                                 title="Zaloguj się"
-                                // onClick={handleLogin} //roboczo
-                                onClick={() => navigate("/account")} //roboczo
+                                onClick={handleLogin}
+                                disabled={isLoggingIn}
                                 sx={{ height: { xs: "40px", md: "50px" } }}
                             ></LoginRegisterButton>
 
