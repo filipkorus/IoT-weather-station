@@ -259,7 +259,7 @@ const deleteOldGatewayLikes = async () => {
 		return prisma.gatewayLike.deleteMany({
 			where: {
 				created: {
-					lt: new Date(new Date().setHours(1, 0, 0, 0))
+					lt: new Date(new Date().setHours(0, 0, 0, 0))
 				}
 			}
 		});
@@ -311,8 +311,8 @@ const removeGatewayLike = async ({gatewayId, userAgent, ipAddr}:
 				userAgent,
 				ipAddr,
 				created: { // ensure that the like was made today
-					gte: new Date(new Date().setHours(1, 0, 0, 0)),
-					lte: new Date(new Date().setHours(24, 59, 59, 999))
+					gte: new Date(new Date().setHours(0, 0, 0, 0)),
+					lte: new Date(new Date().setHours(23, 59, 59, 999))
 				}
 			}
 		});
@@ -346,8 +346,8 @@ const getGatewayLikesByGatewayIdUserAgentAndRemoteIp = async (
 				userAgent,
 				ipAddr,
 				created: { // ensure that the like was made today
-					gte: new Date(new Date().setHours(1, 0, 0, 0)),
-					lte: new Date(new Date().setHours(24, 59, 59, 999))
+					gte: new Date(new Date().setHours(0, 0, 0, 0)),
+					lte: new Date(new Date().setHours(23, 59, 59, 999))
 				}
 			}
 		});
@@ -368,8 +368,8 @@ const countGatewayLikesByGatewayId = async (gatewayId: string) => {
 		return prisma.gatewayLike.count({where: {
 			gatewayId,
 			created: { // check if current day is the same as the day of the like
-				gte: new Date(new Date().setHours(1, 0, 0, 0)),
-				lte: new Date(new Date().setHours(24, 59, 59, 999))
+				gte: new Date(new Date().setHours(0, 0, 0, 0)),
+				lte: new Date(new Date().setHours(23, 59, 59, 999))
 			}
 		}});
 	} catch (error) {
