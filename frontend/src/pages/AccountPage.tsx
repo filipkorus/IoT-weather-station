@@ -4,9 +4,11 @@ import PairAStation from "@/components/PairAStation";
 import Banner from "@/components/Banner.tsx";
 import StationList from "@/components/StationList.tsx";
 import useLogout from "@/hooks/auth/useLogout";
+import usePrivateStations from "@/hooks/usePrivateStations";
 
 const AccountPage: React.FC = () => {
     const { isLoggingOut, logout } = useLogout();
+    const stations = usePrivateStations();
 
     const handleLogout = () => {
         logout();
@@ -37,7 +39,7 @@ const AccountPage: React.FC = () => {
                 }}
             >
                 <Banner message="❄️Witaj na swoim koncie❄️" />
-                <StationList headerText="Twoje stacje:" />
+                <StationList headerText="Twoje stacje:" stations={stations} />
             </Box>
 
             <Box
