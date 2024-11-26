@@ -5,6 +5,8 @@ import { likesFromREST, slopeDataFromREST } from "@/store/slices/liveDataSlice";
 interface Gateway {
     id: string;
     name: string;
+    latitude: number;
+    longitude: number;
     isPaired: boolean;
     isOnline: boolean;
     lastOnline: string;
@@ -21,8 +23,6 @@ interface Gateway {
 interface PublicGateway extends Gateway {
     likes: number;
     haveYouLiked: boolean;
-    latitude: number;
-    longitude: number;
 }
 
 // interface PublicGatewayFromRequest extends PublicGateway {
@@ -66,7 +66,17 @@ export const gatewayApi = createApi({
             providesTags: ["Gateway"],
         }),
         getAllPublicGateways: builder.query<{ gateways: PublicGateway[] }, void>({
-            query: () => "/public-gateway",
+            query: () => ({
+                url: "/public-gateway",
+                method: "GET",
+            }),
+        }),
+        getAllPrivateGateways: builder.query<{ gateways: Gateway[] }, void>({
+            query: () => ({
+                url: "/gateway",
+                method: "GET",
+            }),
+            providesTags: [{ type: "Gateway", id: "PRIVATE_LIST" }],
         }),
     }),
     tagTypes: ["Gateway"],
@@ -74,4 +84,4 @@ export const gatewayApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetPublicGatewayQuery, useGetAllPublicGatewaysQuery } = gatewayApi;
+export const { useGetPublicGatewayQuery, useGetAllPublicGatewaysQuery, useGetAllPrivateGatewaysQuery } = gatewayApi;

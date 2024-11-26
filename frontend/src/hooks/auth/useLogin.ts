@@ -3,6 +3,8 @@ import { useSnackbar } from "../useSnackbar";
 import { useEffect } from "react";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useNavigate } from "react-router-dom";
+import { gatewayApi } from "@/services/gateway";
+import { useDispatch } from "react-redux";
 
 const useLogin = () => {
     const [loginAction, { isLoading: isLoggingIn, isSuccess, isError, error }] = useLoginMutation();
@@ -17,8 +19,13 @@ const useLogin = () => {
         }
     };
 
+    const dispatch = useDispatch();
+
     useEffect(() => {
         if (isSuccess) {
+            // reload private stations when switching user
+            dispatch(gatewayApi.util.invalidateTags([{ type: "Gateway", id: "PRIVATE_LIST" }]));
+
             showSnackbar("", "success");
             showSnackbar("Poprawnie zalogowano!", "success");
             navigate("/account");

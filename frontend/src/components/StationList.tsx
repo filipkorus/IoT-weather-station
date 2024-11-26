@@ -6,19 +6,16 @@ import Avatar from "@mui/material/Avatar";
 import { Box, Typography } from "@mui/material";
 import { ListItemButton } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
-import usePublicStations from "@/hooks/usePublicStations";
-import { useSelector } from "react-redux";
-import { getLiveData } from "@/store/slices/liveDataSlice";
+import { DisplayStation } from "@/hooks/usePublicStations";
 
 // Dodanie typu dla propów
 interface StationListProps {
     headerText?: string; // Opcjonalny tekst nagłówka
+    stations: DisplayStation;
 }
 
-const StationList: React.FC<StationListProps> = ({ headerText }) => {
-    const stations = usePublicStations();
+const StationList: React.FC<StationListProps> = ({ headerText, stations }) => {
     const navigate = useNavigate();
-    const liveData = useSelector(getLiveData);
 
     return (
         <Box
