@@ -45,6 +45,12 @@ const RegisterPage: React.FC = () => {
                                     autoFocus
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault(); // Optional: Prevent unintended form submission if needed
+                                            handleRegister();
+                                        }
+                                    }}
                                 />
                             </Grid>
 
@@ -58,6 +64,12 @@ const RegisterPage: React.FC = () => {
                                     id="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault(); // Optional: Prevent unintended form submission if needed
+                                            handleRegister();
+                                        }
+                                    }}
                                 />
                             </Grid>
                         </Grid>
