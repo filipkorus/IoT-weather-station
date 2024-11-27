@@ -1,6 +1,6 @@
 // login page only for users of sensors and hardware not for potential custoomers of skiing resort
 import { Container, CssBaseline, Box, Typography, TextField, Grid } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
 import useLogin from "@/hooks/auth/useLogin";
@@ -15,6 +15,13 @@ const LoginPage: React.FC = () => {
 
     // const handleLogin = () => {};
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (localStorage.getItem("token")) {
+            navigate("/account");
+        }
+    }, [navigate]);
+
     return (
         <>
             <Container maxWidth="xs">
