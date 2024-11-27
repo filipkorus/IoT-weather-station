@@ -6,6 +6,9 @@ import StationList from "@/components/StationList.tsx";
 import useLogout from "@/hooks/auth/useLogout";
 import usePrivateStations from "@/hooks/usePrivateStations";
 
+
+//zmiana nazwy stacji i usuwanie stacji
+
 const AccountPage: React.FC = () => {
     const { isLoggingOut, logout } = useLogout();
     const stations = usePrivateStations();
@@ -31,7 +34,7 @@ const AccountPage: React.FC = () => {
             <Box
                 sx={{
                     width: { xs: "90%", sm: "48%", md: "95%" },
-                    backgroundColor: "#ffffff",
+                    backgroundColor: "#fdfdfd",
                     borderRadius: "8px",
                     padding: "16px",
                     boxShadow: 2,
@@ -45,7 +48,7 @@ const AccountPage: React.FC = () => {
             <Box
                 sx={{
                     width: { xs: "90%", sm: "48%", md: "95%" },
-                    backgroundColor: "#ffffff",
+                    backgroundColor: "#fdfdfd",
                     borderRadius: "8px",
                     padding: "16px",
                     boxShadow: 2,
