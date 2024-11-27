@@ -16,7 +16,7 @@
 Adafruit_BME280 bme;
 LIDARLite myLidar;
 int cal_cnt = 0;
-#define STICK_HEIGHT 100 // in cm
+#define STICK_HEIGHT 60 // in cm
 
 uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; // wpisac tu mac address
 

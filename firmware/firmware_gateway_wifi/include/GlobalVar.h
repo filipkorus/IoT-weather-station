@@ -2,8 +2,13 @@
 #define GLOBALVAR_H
 
 #define BACKEND_IP "iot.fkor.us"
-#define AUTH_TOKEN "0Y7wRO5yDhvS2pHsASkgwcJcRTe0BQDd0fztHVHjZ9Tfk6aMgWmwYIulcyw550byKw3ovJePv56H8e31khq2FUomxcrKSe9GfiIi10zJBHkCXLvmKvu7CWKGyyLH9mFA"
-#define UID "G202411131A"
 #define WSS true
+
+#ifndef PROD
+#define AUTH_TOKEN "dev"
+#define UID "dev"
+#endif
+
+// #define UID "G202411131A"
 
 #endif

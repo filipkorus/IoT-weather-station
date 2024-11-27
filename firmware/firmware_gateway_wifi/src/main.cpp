@@ -243,9 +243,9 @@ void setup()
   lcd.backlight();
   lcd.setCursor(0, 0);
   lcd.clear();
-  lcd.print("Waiting");
+  lcd.print("Init");
   lcd.setCursor(0, 1);
-  lcd.print("for WiFi");
+  lcd.print(UID);
   bool res;
   WiFiManager wm;
   res = wm.autoConnect("esp32", "12345678");
@@ -325,6 +325,10 @@ void loop()
     {
       pairMode = true;
       Serial.println("pair mode");
+    }
+    if (resetCount < 5)
+    {
+      updateLCD();
     }
     resetCount = 6;
   }
