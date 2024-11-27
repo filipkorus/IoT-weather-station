@@ -18,6 +18,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import PlaceIcon from "@mui/icons-material/Place";
 import { useNavigate } from "react-router-dom";
 import { DisplayStation } from "@/hooks/usePublicStations";
+import useUpdateGatewayInfo from "@/hooks/useUpdateGatewayInfo";
+import { useSnackbar } from "@/hooks/useSnackbar";
 
 interface StationListProps {
     headerText?: string;
@@ -30,8 +32,12 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
     const [openNameDialog, setOpenNameDialog] = React.useState(false);
     const [openLocationDialog, setOpenLocationDialog] = React.useState(false);
     const [stationToEdit, setStationToEdit] = React.useState<DisplayStation[number] | null>(null);
-    const [coordinates, setCoordinates] = React.useState<{ long: number | null, lat: number | null }>({ long: null, lat: null });
+    const [coordinates, setCoordinates] = React.useState<{ long: number | null; lat: number | null }>({
+        long: null,
+        lat: null,
+    });
     const [stationName, setStationName] = React.useState("");
+    const showSnackbar = useSnackbar();
 
     // Funkcja otwierająca dialog dla edycji nazwy stacji
     const handleOpenNameDialog = (station: DisplayStation[number]) => {
@@ -49,15 +55,18 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
 
     const handleCloseNameDialog = () => {
         setOpenNameDialog(false);
-        setStationToEdit(null);
         setStationName("");
     };
 
-    const handleCloseLocationDialog = () => {
+    const handleCloseLocationDialog = React.useCallback(() => {
         setOpenLocationDialog(false);
-        setStationToEdit(null);
         setCoordinates({ long: null, lat: null });
-    };
+    }, []);
+
+    const { updateGatewayInfo, isUpdatingGatewayInfo } = useUpdateGatewayInfo(
+        stationToEdit?.id ?? "",
+        handleCloseLocationDialog,
+    );
 
     const handleSaveName = () => {
         if (stationToEdit) {
@@ -67,10 +76,19 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
     };
 
     const handleSaveLocation = () => {
+        console.log("dupa:");
+
         if (stationToEdit) {
-            console.log(`Zmieniono lokalizację stacji ${stationToEdit.id}:`, coordinates);
+            updateGatewayInfo({
+                infoToUpdate: {
+                    ...(coordinates.long && { longitude: coordinates.long }),
+                    ...(coordinates.lat && { latitude: coordinates.lat }),
+                },
+            });
+        } else {
+            showSnackbar("Nie ma id bramy!", "error");
         }
-        handleCloseLocationDialog();
+        // handleCloseLocationDialog();
     };
 
     return (
@@ -105,55 +123,62 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
             </Typography>
 
             <List>
-                {stations.map((station, index) => (
-                    <Box
-                        key={index}
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            mb: 2,
-                            "&:hover": {
-                                backgroundColor: "#d8eaf6",
-                            },
-                            padding: "8px",
-                            borderRadius: "8px",
-                        }}
-                    >
+                {stations?.length ? (
+                    stations.map((station, index) => (
                         <Box
+                            key={index}
                             sx={{
                                 display: "flex",
                                 alignItems: "center",
-                                flexGrow: 1,
-                                cursor: "pointer",
+                                justifyContent: "space-between",
+                                mb: 2,
+                                "&:hover": {
+                                    backgroundColor: "#d8eaf6",
+                                },
+                                padding: "8px",
+                                borderRadius: "8px",
                             }}
-                            onClick={() => navigate(`/slopedata/${station.id}`)}
                         >
-                            <ListItemAvatar>
-                                <Avatar sx={{ bgcolor: "#1f4152" }}>{station.icon}</Avatar>
-                            </ListItemAvatar>
-                            <ListItemText primary={station.name} />
-                        </Box>
-
-                        {showActions && (
-                            <Box>
-                                <IconButton
-                                    aria-label="Edytuj nazwę"
-                                    onClick={() => handleOpenNameDialog(station)}
-                                    sx={{ marginRight: 1 }}
-                                >
-                                    <EditIcon />
-                                </IconButton>
-                                <IconButton
-                                    aria-label="Lokalizacja"
-                                    onClick={() => handleOpenLocationDialog(station)}
-                                >
-                                    <PlaceIcon />
-                                </IconButton>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    flexGrow: 1,
+                                    cursor: "pointer",
+                                }}
+                                onClick={() => navigate(`/slopedata/${station.id}`)}
+                            >
+                                <ListItemAvatar>
+                                    <Avatar sx={{ bgcolor: "#1f4152" }}>{station.icon}</Avatar>
+                                </ListItemAvatar>
+                                <ListItemText primary={station.name} />
                             </Box>
-                        )}
-                    </Box>
-                ))}
+
+                            {/* Ikony akcji */}
+                            {showActions && (
+                                <Box>
+                                    <IconButton
+                                        aria-label="Edytuj"
+                                        onClick={() => handleOpenNameDialog(station)}
+                                        sx={{ marginRight: 1 }}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
+                                    <IconButton
+                                        aria-label="Lokalizacja"
+                                        onClick={() => handleOpenLocationDialog(station)}
+                                    >
+                                        <PlaceIcon />
+                                    </IconButton>
+                                </Box>
+                            )}
+                        </Box>
+                    ))
+                ) : (
+                    <Typography variant="h6" sx={{ mb: 2 }}>
+                        Brak stacji
+                    </Typography>
+                )}
             </List>
 
             {/* Dialog edycji nazwy stacji */}
@@ -237,29 +262,37 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                     <TextField
                         type="number"
                         label="Długość geograficzna"
-                        value={coordinates.long}
+                        value={coordinates.long ?? ""}
                         onChange={(e) => {
-                            setCoordinates({ ...coordinates, long: parseFloat(e.target.value) })
+                            setCoordinates({ ...coordinates, long: parseFloat(e.target.value) });
                         }}
                         fullWidth
                         variant="outlined"
+                        disabled={isUpdatingGatewayInfo}
                     />
                     <TextField
                         type="number"
                         label="Szerokość geograficzna"
-                        value={coordinates.lat}
+                        value={coordinates.lat ?? ""}
                         onChange={(e) => {
-                            setCoordinates({ ...coordinates, lat: parseFloat(e.target.value) })
+                            setCoordinates({ ...coordinates, lat: parseFloat(e.target.value) });
                         }}
                         fullWidth
                         variant="outlined"
+                        disabled={isUpdatingGatewayInfo}
                     />
                 </DialogContent>
                 <DialogActions sx={{ padding: "8px 24px" }}>
-                    <Button onClick={handleCloseLocationDialog} color="primary">
+                    <Button onClick={handleCloseLocationDialog} color="primary" disabled={isUpdatingGatewayInfo}>
                         Anuluj
                     </Button>
-                    <Button onClick={handleSaveLocation} color="success" variant="contained" autoFocus>
+                    <Button
+                        onClick={handleSaveLocation}
+                        color="success"
+                        variant="contained"
+                        autoFocus
+                        disabled={isUpdatingGatewayInfo}
+                    >
                         Zapisz
                     </Button>
                 </DialogActions>

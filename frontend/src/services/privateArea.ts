@@ -6,6 +6,12 @@ export interface UsernamePassword {
     password: string;
 }
 
+export interface UpdateGatewayInfo {
+    name?: string;
+    latitude?: number;
+    longitude?: number;
+}
+
 // Define a service using a base URL and expected endpoints
 export const privateAreaApi = createApi({
     reducerPath: "privateAreaApi",
@@ -18,10 +24,17 @@ export const privateAreaApi = createApi({
                 body: { pairingCode },
             }),
         }),
+        updateGatewayInfo: builder.mutation<void, { infoToUpdate: UpdateGatewayInfo; gatewayId: string }>({
+            query: ({ infoToUpdate, gatewayId }) => ({
+                url: `/gateway/${gatewayId}`,
+                method: "PUT",
+                body: infoToUpdate,
+            }),
+        }),
     }),
     tagTypes: ["PrivateArea"],
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { usePairingCodeMutation } = privateAreaApi;
+export const { usePairingCodeMutation, useUpdateGatewayInfoMutation } = privateAreaApi;
