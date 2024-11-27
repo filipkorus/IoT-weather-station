@@ -43,6 +43,7 @@ export const baseQueryWithReauth: BaseQueryFn<BaseQueryWithReauthArgs, unknown, 
         } else {
             console.log(".");
             if (window?.location?.pathname === "/account") {
+                localStorage.removeItem("token");
                 window.location.href = "/login";
             }
 
