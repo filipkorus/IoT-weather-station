@@ -10,6 +10,9 @@
 #include <LIDARLite.h>
 #include <GlobalVar.h>
 
+#define BUTTON_PIN 2
+#define BATTERY 34
+
 Adafruit_BME280 bme;
 LIDARLite myLidar;
 int cal_cnt = 0;
@@ -44,6 +47,7 @@ typedef struct struct_message
   uint32_t pm1;
   uint32_t pm25;
   uint32_t pm10;
+  bool pair;
 } struct_message;
 
 // Create a struct_message called BME280Readings to hold sensor readings
@@ -71,8 +75,8 @@ void setup()
   // Init Serial Monitor
   Serial.begin(115200);
   Serial2.begin(9600);
-  pinMode(15, INPUT);
-  pinMode(2, INPUT_PULLUP);
+  pinMode(BATTERY, INPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 
   // Init BME280 sensor
   bool status = bme.begin(0x77);
@@ -196,18 +200,19 @@ void loop()
   getReadings();
 
   // Set values to send
-  Readings.temperature = temperature;
-  Readings.humidity = humidity;
+  Readings.temperature = (float)TPS / 10.f;
+  Readings.humidity = (float)HDS / 10.f;
   Readings.pressure = pressure;
   strcpy(Readings.nodeId, UID);
 
   // lidar distance
   Readings.snowDepth = STICK_HEIGHT - distance;
-  Readings.batteryLevel = (analogRead(34) / 4095) * 2 * 3.3;
+  Readings.batteryLevel = ((float)analogRead(BATTERY) / 4095.f) * 2.f * 3.3f;
 
   if (Readings.snowDepth < 5)
     Readings.snowDepth = 0;
 
+  Readings.pair = !digitalRead(BUTTON_PIN);
   // pm values - airQualitySensor
   Readings.pm1 = PMS1;
   Readings.pm10 = PMS10;
@@ -220,7 +225,12 @@ void loop()
   Serial.println(PMS1);
   Serial.println(PMS10);
   Serial.println(PMS2_5);
+  Serial.println(TPS);
+  Serial.println(HDS);
   Serial.println(Readings.batteryLevel);
+  Serial.println(analogRead(BATTERY));
+  Serial.print("pair: ");
+  Serial.println(Readings.pair);
   Serial.println();
 
   if (PMS2_5 != 0 && PMS10 != 0 && PMS1 != 0)
