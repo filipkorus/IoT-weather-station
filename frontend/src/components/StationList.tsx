@@ -217,6 +217,59 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                         onChange={(e) => setStationName(e.target.value)}
                         fullWidth
                         variant="outlined"
+                        disabled={isUpdatingGatewayInfo}
+                    />
+                </DialogContent>
+                <DialogActions sx={{ padding: "8px 24px" }}>
+                    <Button onClick={handleCloseNameDialog} color="primary">
+                        Anuluj
+                    </Button>
+                    <Button onClick={handleSaveName} color="success" variant="contained" autoFocus>
+                        Zapisz
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Dialog edycji lokalizacji */}
+            <Dialog
+                open={openLocationDialog}
+                onClose={handleCloseLocationDialog}
+                aria-labelledby="edit-location-dialog-title"
+                sx={{
+                    "& .MuiDialog-paper": {
+                        borderRadius: "16px",
+                        padding: "16px",
+                    },
+                }}
+            >
+                <DialogTitle
+                    id="edit-location-dialog-title"
+                    sx={{
+                        padding: "16px 24px",
+                        fontSize: "1.25rem",
+                        fontWeight: "bold",
+                    }}
+                >
+                    Edytuj lokalizację
+                </DialogTitle>
+                <DialogContent
+                    sx={{
+                        padding: "16px 24px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "16px",
+                    }}
+                >
+                    <TextField
+                        type="number"
+                        label="Długość geograficzna"
+                        value={coordinates.long ?? ""}
+                        onChange={(e) => {
+                            setCoordinates({ ...coordinates, long: parseFloat(e.target.value) });
+                        }}
+                        fullWidth
+                        variant="outlined"
+                        disabled={isUpdatingGatewayInfo}
                     />
                 </DialogContent>
                 <DialogActions sx={{ padding: "8px 24px" }}>
