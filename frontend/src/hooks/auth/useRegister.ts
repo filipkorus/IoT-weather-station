@@ -20,7 +20,11 @@ const useRegister = () => {
                 const { status } = error as FetchBaseQueryError;
                 switch (status) {
                     case 400:
-                        showSnackbar("Podano nieprawidłowe dane!", "error");
+                        showSnackbar(
+                            `Podano nieprawidłowe dane! ${error?.data?.errors?.[0]?.message ? error?.data?.errors?.[0]?.message : ""}`,
+                            "error",
+                            10000,
+                        );
                         break;
                     case 409:
                         showSnackbar("Konto o podanej nazwie już istnieje!", "error");
