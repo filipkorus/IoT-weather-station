@@ -51,7 +51,7 @@ const PairAStation: React.FC = () => {
                 <Box
                     sx={{
                         width: "90%",
-                        marginTop: "16px",
+                        // marginTop: "1px",
                         padding: "16px",
                         borderRadius: "16px",
                         boxShadow: 3,

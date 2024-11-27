@@ -102,7 +102,7 @@ const HomePage: React.FC = () => {
                         fullWidth
                         sx={{
                             typography: {
-                                xs: "body1",
+                                xs: "h4",
                                 sm: "h6",
                                 md: "h5",
                                 lg: "h4",
@@ -127,7 +127,7 @@ const HomePage: React.FC = () => {
                             <Typography
                                 sx={{
                                     typography: {
-                                        xs: "body1",
+                                        xs: "h4",
                                         sm: "h6",
                                         md: "h5",
                                         lg: "h4",
@@ -161,7 +161,7 @@ const HomePage: React.FC = () => {
                             <Typography
                                 sx={{
                                     typography: {
-                                        xs: "body1",
+                                        xs: "h4",
                                         sm: "h6",
                                         md: "h5",
                                         lg: "h4",
@@ -195,7 +195,7 @@ const HomePage: React.FC = () => {
                             <Typography
                                 sx={{
                                     typography: {
-                                        xs: "body1",
+                                        xs: "h4",
                                         sm: "h6",
                                         md: "h5",
                                         lg: "h4",
