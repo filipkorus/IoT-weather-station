@@ -28,7 +28,7 @@ const HomePage: React.FC = () => {
     const noData = "brak danych";
 
     const stationInfoForDisplay = {
-        name: stationInfo?.name != null ?? "Nazwa stoku",
+        name: stationInfo?.name != null ? stationInfo?.name : "Nazwa stoku",
         humidity: stationInfo?.humidity != null ? Math.round(stationInfo?.humidity) : noData,
         pressure: stationInfo?.pressure != null ? Math.round(stationInfo?.pressure) : noData,
         pm1: stationInfo?.pm1 != null ? Math.round(stationInfo?.pm1) : noData,
@@ -69,7 +69,7 @@ const HomePage: React.FC = () => {
                     >
                         {/* Nazwa stoku po lewej stronie */}
                         <Typography variant="h5" sx={{ color: "white" }}>
-                            <>{stationInfoForDisplay.name}</>
+                            {stationInfoForDisplay.name}
                         </Typography>
                         <BackButton title="Powrót" onClick={() => navigate("/")}></BackButton>
                     </Box>
@@ -102,7 +102,7 @@ const HomePage: React.FC = () => {
                         fullWidth
                         sx={{
                             typography: {
-                                xs: "body1",
+                                xs: "h4",
                                 sm: "h6",
                                 md: "h5",
                                 lg: "h4",
@@ -127,7 +127,7 @@ const HomePage: React.FC = () => {
                             <Typography
                                 sx={{
                                     typography: {
-                                        xs: "body1",
+                                        xs: "h4",
                                         sm: "h6",
                                         md: "h5",
                                         lg: "h4",
@@ -161,7 +161,7 @@ const HomePage: React.FC = () => {
                             <Typography
                                 sx={{
                                     typography: {
-                                        xs: "body1",
+                                        xs: "h4",
                                         sm: "h6",
                                         md: "h5",
                                         lg: "h4",
@@ -195,7 +195,7 @@ const HomePage: React.FC = () => {
                             <Typography
                                 sx={{
                                     typography: {
-                                        xs: "body1",
+                                        xs: "h4",
                                         sm: "h6",
                                         md: "h5",
                                         lg: "h4",

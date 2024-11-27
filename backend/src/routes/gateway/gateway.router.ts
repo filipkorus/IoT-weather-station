@@ -3,13 +3,19 @@ import {
 	GetGatewayHandler,
 	InitGatewayHandler,
 	UpdateGatewayHandler,
-	GatewayPairingCodeHandler
+	GatewayPairingCodeHandler,
+	CreateGatewayHandler
 } from './gateway.controller';
 import RequireAuth from '../../middlewares/requireAuth';
 import requireGatewayAuth from '../../middlewares/requireGatewayAuth';
+import RequireVendorAuth from '../../middlewares/requireVendorAuth';
 
 const router = Router();
 
+// endpoints for the vendor
+router.post('/', RequireVendorAuth, CreateGatewayHandler);
+
+// endpoints for the user
 router.get('/', RequireAuth, GetGatewayHandler);
 router.get('/:id', RequireAuth, GetGatewayHandler);
 router.put('/:id', RequireAuth, UpdateGatewayHandler);

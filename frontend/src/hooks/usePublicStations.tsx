@@ -20,6 +20,10 @@ export type DisplayStation = Array<{
     name: string;
     icon: JSX.Element;
     id: string;
+    coords: {
+        latitude: number | null;
+        longitude: number | null;
+    }
 }>;
 
 const usePublicStations = (): DisplayStation => {
@@ -29,8 +33,14 @@ const usePublicStations = (): DisplayStation => {
         return [];
     }
 
-    if (error || !data) {
-        alert("An error occurred while fetching the slopes data");
+    if (error) {
+        if (window?.location?.pathname !== "/account") {
+            alert("An error occurred while fetching the slopes data")
+        }
+        return [];
+    }
+
+    if (!data) {
         return [];
     }
 
@@ -38,6 +48,10 @@ const usePublicStations = (): DisplayStation => {
         name: station.name,
         icon: getIcon(index),
         id: station.id,
+        coords: {
+            latitude: station.latitude,
+            longitude: station.longitude,
+        }
     }));
 };
 

@@ -2,6 +2,7 @@ import { useGetPublicGatewayQuery } from "@/services/gateway";
 import { getLiveData } from "@/store/slices/liveDataSlice";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "./useSnackbar";
 
 interface HomePageData {
     created: string;
@@ -17,6 +18,7 @@ interface HomePageData {
 
 const useStationInfo = (id: string | undefined): any => {
     const navigate = useNavigate();
+    const showSnackbar = useSnackbar();
 
     // Redirect immediately if `id` is undefined
     if (!id) {
@@ -39,6 +41,12 @@ const useStationInfo = (id: string | undefined): any => {
         ...(id ? { pm10: liveData?.[id]?.data[0]?.pm10 } : {}),
         ...(id ? { created: liveData?.[id]?.data[0]?.created } : {}),
     };
+
+    if (error) {
+        showSnackbar("", "error");
+        showSnackbar("Nie ma takiego stoku!", "error");
+        navigate("/");
+    }
 
     return stationInfo;
 };

@@ -8,8 +8,14 @@ const usePrivateStations = (): DisplayStation => {
         return [];
     }
 
-    if (error || !data) {
-        alert("An error occurred while fetching the slopes data");
+    if (error) {
+        if (window?.location?.pathname !== "/account") {
+            alert("An error occurred while fetching the slopes data");
+        }
+        return [];
+    }
+
+    if (!data) {
         return [];
     }
 
@@ -17,6 +23,10 @@ const usePrivateStations = (): DisplayStation => {
         name: station.name,
         icon: getIcon(index),
         id: station.id,
+        coords: {
+            latitude: station.latitude,
+            longitude: station.longitude,
+        }
     }));
 };
 

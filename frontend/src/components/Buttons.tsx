@@ -27,7 +27,7 @@ const Buttons: React.FC<ButtonsProps> = ({ title, value, unit, onClick }) => {
             onClick={onClick}
         >
             <Box>
-                <Typography variant="h6" sx={{ fontSize: { xs: "1.1rem", sm: "2rem" } }}>
+                <Typography variant="h6" sx={{ fontSize: { xs: "1.1rem", sm: "2rem", md:"1.7rem" } }}>
                     {title}
                 </Typography>
                 <Typography variant="h2" sx={{ textTransform: "none", fontSize: { xs: "1.5rem", sm: "2rem" } }}>
