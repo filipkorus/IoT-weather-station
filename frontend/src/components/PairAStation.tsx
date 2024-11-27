@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Button, Box, Typography } from "@mui/material";
+import usePairingCode from "@/hooks/usePairingCode";
 
 const PairAStation: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
@@ -14,9 +15,10 @@ const PairAStation: React.FC = () => {
         setCode("");
     };
 
+    const { isPairing, pairing } = usePairingCode({ successCallback: handleClose });
     const handleSubmit = () => {
         console.log("Wprowadzony kod:", code.replace(/\s/g, "")); // Usuwanie spacji przed wysłaniem
-        handleClose();
+        pairing(code.replace(/\s/g, ""));
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,6 +109,7 @@ const PairAStation: React.FC = () => {
                                     backgroundColor: "#fdecea",
                                 },
                             }}
+                            disabled={isPairing}
                         >
                             Anuluj
                         </Button>
@@ -120,6 +123,7 @@ const PairAStation: React.FC = () => {
                                     backgroundColor: "#084a73",
                                 },
                             }}
+                            disabled={isPairing}
                         >
                             Zatwierdź
                         </Button>

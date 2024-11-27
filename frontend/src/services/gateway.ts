@@ -1,10 +1,12 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQuery } from "./baseQuery";
+import { baseQueryWithReauth } from "./baseQueryWithReauth";
 import { likesFromREST, slopeDataFromREST } from "@/store/slices/liveDataSlice";
 
 interface Gateway {
     id: string;
     name: string;
+    latitude: number;
+    longitude: number;
     isPaired: boolean;
     isOnline: boolean;
     lastOnline: string;
@@ -21,8 +23,6 @@ interface Gateway {
 interface PublicGateway extends Gateway {
     likes: number;
     haveYouLiked: boolean;
-    latitude: number;
-    longitude: number;
 }
 
 // interface PublicGatewayFromRequest extends PublicGateway {
@@ -32,7 +32,7 @@ interface PublicGateway extends Gateway {
 // Define a service using a base URL and expected endpoints
 export const gatewayApi = createApi({
     reducerPath: "gatewayApi",
-    baseQuery,
+    baseQuery: baseQueryWithReauth,
     endpoints: (builder) => ({
         getPublicGateway: builder.query<{ gateway: PublicGateway }, { gatewayId: string }>({
             query: ({ gatewayId }) => ({
@@ -66,7 +66,17 @@ export const gatewayApi = createApi({
             providesTags: ["Gateway"],
         }),
         getAllPublicGateways: builder.query<{ gateways: PublicGateway[] }, void>({
-            query: () => "/public-gateway",
+            query: () => ({
+                url: "/public-gateway",
+                method: "GET",
+            }),
+        }),
+        getAllPrivateGateways: builder.query<{ gateways: Gateway[] }, void>({
+            query: () => ({
+                url: "/gateway",
+                method: "GET",
+            }),
+            providesTags: [{ type: "Gateway", id: "PRIVATE_LIST" }],
         }),
     }),
     tagTypes: ["Gateway"],
@@ -74,4 +84,4 @@ export const gatewayApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetPublicGatewayQuery, useGetAllPublicGatewaysQuery } = gatewayApi;
+export const { useGetPublicGatewayQuery, useGetAllPublicGatewaysQuery, useGetAllPrivateGatewaysQuery } = gatewayApi;

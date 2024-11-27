@@ -4,6 +4,7 @@ import { authApi } from "../services/auth";
 import { gatewayApi } from "@/services/gateway.ts";
 import liveDataReducer from "./slices/liveDataSlice.ts";
 import sendLikeSlice from "./slices/sendLikeSlice.ts";
+import { privateAreaApi } from "@/services/privateArea.ts";
 
 // Create the Redux store
 export const store = configureStore({
@@ -13,9 +14,13 @@ export const store = configureStore({
         [gatewayApi.reducerPath]: gatewayApi.reducer,
         liveData: liveDataReducer,
         sendLike: sendLikeSlice,
+        [privateAreaApi.reducerPath]: privateAreaApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(authApi.middleware).concat(gatewayApi.middleware), // Add middlewares
+        getDefaultMiddleware()
+            .concat(authApi.middleware)
+            .concat(gatewayApi.middleware)
+            .concat(privateAreaApi.middleware), // Add middlewares
 });
 
 // Optional: Set up typed hooks (useDispatch, useSelector)
