@@ -76,8 +76,6 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
     };
 
     const handleSaveLocation = () => {
-        console.log("dupa:");
-
         if (stationToEdit) {
             updateGatewayInfo({
                 infoToUpdate: {
