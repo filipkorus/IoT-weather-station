@@ -8,8 +8,14 @@ const usePrivateStations = (): DisplayStation => {
         return [];
     }
 
-    if (error || !data) {
-        alert("An error occurred while fetching the slopes data");
+    if (error) {
+        if (window?.location?.pathname !== "/account") {
+            alert("An error occurred while fetching the slopes data");
+        }
+        return [];
+    }
+
+    if (!data) {
         return [];
     }
 

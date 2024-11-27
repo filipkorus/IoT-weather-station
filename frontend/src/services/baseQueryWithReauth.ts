@@ -42,6 +42,10 @@ export const baseQueryWithReauth: BaseQueryFn<BaseQueryWithReauthArgs, unknown, 
             result = await baseQuery(args, api, extraOptions);
         } else {
             console.log(".");
+            if (window?.location?.pathname === "/account") {
+                window.location.href = "/login";
+            }
+
             // console.log("refresh failure");
             // handle refresh failure (e.g., logout user)
             // window?.location.replace("/login");
