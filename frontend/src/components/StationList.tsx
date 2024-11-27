@@ -50,23 +50,29 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations }) => {
             </Typography>
 
             <List>
-                {stations.map((station, index) => (
-                    <ListItemButton
-                        key={index}
-                        onClick={() => navigate(`/slopedata/${station.id}`)}
-                        sx={{
-                            mb: 2,
-                            "&:hover": {
-                                backgroundColor: "#d8eaf6",
-                            },
-                        }}
-                    >
-                        <ListItemAvatar>
-                            <Avatar sx={{ bgcolor: "#1f4152" }}>{station.icon}</Avatar>
-                        </ListItemAvatar>
-                        <ListItemText primary={station.name} />
-                    </ListItemButton>
-                ))}
+                {stations?.length ? (
+                    stations.map((station, index) => (
+                        <ListItemButton
+                            key={index}
+                            onClick={() => navigate(`/slopedata/${station.id}`)}
+                            sx={{
+                                mb: 2,
+                                "&:hover": {
+                                    backgroundColor: "#d8eaf6",
+                                },
+                            }}
+                        >
+                            <ListItemAvatar>
+                                <Avatar sx={{ bgcolor: "#1f4152" }}>{station.icon}</Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary={station.name} />
+                        </ListItemButton>
+                    ))
+                ) : (
+                    <Typography variant="h6" sx={{ mb: 2 }}>
+                        Brak stacji
+                    </Typography>
+                )}
             </List>
         </Box>
     );
