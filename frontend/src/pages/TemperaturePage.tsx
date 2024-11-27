@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
-import { Box } from "@mui/material";
 import ChartSkeleton from "@/components/ChartSkeleton.tsx";
 const temperatureData = {
     "24h": [
@@ -97,13 +96,10 @@ const TemperaturePage: React.FC = () => {
     const id = useParams().id;
     const navigate = useNavigate();
     return (
-        <Box sx={{ padding: 3 }}>
-            {/* Przyciski i nagłówek w górnym lewym rogu */}
-            <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-                <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-                <ChartSkeleton title="Temperatura" unit="°C" data={temperatureData} />
-            </Box>
-        </Box>
+        <div>
+            <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
+            <ChartSkeleton title="Temperatura" unit="°C" data={temperatureData}/>
+        </div>
     );
 };
 

@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
 import ChartSkeleton from "@/components/ChartSkeleton.tsx";
-import { Box } from "@mui/material";
 const snowData = {
     "24h": [
         { created: new Date(Date.now() - 0 * 60 * 60 * 1000), value: 0 }, // "0h" → now
@@ -97,13 +96,10 @@ const SnowPage: React.FC = () => {
     const id = useParams().id;
     const navigate = useNavigate();
     return (
-        <Box sx={{ padding: 3 }}>
-            {/* Przyciski i nagłówek w górnym lewym rogu */}
-            <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-                <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-                <ChartSkeleton title="Poziom śniegu" unit="m" data={snowData} />
-            </Box>
-        </Box>
+        <div>
+            <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
+            <ChartSkeleton title="Poziom śniegu" unit="cm" data={snowData}/>
+        </div>
     );
 };
 

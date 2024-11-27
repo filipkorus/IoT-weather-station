@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
 import ChartSkeleton from "@/components/ChartSkeleton.tsx";
-import { Box } from "@mui/material";
 const pressureData = {
     "24h": [
         { created: new Date(Date.now() - 0 * 60 * 60 * 1000), value: 0 }, // "0h" → now
@@ -98,13 +97,11 @@ const PressurePage: React.FC = () => {
     const id = useParams().id;
     const navigate = useNavigate();
     return (
-        <Box sx={{ padding: 3 }}>
-            {/* Przyciski i nagłówek w górnym lewym rogu */}
-            <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-                <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-                <ChartSkeleton title="Ciśnienie" unit="hPa" data={pressureData} />
-            </Box>
-        </Box>
+    <div>
+        <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
+        <ChartSkeleton title="Ciśnienie" unit="hPa" data={pressureData}/>
+
+    </div>
     );
 };
 
