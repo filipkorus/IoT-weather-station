@@ -1,6 +1,11 @@
 #ifndef GLOBALVAR_H
 #define GLOBALVAR_H
 
-#define UID "N2024111401"
+// #define UID "N2024111401"
+
+#ifndef PROD
+#define AUTH_TOKEN ""
+#define UID ""
+#endif
 
 #endif

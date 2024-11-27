@@ -19,6 +19,7 @@ typedef struct struct_message
   uint32_t pm1;
   uint32_t pm25;
   uint32_t pm10;
+  bool pair;
 } struct_message;
 
 struct_message myData;
@@ -45,6 +46,7 @@ void OnDataRecv(const uint8_t *mac_addr, const uint8_t *incomingData, int len)
   doc["pm1"] = myData.pm1;
   doc["pm25"] = myData.pm25;
   doc["pm10"] = myData.pm10;
+  doc["pair"] = myData.pair;
   char buff[2048];
   serializeJson(doc, buff);
   Serial2.println(buff);
