@@ -3,6 +3,7 @@ import { useSnackbar } from "./useSnackbar";
 import { useEffect } from "react";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useDispatch } from "react-redux";
+import { gatewayApi } from "@/services/gateway";
 
 interface Props {
     successCallback: () => void;
@@ -16,8 +17,8 @@ const usePairingCode = ({ successCallback }: Props = { successCallback: () => {}
 
     useEffect(() => {
         if (isSuccess) {
-            // // reload private stations after pairing
-            // dispatch(gatewayApi.util.invalidateTags([{ type: "Gateway", id: "PRIVATE_LIST" }]));
+            // reload private stations after pairing
+            dispatch(gatewayApi.util.invalidateTags([{ type: "Gateway", id: "PRIVATE_LIST" }]));
 
             showSnackbar("", "success");
             showSnackbar("Sparowano pomyślnie!", "success");
