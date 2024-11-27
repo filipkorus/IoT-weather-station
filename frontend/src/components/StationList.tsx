@@ -18,6 +18,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import PlaceIcon from "@mui/icons-material/Place"; // Ikonka lokalizacji
 import { useNavigate } from "react-router-dom";
 import { DisplayStation } from "@/hooks/usePublicStations";
+import useUpdateGatewayInfo from "@/hooks/useUpdateGatewayInfo";
 
 interface StationListProps {
     headerText?: string; // Opcjonalny tekst nagłówka
@@ -46,9 +47,16 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
         setCoordinates({ long: "", lat: "" });
     };
 
+    const { updateGatewayInfo, isUpdatingGatewayInfo } = useUpdateGatewayInfo(stationToEdit ?? "", handleCloseDialog);
+
     const handleSaveCoordinates = () => {
         console.log(`Współrzędne dla stacji ${stationToEdit}:`, coordinates);
-        handleCloseDialog(); // Zamknij popup
+        updateGatewayInfo({
+            infoToUpdate: {
+                ...(coordinates.long && { longitude: parseFloat(coordinates.long) }),
+                ...(coordinates.lat && { latitude: parseFloat(coordinates.lat) }),
+            },
+        });
     };
 
     return (
@@ -175,6 +183,7 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                         onChange={(e) => setCoordinates({ ...coordinates, long: e.target.value })}
                         fullWidth
                         variant="outlined"
+                        disabled={isUpdatingGatewayInfo}
                     />
                     <TextField
                         label="Szerokość geograficzna (Lat)"
@@ -182,13 +191,20 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                         onChange={(e) => setCoordinates({ ...coordinates, lat: e.target.value })}
                         fullWidth
                         variant="outlined"
+                        disabled={isUpdatingGatewayInfo}
                     />
                 </DialogContent>
                 <DialogActions sx={{ padding: "8px 24px" }}>
-                    <Button onClick={handleCloseDialog} color="primary">
+                    <Button onClick={handleCloseDialog} color="primary" disabled={isUpdatingGatewayInfo}>
                         Anuluj
                     </Button>
-                    <Button onClick={handleSaveCoordinates} color="success" variant="contained" autoFocus>
+                    <Button
+                        onClick={handleSaveCoordinates}
+                        color="success"
+                        variant="contained"
+                        autoFocus
+                        disabled={isUpdatingGatewayInfo}
+                    >
                         Zapisz
                     </Button>
                 </DialogActions>
