@@ -7,12 +7,31 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 import { fileURLToPath } from "url";
+import axios from "axios";
 
 const CONFIG_PATH = path.join(os.homedir(), ".sosen-cli-config.json");
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const STORAGE = path.join(__dirname, "data.json");
 const buildsFolder = path.join(__dirname, "builds");
+
+async function sendPostRequest(url, data, token) {
+  try {
+    const response = await axios.post(url, data, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${token}`,
+      },
+    });
+    return response.data.data.gateway.apiKey;
+  } catch (error) {
+    console.error(
+      "Error:",
+      error.response?.status,
+      error.response?.data || error.message
+    );
+  }
+}
 
 async function copyFirmware(sourceFolder, name) {
   // Check if the builds directory exists, if not, create it
@@ -172,9 +191,19 @@ async function runCLI() {
           number
         )}`;
 
-  const AUTH_TOKEN = "";
-
   if (type !== "now") console.log(`Generated UID: ${UID}`);
+
+  let AUTH_TOKEN = "";
+
+  if (type === "wifi") {
+    AUTH_TOKEN = await sendPostRequest(
+      "https://iot.fkor.us/api/gateway",
+      { gatewayId: UID },
+      savedApiKey
+    );
+
+    console.log(`Generated Token: ${AUTH_TOKEN}`);
+  }
 
   const upload = await confirm({ message: "Upload to ESP?", default: false });
 
