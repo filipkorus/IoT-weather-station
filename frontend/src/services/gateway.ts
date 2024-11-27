@@ -78,10 +78,30 @@ export const gatewayApi = createApi({
             }),
             providesTags: [{ type: "Gateway", id: "PRIVATE_LIST" }],
         }),
+        getGatewayMeasurements: builder.query({
+            query: ({
+                gatewayId = "3333",
+                startDate = "2024-10-28T21:56:20.974Z",
+                endDate = "2024-11-27T21:56:20.974Z",
+            }) => {
+                const url = `/measurements/gateway/${gatewayId}${
+                    startDate || endDate ? "?" : ""
+                }${startDate ? `startDate=${startDate}` : ""}${
+                    startDate && endDate ? "&" : ""
+                }${endDate ? `endDate=${endDate}` : ""}`;
+                console.log("Final URL:", url); // Log the constructed URL
+                return { url, method: "GET" }; // Return the query object
+            },
+        }),
     }),
     tagTypes: ["Gateway"],
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetPublicGatewayQuery, useGetAllPublicGatewaysQuery, useGetAllPrivateGatewaysQuery } = gatewayApi;
+export const {
+    useGetPublicGatewayQuery,
+    useGetAllPublicGatewaysQuery,
+    useGetAllPrivateGatewaysQuery,
+    useGetGatewayMeasurementsQuery,
+} = gatewayApi;

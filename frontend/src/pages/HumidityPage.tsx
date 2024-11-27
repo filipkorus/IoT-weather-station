@@ -102,7 +102,7 @@ const HumidityPage: React.FC = () => {
             {/* Przyciski i nagłówek w górnym lewym rogu */}
             <Box sx={{ display: "flex", alignItems: "flex-start" }}>
                 <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-                <ChartSkeleton title="Wilgotność" unit="%" data={humidityData} />
+                <ChartSkeleton title="Wilgotność" unit="%" data={humidityData} property="humidity" />
             </Box>
         </Box>
     );

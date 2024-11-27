@@ -101,7 +101,7 @@ const SnowPage: React.FC = () => {
             {/* Przyciski i nagłówek w górnym lewym rogu */}
             <Box sx={{ display: "flex", alignItems: "flex-start" }}>
                 <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-                <ChartSkeleton title="Poziom śniegu" unit="m" data={snowData} />
+                <ChartSkeleton title="Poziom śniegu" unit="m" data={snowData} property="snowDepth" />
             </Box>
         </Box>
     );

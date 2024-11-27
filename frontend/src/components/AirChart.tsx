@@ -3,6 +3,8 @@ import { Box, Typography, Radio, RadioGroup, FormControlLabel, FormControl } fro
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList, Cell } from "recharts";
 import { Intervals } from "@/components/ChartSkeleton.tsx";
 import formatChartData from "@/utils/formatChartData.ts";
+import { useParams } from "react-router-dom";
+import { useIsItMyStation } from "@/hooks/useIsItMyStation";
 
 interface DataEntry {
     created: Date;
@@ -28,6 +30,9 @@ const AirChart: React.FC<AirChartProps> = ({ title, unit, data }) => {
     const isLoggedIn = localStorage.getItem("token") !== null;
 
     const selectedData = formatChartData<DataEntry>(data[timeRange], timeRange);
+    const params = useParams();
+    // const results = useHistoricalData({ gatewayId: params.id ?? "", property: ["pm1", "pm25", "pm10"], timeRange });
+    const isItMyStation = useIsItMyStation(params.id ?? "");
 
     return (
         <Box sx={{ display: "flex", padding: 3 }}>
@@ -42,7 +47,7 @@ const AirChart: React.FC<AirChartProps> = ({ title, unit, data }) => {
                         <FormControlLabel value="24h" control={<Radio />} label="Ostatnie 24h" />
                         <FormControlLabel value="7d" control={<Radio />} label="Ostatnie 7 dni" />
                         <FormControlLabel value="30d" control={<Radio />} label="Ostatnie 30 dni" />
-                        {isLoggedIn && (
+                        {isLoggedIn && isItMyStation && (
                             <>
                                 <FormControlLabel value="1y" control={<Radio />} label="Ostatni rok" />
                                 <FormControlLabel value="2y" control={<Radio />} label="Ostatnie 2 lata" />

@@ -102,7 +102,7 @@ const PressurePage: React.FC = () => {
             {/* Przyciski i nagłówek w górnym lewym rogu */}
             <Box sx={{ display: "flex", alignItems: "flex-start" }}>
                 <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-                <ChartSkeleton title="Ciśnienie" unit="hPa" data={pressureData} />
+                <ChartSkeleton title="Ciśnienie" unit="hPa" data={pressureData} property="pressure" />
             </Box>
         </Box>
     );

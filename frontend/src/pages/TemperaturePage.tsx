@@ -101,7 +101,7 @@ const TemperaturePage: React.FC = () => {
             {/* Przyciski i nagłówek w górnym lewym rogu */}
             <Box sx={{ display: "flex", alignItems: "flex-start" }}>
                 <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-                <ChartSkeleton title="Temperatura" unit="°C" data={temperatureData} />
+                <ChartSkeleton title="Temperatura" unit="°C" data={temperatureData} property="temperature" />
             </Box>
         </Box>
     );
