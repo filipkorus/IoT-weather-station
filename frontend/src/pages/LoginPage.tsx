@@ -10,6 +10,13 @@ const LoginPage: React.FC = () => {
 
     const handleLogin = () => {};
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (localStorage.getItem("token")) {
+            navigate("/account");
+        }
+    }, [navigate]);
+
     return (
         <>
             <Container maxWidth="xs">

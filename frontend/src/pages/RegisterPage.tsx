@@ -10,6 +10,13 @@ const RegisterPage: React.FC = () => {
 
     const handleRegister = async () => {};
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (localStorage.getItem("token")) {
+            navigate("/account");
+        }
+    }, [navigate]);
+
     return (
         <>
             <Container maxWidth="xs">
