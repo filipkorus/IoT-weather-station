@@ -42,7 +42,7 @@ const AccountPage: React.FC = () => {
                 }}
             >
                 <Banner message="❄️Witaj na swoim koncie❄️" />
-                <StationList headerText="Twoje stacje:" stations={stations} />
+                <StationList headerText="Twoje stacje:" stations={stations} showActions={true} />
             </Box>
 
             <Box

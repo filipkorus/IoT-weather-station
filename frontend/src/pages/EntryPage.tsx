@@ -56,7 +56,7 @@ const EntryPage: React.FC = () => {
                     maxHeight: { lg: "70vh", xs: "80vh" },
                 }}
             >
-                <StationList stations={stations} />
+                <StationList stations={stations}  showActions={false}/>
             </Box>
             <Box
                 sx={{
