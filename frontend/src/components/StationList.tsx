@@ -53,26 +53,29 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
         setOpenLocationDialog(true);
     };
 
-    const handleCloseNameDialog = () => {
-        setOpenNameDialog(false);
-        setStationName("");
-    };
-
-    const handleCloseLocationDialog = React.useCallback(() => {
+    const handleCloseDialogs = React.useCallback(() => {
         setOpenLocationDialog(false);
         setCoordinates({ long: null, lat: null });
+
+        setOpenNameDialog(false);
+        setStationName("");
     }, []);
 
     const { updateGatewayInfo, isUpdatingGatewayInfo } = useUpdateGatewayInfo(
         stationToEdit?.id ?? "",
-        handleCloseLocationDialog,
+        handleCloseDialogs,
     );
 
     const handleSaveName = () => {
         if (stationToEdit) {
-            console.log(`Zmieniono nazwę stacji ${stationToEdit.id} na: ${stationName}`);
+            updateGatewayInfo({
+                infoToUpdate: {
+                    ...(stationName && { name: stationName }),
+                },
+            });
+        } else {
+            showSnackbar("Nie ma id bramy!", "error");
         }
-        handleCloseNameDialog();
     };
 
     const handleSaveLocation = () => {
@@ -86,7 +89,6 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
         } else {
             showSnackbar("Nie ma id bramy!", "error");
         }
-        // handleCloseLocationDialog();
     };
 
     return (
@@ -149,7 +151,7 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
             {/* Dialog edycji nazwy stacji */}
             <Dialog
                 open={openNameDialog}
-                onClose={handleCloseNameDialog}
+                onClose={handleCloseDialogs}
                 aria-labelledby="edit-name-dialog-title"
                 sx={{
                     "& .MuiDialog-paper": {
@@ -186,7 +188,7 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                     />
                 </DialogContent>
                 <DialogActions sx={{ padding: "8px 24px" }}>
-                    <Button onClick={handleCloseNameDialog} color="primary">
+                    <Button onClick={handleCloseDialogs} color="primary">
                         Anuluj
                     </Button>
                     <Button onClick={handleSaveName} color="success" variant="contained" autoFocus>
@@ -198,7 +200,7 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
             {/* Dialog edycji lokalizacji */}
             <Dialog
                 open={openLocationDialog}
-                onClose={handleCloseLocationDialog}
+                onClose={handleCloseDialogs}
                 aria-labelledby="edit-location-dialog-title"
                 sx={{
                     "& .MuiDialog-paper": {
@@ -238,7 +240,7 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                     />
                 </DialogContent>
                 <DialogActions sx={{ padding: "8px 24px" }}>
-                    <Button onClick={handleCloseNameDialog} color="primary">
+                    <Button onClick={handleCloseDialogs} color="primary">
                         Anuluj
                     </Button>
                     <Button onClick={handleSaveName} color="success" variant="contained" autoFocus>
@@ -250,7 +252,7 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
             {/* Dialog edycji lokalizacji */}
             <Dialog
                 open={openLocationDialog}
-                onClose={handleCloseLocationDialog}
+                onClose={handleCloseDialogs}
                 aria-labelledby="edit-location-dialog-title"
                 sx={{
                     "& .MuiDialog-paper": {
@@ -301,7 +303,7 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                     />
                 </DialogContent>
                 <DialogActions sx={{ padding: "8px 24px" }}>
-                    <Button onClick={handleCloseLocationDialog} color="primary" disabled={isUpdatingGatewayInfo}>
+                    <Button onClick={handleCloseDialogs} color="primary" disabled={isUpdatingGatewayInfo}>
                         Anuluj
                     </Button>
                     <Button
