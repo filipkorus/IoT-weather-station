@@ -4,6 +4,19 @@ import generatePairingCode from '../../utils/generatePairingCode';
 
 const prisma = new PrismaClient();
 
+const getDate = () => {
+	const today = new Date();
+	today.setHours(today.getHours() + 1);
+
+	const todayMidnight = new Date(today);
+	todayMidnight.setHours(0, 0, 0, 0);
+
+	const tomorrowMidnight = new Date(today);
+	tomorrowMidnight.setHours(24, 0, 0, 0);
+
+	return {currentTime: today, todayMidnight, tomorrowMidnight};
+};
+
 /**
  * Creates gateway in the database.
  *
@@ -284,7 +297,8 @@ const saveGatewayLike = async ({gatewayId, likeData}: { gatewayId: string, likeD
 			data: {
 				gatewayId,
 				ipAddr: likeData.ipAddr,
-				userAgent: likeData.userAgent
+				userAgent: likeData.userAgent,
+				created: getDate().currentTime
 			}
 		});
 		return saved != null;
@@ -311,8 +325,8 @@ const removeGatewayLike = async ({gatewayId, userAgent, ipAddr}:
 				userAgent,
 				ipAddr,
 				created: { // ensure that the like was made today
-					gte: new Date(new Date().setHours(1, 0, 0, 0)),
-					lte: new Date(new Date().setHours(24, 59, 59, 999))
+					gte: getDate().todayMidnight,
+					lte: getDate().tomorrowMidnight
 				}
 			}
 		});
@@ -346,8 +360,8 @@ const getGatewayLikesByGatewayIdUserAgentAndRemoteIp = async (
 				userAgent,
 				ipAddr,
 				created: { // ensure that the like was made today
-					gte: new Date(new Date().setHours(1, 0, 0, 0)),
-					lte: new Date(new Date().setHours(24, 59, 59, 999))
+					gte: getDate().todayMidnight,
+					lte: getDate().tomorrowMidnight
 				}
 			}
 		});
@@ -364,12 +378,14 @@ const getGatewayLikesByGatewayIdUserAgentAndRemoteIp = async (
  * @param gatewayId ID of the gateway.
  */
 const countGatewayLikesByGatewayId = async (gatewayId: string) => {
+	const currentDate = new Date();
+	currentDate.setHours(new Date().getHours() + 1);
 	try {
 		return prisma.gatewayLike.count({where: {
 			gatewayId,
 			created: { // check if current day is the same as the day of the like
-				gte: new Date(new Date().setHours(1, 0, 0, 0)),
-				lte: new Date(new Date().setHours(24, 59, 59, 999))
+				gte: getDate().todayMidnight,
+				lte: getDate().tomorrowMidnight
 			}
 		}});
 	} catch (error) {
@@ -468,6 +484,7 @@ export {
 	createGatewayPairingCode,
 	getGatewayByPairingCode,
 	pairGatewayWithUserAccount,
+	deleteOldGatewayLikes,
 	saveGatewayLike,
 	removeGatewayLike,
 	getGatewayLikesByGatewayIdUserAgentAndRemoteIp,

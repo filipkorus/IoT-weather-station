@@ -1,12 +1,21 @@
 import { useGetPublicGatewayQuery } from "@/services/gateway";
 import { getLiveData } from "@/store/slices/liveDataSlice";
-import { useSelector } from "react-redux";
-import { useSendLike } from "./useSendLike";
+import { useDispatch, useSelector } from "react-redux";
+import { useSocket } from "./useSocket";
+import { getIdFromURL, setGatewayId } from "@/store/slices/sendLikeSlice";
 
 const useLikes = (id: string | undefined) => {
     const liveData = useSelector(getLiveData);
-    const { data, isFetching, refetch } = useGetPublicGatewayQuery({ gatewayId: id ?? "" });
-    const { func: likeAction, gid } = useSendLike(id ?? "", refetch, data?.gateway?.haveYouLiked ?? false);
+    const { isFetching } = useGetPublicGatewayQuery({ gatewayId: id ?? "" });
+
+    const idFromURL = useSelector(getIdFromURL);
+    const dispatch = useDispatch();
+
+    const { sendMessage } = useSocket();
+    const likeAction = () => {
+        dispatch(setGatewayId(idFromURL));
+        sendMessage(JSON.stringify({ type: haveYouLiked ? "dislike" : "likes", gatewayId: id ?? "" }));
+    };
 
     if (!id) {
         return { likes: undefined, disableButton: true, haveYouLiked: false, likeAction: () => {} };
@@ -15,7 +24,7 @@ const useLikes = (id: string | undefined) => {
     const likes = liveData?.[id]?.likes;
     const haveYouLiked = liveData?.[id]?.haveYouLiked;
 
-    return { likes, disableButton: isFetching || !!gid, haveYouLiked, likeAction };
+    return { likes, disableButton: isFetching, haveYouLiked, likeAction };
 };
 
 export default useLikes;

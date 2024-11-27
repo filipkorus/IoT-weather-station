@@ -3,16 +3,22 @@ import { Box, Button } from "@mui/material";
 import PairAStation from "@/components/PairAStation";
 import Banner from "@/components/Banner.tsx";
 import StationList from "@/components/StationList.tsx";
-import {useNavigate} from "react-router-dom";
+import useLogout from "@/hooks/auth/useLogout";
+import usePrivateStations from "@/hooks/usePrivateStations";
 
 const AccountPage: React.FC = () => {
+    const { isLoggingOut, logout } = useLogout();
+    const stations = usePrivateStations();
 
-    const navigate = useNavigate();
+    const handleLogout = () => {
+        logout();
+    };
+
     return (
         <Box
             sx={{
                 display: "flex",
-                flexDirection: { xs: "column", sm: "row", md:"column", lg:"row"},
+                flexDirection: { xs: "column", sm: "row", md: "column", lg: "row" },
                 justifyContent: "space-between",
                 padding: "2%",
                 backgroundColor: "#9bcce5",
@@ -24,7 +30,7 @@ const AccountPage: React.FC = () => {
             {/* Pierwszy kontener z listą stacji */}
             <Box
                 sx={{
-                    width: { xs: "90%", sm: "48%", md:"95%" },
+                    width: { xs: "90%", sm: "48%", md: "95%" },
                     backgroundColor: "#ffffff",
                     borderRadius: "8px",
                     padding: "16px",
@@ -33,12 +39,12 @@ const AccountPage: React.FC = () => {
                 }}
             >
                 <Banner message="❄️Witaj na swoim koncie❄️" />
-                <StationList headerText="Twoje stacje:" />
+                <StationList headerText="Twoje stacje:" stations={stations} />
             </Box>
 
             <Box
                 sx={{
-                    width: { xs: "90%", sm: "48%", md:"95%"  },
+                    width: { xs: "90%", sm: "48%", md: "95%" },
                     backgroundColor: "#ffffff",
                     borderRadius: "8px",
                     padding: "16px",
@@ -48,16 +54,15 @@ const AccountPage: React.FC = () => {
                     justifyContent: "space-between",
                     alignItems: "center",
                     gap: "16px",
-                    minHeight: {lg:"85vh", xs:"50vh"}
+                    minHeight: { lg: "85vh", xs: "50vh" },
                 }}
             >
-
                 <PairAStation />
-
 
                 <Button
                     variant="outlined"
-                    onClick={() => navigate(`/`)}
+                    onClick={handleLogout}
+                    disabled={isLoggingOut}
                     sx={{
                         width: "100%",
                         padding: "10px",

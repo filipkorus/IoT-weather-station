@@ -1,7 +1,8 @@
+import { useGetPublicGatewayQuery } from "@/services/gateway";
 import { likes, sensorsToClient } from "@/store/slices/liveDataSlice";
-import { setGatewayId } from "@/store/slices/sendLikeSlice";
+import { getIdFromURL, setGatewayId } from "@/store/slices/sendLikeSlice";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 // Define the type of the data you're receiving via the socket
 interface MessageData {
@@ -11,6 +12,8 @@ interface MessageData {
 
 const useHandleDataFromSocket = (socket: WebSocket | null) => {
     const dispatch = useDispatch();
+    const id = useSelector(getIdFromURL);
+    const { refetch } = useGetPublicGatewayQuery({ gatewayId: id });
 
     useEffect(() => {
         // Initialize the WebSocket connection with an authorization token as a query parameter
@@ -21,13 +24,17 @@ const useHandleDataFromSocket = (socket: WebSocket | null) => {
         // Define the onmessage event listener for receiving data
         socket.onmessage = (event) => {
             const data: MessageData = JSON.parse(event.data);
+            console.log("Received message:", data);
             if (data?.type === "sensors-to-client") {
                 dispatch(sensorsToClient(data));
             }
             if (data?.type === "likes") {
                 dispatch(likes(data));
                 // purpose of like sending
-                dispatch(setGatewayId(data.gatewayId));
+                if (data.gatewayId === id) {
+                    refetch();
+                    dispatch(setGatewayId(""));
+                }
             }
         };
 

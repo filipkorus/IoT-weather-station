@@ -1,4 +1,4 @@
-import {Node, NodeData, PrismaClient} from '@prisma/client';
+import { Node, NodeData, PrismaClient } from '@prisma/client';
 import logger from '../../utils/logger';
 
 const prisma = new PrismaClient();
@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
  * @param nodeId ID of the node.
  * @returns {Promise<Node|null>} Created node.
  */
-const createNode = async ({gatewayId, nodeId}: {gatewayId: string, nodeId: string}): Promise<Node | null> => {
+const createNode = async ({ gatewayId, nodeId }: { gatewayId: string, nodeId: string }): Promise<Node | null> => {
 	try {
 		return prisma.node.create({
 			data: {
@@ -32,21 +32,29 @@ type NodeDataToSave = Pick<NodeData, 'batteryLevel' | 'temperature' | 'humidity'
  * @param gatewayId ID of the gateway.
  * @param data Data to save.
  */
-const saveNodeData = async ({nodeId, gatewayId, data}: {nodeId: string, gatewayId: string, data: NodeDataToSave}) => {
+const saveNodeData = async ({ nodeId, gatewayId, data }: { nodeId: string, gatewayId: string, data: NodeDataToSave }) => {
 	const node = await getNodeById(nodeId);
+	if (node?.gatewayId !== gatewayId) {
+		return false;
+	}
+
 	if (node == null) {
-		await createNode({gatewayId, nodeId});
+		if (!(await createNode({ gatewayId, nodeId }))) {
+			return false;
+		}
 	}
 
 	try {
-		await prisma.nodeData.create({
+		const created = await prisma.nodeData.create({
 			data: {
 				nodeId,
 				...data
 			}
 		});
+		return created != null;
 	} catch (error) {
 		logger.error(error);
+		return false;
 	} finally {
 		await prisma.$disconnect();
 	}
@@ -59,7 +67,7 @@ const saveNodeData = async ({nodeId, gatewayId, data}: {nodeId: string, gatewayI
  */
 const getNodeById = async (nodeId: string): Promise<Node | null> => {
 	try {
-		return prisma.node.findUnique({where: {id: nodeId}});
+		return prisma.node.findUnique({ where: { id: nodeId } });
 	} catch (error) {
 		logger.error(error);
 		return null;
@@ -75,7 +83,7 @@ const getNodeById = async (nodeId: string): Promise<Node | null> => {
  */
 const getNodesByGatewayId = async (gatewayId: string): Promise<Node[] | null> => {
 	try {
-		return prisma.node.findMany({where: {gatewayId}});
+		return prisma.node.findMany({ where: { gatewayId } });
 	} catch (error) {
 		logger.error(error);
 		return null;

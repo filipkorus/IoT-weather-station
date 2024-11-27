@@ -3,7 +3,7 @@ import SnowboardingIcon from "@mui/icons-material/Snowboarding";
 import AcUnitIcon from "@mui/icons-material/AcUnit";
 import TerrainIcon from "@mui/icons-material/Terrain";
 
-const getIcon = (index: number) => {
+export const getIcon = (index: number) => {
     switch (index % 3) {
         case 0:
             return <SnowboardingIcon />;
@@ -16,7 +16,13 @@ const getIcon = (index: number) => {
     }
 };
 
-const usePublicStations = () => {
+export type DisplayStation = Array<{
+    name: string;
+    icon: JSX.Element;
+    id: string;
+}>;
+
+const usePublicStations = (): DisplayStation => {
     const { data, error, isLoading } = useGetAllPublicGatewaysQuery();
 
     if (isLoading) {

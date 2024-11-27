@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
-interface _CommonDataNoCreated {
+interface _CommonData {
     batteryLevel: number;
     temperature: number;
     humidity: number;
@@ -10,16 +10,12 @@ interface _CommonDataNoCreated {
     pm1: number;
     pm25: number;
     pm10: number;
-}
-
-interface _CommonData extends _CommonDataNoCreated {
     created: string;
 }
 
 interface SensorsToClient {
     gatewayId: string;
-    created: string;
-    data: _CommonDataNoCreated; // we want to keep length up to 5
+    sensorData: _CommonData; // we want to keep length up to 5
 }
 
 interface Likes {
@@ -61,7 +57,7 @@ const liveDataSlice = createSlice({
                 }
                 state[data.gatewayId].data = [];
             }
-            state[data.gatewayId].data.unshift({ ...data.data, created: data.created });
+            state[data.gatewayId].data.unshift({ ...data.sensorData });
         },
         likes: (state, action) => {
             const data = action.payload as Likes;
@@ -80,11 +76,22 @@ const liveDataSlice = createSlice({
             state[data.gatewayId].likes = data.likes;
             state[data.gatewayId].haveYouLiked = data.haveYouLiked;
         },
+        slopeDataFromREST: (state, action) => {
+            const data = action.payload as {
+                gateway: { id: string; likes: number; haveYouLiked: boolean; sensorData: Array<_CommonData> };
+            };
+
+            state[data.gateway.id] = {
+                likes: data.gateway.likes,
+                haveYouLiked: data.gateway.haveYouLiked,
+                data: data.gateway.sensorData,
+            };
+        },
     },
 });
 
 // Export the action for dispatching
-export const { sensorsToClient, likes, likesFromREST } = liveDataSlice.actions;
+export const { sensorsToClient, likes, likesFromREST, slopeDataFromREST } = liveDataSlice.actions;
 
 // Export the reducer to be added to the store
 export default liveDataSlice.reducer;

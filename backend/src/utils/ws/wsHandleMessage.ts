@@ -9,7 +9,7 @@ import {
 import {broadcast, broadcastToAllExceptSender} from './broadcast';
 import logger from '../logger';
 import WebBrowserClient from '../../types/WebBrowserClient';
-import {saveNodeData} from '../../routes/gateway/node.servcie';
+import {saveNodeData} from '../../routes/gateway/node.service';
 
 const _saveSensorData = async ({nodeId, gatewayId, message}: {nodeId: string, gatewayId: string, message: object}) => {
 	if (!('batteryLevel' in message && 'temperature' in message && 'humidity' in message && 'pressure' in message && 'snowDepth' in message && 'pm1' in message && 'pm25' in message && 'pm10' in message)) {
@@ -28,11 +28,15 @@ const _saveSensorData = async ({nodeId, gatewayId, message}: {nodeId: string, ga
 		pm10: message['pm10'] as number,
 	};
 
-	await saveNodeData({
+	const saved = await saveNodeData({
 		nodeId,
 		gatewayId,
 		data
 	});
+
+	if (!saved) {
+		return null;
+	}
 
 	return data;
 };
@@ -110,6 +114,10 @@ const wsHandleMessage = async (
 			gatewayId,
 			message: parsedMessage
 		});
+		if (sensorData == null) {
+			return;
+		}
+
 		broadcastToAllExceptSender({
 			wss: webSocketServer,
 			sender,
