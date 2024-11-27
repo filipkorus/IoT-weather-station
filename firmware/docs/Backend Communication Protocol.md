@@ -10,7 +10,7 @@ The gateway initialises the connection by sending the `Init Frame`. If the gatew
 
 The user enters the code on the website to pair it with his account. After the gateway restarts, it sends the `Init frame` again. The backend returns user data, and then the gateway starts the WS connection.
 
-The user can pair nodes with the gateway with the button located on the case. A node sends his ESP32 MAC number via LoRa to the gateway. The gateway saves this MAC to EEPROM as a trusted node.
+The user can pair nodes with the gateway with the button located on the case. A node sends his NID number via ESP-NOW to the gateway. The gateway saves this NID to EEPROM as a trusted node.
 
 The gateway sends a frame via WS containing sensor data and node serial number to the backend. The backend will create a node object if it does not exist, then log data from sensors.
 

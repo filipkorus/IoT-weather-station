@@ -86,7 +86,10 @@ void updateLCD()
   lcd.print("Likes: ");
   lcd.print(likes);
   lcd.setCursor(0, 1);
-  lcd.printf("Temp: %.1f*C", temp);
+  lcd.printf("%.1f", temp);
+  lcd.write(0xdf);
+  lcd.print('C ');
+  lcd.printf("%.1f%", hum);
 }
 void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
 {
