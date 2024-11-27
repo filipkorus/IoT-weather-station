@@ -84,56 +84,59 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
             </Typography>
 
             <List>
-                {stations.map((station, index) => (
-                    <Box
-                        key={index}
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            mb: 2,
-                            "&:hover": {
-                                backgroundColor: "#d8eaf6",
-                            },
-                            padding: "8px",
-                            borderRadius: "8px",
-                        }}
-                    >
+                {stations?.length ? (
+                    stations.map((station, index) => (
                         <Box
+                            key={index}
                             sx={{
                                 display: "flex",
                                 alignItems: "center",
-                                flexGrow: 1,
-                                cursor: "pointer",
+                                justifyContent: "space-between",
+                                mb: 2,
+                                "&:hover": {
+                                    backgroundColor: "#d8eaf6",
+                                },
+                                padding: "8px",
+                                borderRadius: "8px",
                             }}
-                            onClick={() => navigate(`/slopedata/${station.id}`)}
                         >
-                            <ListItemAvatar>
-                                <Avatar sx={{ bgcolor: "#1f4152" }}>{station.icon}</Avatar>
-                            </ListItemAvatar>
-                            <ListItemText primary={station.name} />
-                        </Box>
-
-                        {/* Ikony akcji */}
-                        {showActions && (
-                            <Box>
-                                <IconButton
-                                    aria-label="Edytuj"
-                                    onClick={() => handleEdit(station.id)}
-                                    sx={{ marginRight: 1 }}
-                                >
-                                    <EditIcon />
-                                </IconButton>
-                                <IconButton
-                                    aria-label="Lokalizacja"
-                                    onClick={() => handleOpenDialog(station.id)}
-                                >
-                                    <PlaceIcon />
-                                </IconButton>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    flexGrow: 1,
+                                    cursor: "pointer",
+                                }}
+                                onClick={() => navigate(`/slopedata/${station.id}`)}
+                            >
+                                <ListItemAvatar>
+                                    <Avatar sx={{ bgcolor: "#1f4152" }}>{station.icon}</Avatar>
+                                </ListItemAvatar>
+                                <ListItemText primary={station.name} />
                             </Box>
-                        )}
-                    </Box>
-                ))}
+
+                            {/* Action icons */}
+                            {showActions && (
+                                <Box>
+                                    <IconButton
+                                        aria-label="Edit"
+                                        onClick={() => handleEdit(station.id)}
+                                        sx={{ marginRight: 1 }}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
+                                    <IconButton aria-label="Location" onClick={() => handleOpenDialog(station.id)}>
+                                        <PlaceIcon />
+                                    </IconButton>
+                                </Box>
+                            )}
+                        </Box>
+                    ))
+                ) : (
+                    <Typography variant="h6" sx={{ mb: 2 }}>
+                        Brak stacji
+                    </Typography>
+                )}
             </List>
 
             {/* Dialog wprowadzania współrzędnych */}
@@ -185,12 +188,7 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                     <Button onClick={handleCloseDialog} color="primary">
                         Anuluj
                     </Button>
-                    <Button
-                        onClick={handleSaveCoordinates}
-                        color="success"
-                        variant="contained"
-                        autoFocus
-                    >
+                    <Button onClick={handleSaveCoordinates} color="success" variant="contained" autoFocus>
                         Zapisz
                     </Button>
                 </DialogActions>
