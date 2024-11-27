@@ -18,7 +18,7 @@ interface ChartSkeletonProps {
     property: string;
 }
 export type Intervals = "24h" | "7d" | "30d" | "1y" | "2y";
-const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data }) => {
+const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data, property }) => {
     const [timeRange, setTimeRange] = useState<Intervals>("24h");
     const handleTimeRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTimeRange(event.target.value as Intervals);
