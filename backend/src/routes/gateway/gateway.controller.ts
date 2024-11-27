@@ -1,5 +1,5 @@
 import {
-	BAD_REQUEST,
+	BAD_REQUEST, CONFLICT, CREATED,
 	FORBIDDEN,
 	MISSING_BODY_FIELDS,
 	NOT_FOUND,
@@ -19,10 +19,44 @@ import {
 	getPairedGateways,
 	updateGatewayName,
 	getGatewayLikesByGatewayIdUserAgentAndRemoteIp,
-	getLastNGatewaySensorDataRecords, updateGatewayLocation
+	getLastNGatewaySensorDataRecords, updateGatewayLocation, createGateway
 } from './gateway.service';
 import {getUserById} from '../user/user.service';
 import {remoteIpAndUserAgent} from '../../utils/ws/wsRemoteIpAndUserAgent';
+import generateApiKey from '../../utils/generateApiKey';
+
+export const CreateGatewayHandler = async (req: Request, res: Response) => {
+	const RequestSchema = z.object({
+		gatewayId: z.string().trim().length(11)
+	});
+
+	const validatedRequest = validateObject(RequestSchema, req.body);
+	if (validatedRequest.data == null) {
+		return MISSING_BODY_FIELDS(res, validatedRequest.errors);
+	}
+
+	const gatewayId = validatedRequest.data.gatewayId;
+
+	const existingGateway = await getGatewayById(gatewayId);
+	if (existingGateway != null) {
+		return CONFLICT(res, `Gateway with id=${gatewayId} already exists`, {gatewayId});
+	}
+
+	const gatewayApiKey = generateApiKey();
+	const gateway = await createGateway({
+		gatewayId,
+		apiKey: gatewayApiKey
+	})
+
+	if (gateway == null) {
+		return SERVER_ERROR(res, 'Server Error: Gateway could not be created');
+	}
+
+	return CREATED(res, 'Gateway created', {gateway: {
+		gatewayId: gateway.id,
+		apiKey: gateway.apiKey
+	}});
+};
 
 export const GetGatewayHandler = async (req: Request, res: Response) => {
 	const gatewayId = req.params.id;
