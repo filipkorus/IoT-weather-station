@@ -15,40 +15,62 @@ import {
     TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import PlaceIcon from "@mui/icons-material/Place"; // Ikonka lokalizacji
+import PlaceIcon from "@mui/icons-material/Place";
 import { useNavigate } from "react-router-dom";
 import { DisplayStation } from "@/hooks/usePublicStations";
 
 interface StationListProps {
-    headerText?: string; // Opcjonalny tekst nagłówka
+    headerText?: string;
     stations: DisplayStation;
-    showActions?: boolean; // Czy pokazywać ikony akcji
+    showActions?: boolean;
 }
 
 const StationList: React.FC<StationListProps> = ({ headerText, stations, showActions = false }) => {
     const navigate = useNavigate();
-    const [openDialog, setOpenDialog] = React.useState(false);
-    const [stationToEdit, setStationToEdit] = React.useState<string | null>(null);
-    const [coordinates, setCoordinates] = React.useState({ long: "", lat: "" });
+    const [openNameDialog, setOpenNameDialog] = React.useState(false);
+    const [openLocationDialog, setOpenLocationDialog] = React.useState(false);
+    const [stationToEdit, setStationToEdit] = React.useState<DisplayStation[number] | null>(null);
+    const [coordinates, setCoordinates] = React.useState<{ long: number | null, lat: number | null }>({ long: null, lat: null });
+    const [stationName, setStationName] = React.useState("");
 
-    const handleEdit = (stationId: string) => {
-        console.log("Edytuj stację:", stationId);
+    // Funkcja otwierająca dialog dla edycji nazwy stacji
+    const handleOpenNameDialog = (station: DisplayStation[number]) => {
+        setStationToEdit(station);
+        setStationName(station.name);
+        setOpenNameDialog(true);
     };
 
-    const handleOpenDialog = (stationId: string) => {
-        setStationToEdit(stationId);
-        setOpenDialog(true);
+    // Funkcja otwierająca dialog dla edycji lokalizacji
+    const handleOpenLocationDialog = (station: DisplayStation[number]) => {
+        setStationToEdit(station);
+        setCoordinates({ long: station.coords?.longitude, lat: station.coords?.latitude });
+        setOpenLocationDialog(true);
     };
 
-    const handleCloseDialog = () => {
-        setOpenDialog(false);
+    const handleCloseNameDialog = () => {
+        setOpenNameDialog(false);
         setStationToEdit(null);
-        setCoordinates({ long: "", lat: "" });
+        setStationName("");
     };
 
-    const handleSaveCoordinates = () => {
-        console.log(`Współrzędne dla stacji ${stationToEdit}:`, coordinates);
-        handleCloseDialog(); // Zamknij popup
+    const handleCloseLocationDialog = () => {
+        setOpenLocationDialog(false);
+        setStationToEdit(null);
+        setCoordinates({ long: null, lat: null });
+    };
+
+    const handleSaveName = () => {
+        if (stationToEdit) {
+            console.log(`Zmieniono nazwę stacji ${stationToEdit.id} na: ${stationName}`);
+        }
+        handleCloseNameDialog();
+    };
+
+    const handleSaveLocation = () => {
+        if (stationToEdit) {
+            console.log(`Zmieniono lokalizację stacji ${stationToEdit.id}:`, coordinates);
+        }
+        handleCloseLocationDialog();
     };
 
     return (
@@ -77,7 +99,6 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                 },
             }}
         >
-            {/* Dynamiczny nagłówek */}
             <Typography variant="h6" sx={{ mb: 2, padding: { xs: "3%" } }}>
                 {headerText ||
                     "Jesteś ciekaw warunków na swoim ulubionym stoku? Wybierz stację z listy, aby je poznać:"}
@@ -114,19 +135,18 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                             <ListItemText primary={station.name} />
                         </Box>
 
-                        {/* Ikony akcji */}
                         {showActions && (
                             <Box>
                                 <IconButton
-                                    aria-label="Edytuj"
-                                    onClick={() => handleEdit(station.id)}
+                                    aria-label="Edytuj nazwę"
+                                    onClick={() => handleOpenNameDialog(station)}
                                     sx={{ marginRight: 1 }}
                                 >
                                     <EditIcon />
                                 </IconButton>
                                 <IconButton
                                     aria-label="Lokalizacja"
-                                    onClick={() => handleOpenDialog(station.id)}
+                                    onClick={() => handleOpenLocationDialog(station)}
                                 >
                                     <PlaceIcon />
                                 </IconButton>
@@ -136,11 +156,11 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                 ))}
             </List>
 
-            {/* Dialog wprowadzania współrzędnych */}
+            {/* Dialog edycji nazwy stacji */}
             <Dialog
-                open={openDialog}
-                onClose={handleCloseDialog}
-                aria-labelledby="location-dialog-title"
+                open={openNameDialog}
+                onClose={handleCloseNameDialog}
+                aria-labelledby="edit-name-dialog-title"
                 sx={{
                     "& .MuiDialog-paper": {
                         borderRadius: "16px",
@@ -149,14 +169,14 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                 }}
             >
                 <DialogTitle
-                    id="location-dialog-title"
+                    id="edit-name-dialog-title"
                     sx={{
                         padding: "16px 24px",
                         fontSize: "1.25rem",
                         fontWeight: "bold",
                     }}
                 >
-                    Wprowadź współrzędne
+                    Edytuj nazwę stacji
                 </DialogTitle>
                 <DialogContent
                     sx={{
@@ -167,30 +187,79 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                     }}
                 >
                     <TextField
-                        label="Długość geograficzna (Long)"
-                        value={coordinates.long}
-                        onChange={(e) => setCoordinates({ ...coordinates, long: e.target.value })}
-                        fullWidth
-                        variant="outlined"
-                    />
-                    <TextField
-                        label="Szerokość geograficzna (Lat)"
-                        value={coordinates.lat}
-                        onChange={(e) => setCoordinates({ ...coordinates, lat: e.target.value })}
+                        label="Nazwa stacji"
+                        value={stationName}
+                        onChange={(e) => setStationName(e.target.value)}
                         fullWidth
                         variant="outlined"
                     />
                 </DialogContent>
                 <DialogActions sx={{ padding: "8px 24px" }}>
-                    <Button onClick={handleCloseDialog} color="primary">
+                    <Button onClick={handleCloseNameDialog} color="primary">
                         Anuluj
                     </Button>
-                    <Button
-                        onClick={handleSaveCoordinates}
-                        color="success"
-                        variant="contained"
-                        autoFocus
-                    >
+                    <Button onClick={handleSaveName} color="success" variant="contained" autoFocus>
+                        Zapisz
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Dialog edycji lokalizacji */}
+            <Dialog
+                open={openLocationDialog}
+                onClose={handleCloseLocationDialog}
+                aria-labelledby="edit-location-dialog-title"
+                sx={{
+                    "& .MuiDialog-paper": {
+                        borderRadius: "16px",
+                        padding: "16px",
+                    },
+                }}
+            >
+                <DialogTitle
+                    id="edit-location-dialog-title"
+                    sx={{
+                        padding: "16px 24px",
+                        fontSize: "1.25rem",
+                        fontWeight: "bold",
+                    }}
+                >
+                    Edytuj lokalizację
+                </DialogTitle>
+                <DialogContent
+                    sx={{
+                        padding: "16px 24px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "16px",
+                    }}
+                >
+                    <TextField
+                        type="number"
+                        label="Długość geograficzna"
+                        value={coordinates.long}
+                        onChange={(e) => {
+                            setCoordinates({ ...coordinates, long: parseFloat(e.target.value) })
+                        }}
+                        fullWidth
+                        variant="outlined"
+                    />
+                    <TextField
+                        type="number"
+                        label="Szerokość geograficzna"
+                        value={coordinates.lat}
+                        onChange={(e) => {
+                            setCoordinates({ ...coordinates, lat: parseFloat(e.target.value) })
+                        }}
+                        fullWidth
+                        variant="outlined"
+                    />
+                </DialogContent>
+                <DialogActions sx={{ padding: "8px 24px" }}>
+                    <Button onClick={handleCloseLocationDialog} color="primary">
+                        Anuluj
+                    </Button>
+                    <Button onClick={handleSaveLocation} color="success" variant="contained" autoFocus>
                         Zapisz
                     </Button>
                 </DialogActions>

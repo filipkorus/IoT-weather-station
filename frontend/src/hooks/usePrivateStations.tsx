@@ -17,6 +17,10 @@ const usePrivateStations = (): DisplayStation => {
         name: station.name,
         icon: getIcon(index),
         id: station.id,
+        coords: {
+            latitude: station.latitude,
+            longitude: station.longitude,
+        }
     }));
 };
 
