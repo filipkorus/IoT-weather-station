@@ -12,7 +12,11 @@ import authenticate from './middlewares/authenticate';
 import authenticateGateway from './middlewares/authenticateGateway';
 import wsAuthenticate from './utils/ws/wsAuthenticate';
 import {onSocketPostError, onSocketPreError} from './utils/ws/wsOnError';
-import {setGatewayIsOnline} from './routes/gateway/gateway.service';
+import {
+	countGatewayLikesByGatewayId,
+	deleteOldGatewayLikes,
+	setGatewayIsOnline
+} from './routes/gateway/gateway.service';
 import wsHandleMessage from './utils/ws/wsHandleMessage';
 import wsRemoteIpAndUserAgent from './utils/ws/wsRemoteIpAndUserAgent';
 import {Gateway, Node} from '@prisma/client';
@@ -47,6 +51,8 @@ const isClientGateway = (client: Gateway | WebBrowserClient): client is Gateway 
 const isClientWebBrowser = (client: Gateway | WebBrowserClient): client is WebBrowserClient => 'userAgent' in client;
 
 wss.on('connection', async (ws: WebSocket, request: http.IncomingMessage, client: Gateway | WebBrowserClient) => {
+	await deleteOldGatewayLikes();
+
 	let isClientAlive = true;
 	if (isClientWebBrowser(client)) { // check if client is a WebBrowserClient and overwrite its properties
 		const {ipAddr, userAgent} = wsRemoteIpAndUserAgent(ws, request);
@@ -57,6 +63,12 @@ wss.on('connection', async (ws: WebSocket, request: http.IncomingMessage, client
 	if (isClientGateway(client)) { // check if client is a Gateway
 		ws.on('pong', async () => { isClientAlive = true; });
 		logger.info(`Gateway (id=${client.id}) connected`);
+
+		ws.send(JSON.stringify({
+			type: 'likes',
+			likes: await countGatewayLikesByGatewayId(client.id),
+			gatewayId: client.id
+		}));
 	}
 
 	// Ping clients to check connectivity
