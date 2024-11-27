@@ -20,6 +20,10 @@ export type DisplayStation = Array<{
     name: string;
     icon: JSX.Element;
     id: string;
+    coords: {
+        latitude: number | null;
+        longitude: number | null;
+    }
 }>;
 
 const usePublicStations = (): DisplayStation => {
@@ -44,6 +48,10 @@ const usePublicStations = (): DisplayStation => {
         name: station.name,
         icon: getIcon(index),
         id: station.id,
+        coords: {
+            latitude: station.latitude,
+            longitude: station.longitude,
+        }
     }));
 };
 

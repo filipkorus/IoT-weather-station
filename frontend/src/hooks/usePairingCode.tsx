@@ -2,7 +2,6 @@ import { usePairingCodeMutation } from "@/services/privateArea";
 import { useSnackbar } from "./useSnackbar";
 import { useEffect } from "react";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { gatewayApi } from "@/services/gateway";
 import { useDispatch } from "react-redux";
 
 interface Props {
