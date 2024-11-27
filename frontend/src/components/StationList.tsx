@@ -156,28 +156,16 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                 sx={{
                     "& .MuiDialog-paper": {
                         borderRadius: "16px",
-                        padding: "16px",
+                        padding: "24px",
+                        width: "600px",
+                        maxWidth: "90vw",
                     },
                 }}
             >
-                <DialogTitle
-                    id="edit-name-dialog-title"
-                    sx={{
-                        padding: "16px 24px",
-                        fontSize: "1.25rem",
-                        fontWeight: "bold",
-                    }}
-                >
+                <DialogTitle id="edit-name-dialog-title" sx={{ fontSize: "1.5rem", fontWeight: "bold" }}>
                     Edytuj nazwę stacji
                 </DialogTitle>
-                <DialogContent
-                    sx={{
-                        padding: "16px 24px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "16px",
-                    }}
-                >
+                <DialogContent sx={{ display: "flex", flexDirection: "column", gap: "16px",}}>
                     <TextField
                         label="Nazwa stacji"
                         value={stationName}
@@ -185,13 +173,14 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                         fullWidth
                         variant="outlined"
                         disabled={isUpdatingGatewayInfo}
+                        sx={{marginTop:"2%"}}
                     />
                 </DialogContent>
-                <DialogActions sx={{ padding: "8px 24px" }}>
+                <DialogActions>
                     <Button onClick={handleCloseDialogs} color="primary">
                         Anuluj
                     </Button>
-                    <Button onClick={handleSaveName} color="success" variant="contained" autoFocus>
+                    <Button onClick={handleSaveName} color="success" variant="contained">
                         Zapisz
                     </Button>
                 </DialogActions>
@@ -205,105 +194,39 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                 sx={{
                     "& .MuiDialog-paper": {
                         borderRadius: "16px",
-                        padding: "16px",
+                        padding: "24px",
+                        width: "600px",
+                        maxWidth: "90vw",
                     },
                 }}
             >
-                <DialogTitle
-                    id="edit-location-dialog-title"
-                    sx={{
-                        padding: "16px 24px",
-                        fontSize: "1.25rem",
-                        fontWeight: "bold",
-                    }}
-                >
+                <DialogTitle id="edit-location-dialog-title" sx={{ fontSize: "1.5rem", fontWeight: "bold" }}>
                     Edytuj lokalizację
                 </DialogTitle>
-                <DialogContent
-                    sx={{
-                        padding: "16px 24px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "16px",
-                    }}
-                >
+                <DialogContent sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                     <TextField
+                        sx={{marginTop:"2%"}}
                         type="number"
                         label="Długość geograficzna"
                         value={coordinates.long ?? ""}
-                        onChange={(e) => {
-                            setCoordinates({ ...coordinates, long: parseFloat(e.target.value) });
-                        }}
-                        fullWidth
-                        variant="outlined"
-                        disabled={isUpdatingGatewayInfo}
-                    />
-                </DialogContent>
-                <DialogActions sx={{ padding: "8px 24px" }}>
-                    <Button onClick={handleCloseDialogs} color="primary">
-                        Anuluj
-                    </Button>
-                    <Button onClick={handleSaveName} color="success" variant="contained" autoFocus>
-                        Zapisz
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Dialog edycji lokalizacji */}
-            <Dialog
-                open={openLocationDialog}
-                onClose={handleCloseDialogs}
-                aria-labelledby="edit-location-dialog-title"
-                sx={{
-                    "& .MuiDialog-paper": {
-                        borderRadius: "16px",
-                        padding: "16px",
-                    },
-                }}
-            >
-                <DialogTitle
-                    id="edit-location-dialog-title"
-                    sx={{
-                        padding: "16px 24px",
-                        fontSize: "1.25rem",
-                        fontWeight: "bold",
-                    }}
-                >
-                    Edytuj lokalizację
-                </DialogTitle>
-                <DialogContent
-                    sx={{
-                        padding: "16px 24px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "16px",
-                    }}
-                >
-                    <TextField
-                        type="number"
-                        label="Długość geograficzna"
-                        value={coordinates.long ?? ""}
-                        onChange={(e) => {
-                            setCoordinates({ ...coordinates, long: parseFloat(e.target.value) });
-                        }}
+                        onChange={(e) => setCoordinates({ ...coordinates, long: parseFloat(e.target.value) })}
                         fullWidth
                         variant="outlined"
                         disabled={isUpdatingGatewayInfo}
                     />
                     <TextField
+                        sx={{marginTop:"2%"}}
                         type="number"
                         label="Szerokość geograficzna"
                         value={coordinates.lat ?? ""}
-                        onChange={(e) => {
-                            setCoordinates({ ...coordinates, lat: parseFloat(e.target.value) });
-                        }}
+                        onChange={(e) => setCoordinates({ ...coordinates, lat: parseFloat(e.target.value) })}
                         fullWidth
                         variant="outlined"
                         disabled={isUpdatingGatewayInfo}
                     />
                 </DialogContent>
-                <DialogActions sx={{ padding: "8px 24px" }}>
-                    <Button onClick={handleCloseDialogs} color="primary" disabled={isUpdatingGatewayInfo}>
+                <DialogActions>
+                    <Button onClick={handleCloseDialogs} color="primary">
                         Anuluj
                     </Button>
                     <Button

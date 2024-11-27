@@ -3,7 +3,6 @@ import { Typography } from '@mui/material';
 import {useNavigate} from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
 import ChartSkeleton from "@/components/ChartSkeleton.tsx";
-import { Box } from "@mui/material";
 const snowData = {
     "24h": [
         { created: new Date(Date.now() - 0 * 60 * 60 * 1000), value: 0 }, // "0h" → now

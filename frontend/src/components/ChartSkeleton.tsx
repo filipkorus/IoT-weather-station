@@ -64,6 +64,10 @@ const PressureChart: React.FC = () => {
     // Wybór danych na podstawie wybranego zakresu
     const selectedData = data[timeRange]; // Teraz TypeScript wie, że timeRange jest jednym z kluczy data
 
+    // Sprawdzamy, czy ekran jest mały (xs, sm, md)
+    const isSmallScreen = useMediaQuery("(max-width: 700px)");
+    const isMediumScreen = useMediaQuery("(max-width: 1024px)");
+
     return (
         <Box sx={{ padding: 3 }}>
             <Typography variant="h4" gutterBottom>
