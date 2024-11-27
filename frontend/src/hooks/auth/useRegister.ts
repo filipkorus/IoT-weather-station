@@ -4,6 +4,10 @@ import { useEffect } from "react";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useNavigate } from "react-router-dom";
 
+type CustomErrorData = {
+    errors?: { message?: string }[];
+};
+
 const useRegister = () => {
     const [register, { isLoading: isRegistering, isSuccess, isError, error }] = useRegisterMutation();
     const showSnackbar = useSnackbar();
@@ -17,11 +21,11 @@ const useRegister = () => {
 
         if (isError) {
             if ((error as FetchBaseQueryError)?.status) {
-                const { status } = error as FetchBaseQueryError;
+                const { status, data } = error as FetchBaseQueryError & { data: CustomErrorData };
                 switch (status) {
                     case 400:
                         showSnackbar(
-                            `Podano nieprawidłowe dane! ${error?.data?.errors?.[0]?.message ? error?.data?.errors?.[0]?.message : ""}`,
+                            `Podano nieprawidłowe dane! ${data?.errors?.[0]?.message ? data?.errors?.[0]?.message : ""}`,
                             "error",
                             10000,
                         );
