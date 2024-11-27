@@ -484,6 +484,7 @@ export {
 	createGatewayPairingCode,
 	getGatewayByPairingCode,
 	pairGatewayWithUserAccount,
+	deleteOldGatewayLikes,
 	saveGatewayLike,
 	removeGatewayLike,
 	getGatewayLikesByGatewayIdUserAgentAndRemoteIp,
