@@ -3,10 +3,12 @@ import { likes, sensorsToClient } from "@/store/slices/liveDataSlice";
 import { getIdFromURL, setGatewayId } from "@/store/slices/sendLikeSlice";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSnackbar } from "./useSnackbar";
 
 // Define the type of the data you're receiving via the socket
 interface MessageData {
     type: string;
+    message?: string;
     gatewayId: string;
 }
 
@@ -14,6 +16,7 @@ const useHandleDataFromSocket = (socket: WebSocket | null) => {
     const dispatch = useDispatch();
     const id = useSelector(getIdFromURL);
     const { refetch } = useGetPublicGatewayQuery({ gatewayId: id });
+    const showSnackbar = useSnackbar();
 
     useEffect(() => {
         // Initialize the WebSocket connection with an authorization token as a query parameter
@@ -35,6 +38,10 @@ const useHandleDataFromSocket = (socket: WebSocket | null) => {
                     refetch();
                     dispatch(setGatewayId(""));
                 }
+            } else if (data?.type === "likes-error-response") {
+                showSnackbar(data?.message ?? "Server error, please refresh the page", "error", 5000);
+            } else if (data?.type === "dislike-error-response") {
+                showSnackbar(data?.message ?? "Server error, please refresh the page", "error", 5000);
             }
         };
 
@@ -42,7 +49,7 @@ const useHandleDataFromSocket = (socket: WebSocket | null) => {
         return () => {
             socket.close();
         };
-    }, [socket, dispatch]);
+    }, [socket, dispatch, id, refetch, showSnackbar]);
 };
 
 export default useHandleDataFromSocket;
