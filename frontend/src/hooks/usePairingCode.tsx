@@ -17,8 +17,8 @@ const usePairingCode = ({ successCallback }: Props = { successCallback: () => {}
 
     useEffect(() => {
         if (isSuccess) {
-            // reload private stations after pairing
-            dispatch(gatewayApi.util.invalidateTags([{ type: "Gateway", id: "PRIVATE_LIST" }]));
+            // // reload private stations after pairing
+            // dispatch(gatewayApi.util.invalidateTags([{ type: "Gateway", id: "PRIVATE_LIST" }]));
 
             showSnackbar("", "success");
             showSnackbar("Sparowano pomyślnie!", "success");
@@ -45,7 +45,7 @@ const usePairingCode = ({ successCallback }: Props = { successCallback: () => {}
                 showSnackbar("Błąd serwera", "error");
             }
         }
-    }, [isSuccess, isError, showSnackbar, error, successCallback]);
+    }, [isSuccess, isError, showSnackbar, error, successCallback, dispatch]);
 
     return {
         isPairing,
