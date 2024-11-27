@@ -11,6 +11,7 @@ const useLogout = () => {
     useEffect(() => {
         if (isSuccess) {
             showSnackbar("Poprawnie wylogowano!", "success");
+            localStorage.removeItem("token");
             navigate(`/`);
         }
 
