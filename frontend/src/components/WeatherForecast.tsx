@@ -116,7 +116,7 @@ const WeatherForecast: React.FC = () => {
                 elevation={3}
                 sx={{
                     boxShadow: 5,
-                    padding: "20px",
+                    padding: "14.5px",
                     height: "80%",
                     display: "flex",
                     alignItems: "center",
