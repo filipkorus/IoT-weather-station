@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { TextField, Button, Box, Typography } from "@mui/material";
 import usePairingCode from "@/hooks/usePairingCode";
 
@@ -10,10 +10,10 @@ const PairAStation: React.FC = () => {
         setShowForm(true);
     };
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         setShowForm(false);
         setCode("");
-    };
+    }, []);
 
     const { isPairing, pairing } = usePairingCode({ successCallback: handleClose });
     const handleSubmit = () => {
