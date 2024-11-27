@@ -40,7 +40,7 @@ const LoginRegisterButton: React.FC<LoginRegisterButtonProps> = ({
             onClick={onClick}
         >
             <Box>
-                <Typography variant="body2" sx={{ fontSize: { xs: "0.8rem", sm: "1rem", md: "1rem" } }}>
+                <Typography variant="body2" sx={{ fontSize: { xs: "0.8rem", sm: "0.8rem", md: "1rem" } }}>
                     {title}
                 </Typography>
             </Box>
