@@ -3,9 +3,12 @@ import { Box, Typography } from "@mui/material";
 import StationList from "@/components/StationList.tsx";
 import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
 import { useNavigate } from "react-router-dom";
+import usePublicStations from "@/hooks/usePublicStations";
 
 const EntryPage: React.FC = () => {
     const navigate = useNavigate();
+    const stations = usePublicStations();
+
     return (
         <Box
             sx={{
@@ -53,7 +56,7 @@ const EntryPage: React.FC = () => {
                     maxHeight: { lg: "70vh", xs: "80vh" },
                 }}
             >
-                <StationList />
+                <StationList stations={stations} />
             </Box>
             <Box
                 sx={{
