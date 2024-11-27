@@ -12,38 +12,42 @@ import {
     DialogActions,
     DialogContent,
     Button,
+    TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import PlaceIcon from "@mui/icons-material/Place"; // Ikonka lokalizacji
 import { useNavigate } from "react-router-dom";
 import { DisplayStation } from "@/hooks/usePublicStations";
 
 interface StationListProps {
     headerText?: string; // Opcjonalny tekst nagłówka
     stations: DisplayStation;
+    showActions?: boolean; // Czy pokazywać ikony akcji
 }
 
-const StationList: React.FC<StationListProps> = ({ headerText, stations }) => {
+const StationList: React.FC<StationListProps> = ({ headerText, stations, showActions = false }) => {
     const navigate = useNavigate();
     const [openDialog, setOpenDialog] = React.useState(false);
-    const [stationToDelete, setStationToDelete] = React.useState<string | null>(null);
+    const [stationToEdit, setStationToEdit] = React.useState<string | null>(null);
+    const [coordinates, setCoordinates] = React.useState({ long: "", lat: "" });
 
     const handleEdit = (stationId: string) => {
         console.log("Edytuj stację:", stationId);
     };
 
     const handleOpenDialog = (stationId: string) => {
-        setStationToDelete(stationId);
+        setStationToEdit(stationId);
         setOpenDialog(true);
     };
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
-        setStationToDelete(null);
+        setStationToEdit(null);
+        setCoordinates({ long: "", lat: "" });
     };
 
-    const handleDeleteStation = () => {
-        console.log("Stacja usunięta:", stationToDelete);
+    const handleSaveCoordinates = () => {
+        console.log(`Współrzędne dla stacji ${stationToEdit}:`, coordinates);
         handleCloseDialog(); // Zamknij popup
     };
 
@@ -105,12 +109,11 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations }) => {
                 )}
             </List>
 
-            {/* Dialog potwierdzający usunięcie */}
+            {/* Dialog wprowadzania współrzędnych */}
             <Dialog
                 open={openDialog}
                 onClose={handleCloseDialog}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
+                aria-labelledby="location-dialog-title"
                 sx={{
                     "& .MuiDialog-paper": {
                         borderRadius: "16px",
@@ -119,31 +122,49 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations }) => {
                 }}
             >
                 <DialogTitle
-                    id="alert-dialog-title"
+                    id="location-dialog-title"
                     sx={{
                         padding: "16px 24px",
                         fontSize: "1.25rem",
                         fontWeight: "bold",
                     }}
                 >
-                    Potwierdź usunięcie
+                    Wprowadź współrzędne
                 </DialogTitle>
-                <DialogContent sx={{ padding: "16px 24px" }}>
-                    <Typography variant="body1">
-                        Czy na pewno chcesz trwale usunąć tę stację?
-                    </Typography>
+                <DialogContent
+                    sx={{
+                        padding: "16px 24px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "16px",
+                    }}
+                >
+                    <TextField
+                        label="Długość geograficzna (Long)"
+                        value={coordinates.long}
+                        onChange={(e) => setCoordinates({ ...coordinates, long: e.target.value })}
+                        fullWidth
+                        variant="outlined"
+                    />
+                    <TextField
+                        label="Szerokość geograficzna (Lat)"
+                        value={coordinates.lat}
+                        onChange={(e) => setCoordinates({ ...coordinates, lat: e.target.value })}
+                        fullWidth
+                        variant="outlined"
+                    />
                 </DialogContent>
                 <DialogActions sx={{ padding: "8px 24px" }}>
                     <Button onClick={handleCloseDialog} color="primary">
                         Anuluj
                     </Button>
                     <Button
-                        onClick={handleDeleteStation}
-                        color="error"
+                        onClick={handleSaveCoordinates}
+                        color="success"
                         variant="contained"
                         autoFocus
                     >
-                        Usuń
+                        Zapisz
                     </Button>
                 </DialogActions>
             </Dialog>
