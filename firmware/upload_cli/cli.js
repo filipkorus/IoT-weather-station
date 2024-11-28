@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { select, confirm, password } from "@inquirer/prompts";
+import { select, confirm, password, input } from "@inquirer/prompts";
 import child_process from "child_process";
 import "dotenv/config";
 import fs from "fs";
@@ -135,7 +135,12 @@ function formatToHex(num) {
 }
 
 async function runCLI() {
-  if (!getSavedApiKey()) {
+  const automatic = await confirm({
+    message: "Use automatic flow?",
+    default: true,
+  });
+
+  if (!getSavedApiKey() && automatic) {
     const answer = await password({
       message: "Api key not found, enter one: ",
     });
@@ -168,7 +173,6 @@ async function runCLI() {
     ],
   });
 
-  const number = readNumberFromFile(type);
   let firmwarePath = "";
   switch (type) {
     case "wifi":
@@ -184,25 +188,38 @@ async function runCLI() {
 
   runArguments.push(`-d ${firmwarePath}`);
 
-  const UID =
-    type === "now"
-      ? "gatewaynow"
-      : `${type === "wifi" ? "G" : "N"}${getCurrentDate()}${formatToHex(
-          number
-        )}`;
-
-  if (type !== "now") console.log(`Generated UID: ${UID}`);
-
+  let UID = "";
   let AUTH_TOKEN = "";
 
-  if (type === "wifi") {
-    AUTH_TOKEN = await sendPostRequest(
-      "https://iot.fkor.us/api/gateway",
-      { gatewayId: UID },
-      savedApiKey
-    );
+  if (automatic) {
+    const number = readNumberFromFile(type);
+    UID =
+      type === "now"
+        ? "gatewaynow"
+        : `${type === "wifi" ? "G" : "N"}${getCurrentDate()}${formatToHex(
+            number
+          )}`;
 
-    console.log(`Generated Token: ${AUTH_TOKEN}`);
+    if (type !== "now") console.log(`Generated UID: ${UID}`);
+
+    if (type === "wifi" && automatic) {
+      AUTH_TOKEN = await sendPostRequest(
+        "https://iot.fkor.us/api/gateway",
+        { gatewayId: UID },
+        savedApiKey
+      );
+
+      console.log(`Generated Token: ${AUTH_TOKEN}`);
+    }
+  } else {
+    UID = await input({
+      message: "Enter UID (only for 'gateway wifi'/'node')",
+    });
+    AUTH_TOKEN = await input({
+      message: "Enter AUTH TOKEN (only for 'gateway wifi')",
+    });
+    console.log(`UID: ${UID}`);
+    console.log(`Token: ${AUTH_TOKEN}`);
   }
 
   const upload = await confirm({ message: "Upload to ESP?", default: false });
