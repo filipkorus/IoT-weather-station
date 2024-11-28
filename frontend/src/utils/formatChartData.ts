@@ -9,7 +9,7 @@ const formatChartData = <DataType extends { created: Date }>(data: DataType[], t
         } else if (timeRange === "7d") {
             toLocaleStringParams = { weekday: "long" };
         } else if (timeRange === "30d") {
-            toLocaleStringParams = { day: "numeric" };
+            toLocaleStringParams = { day: "numeric", month: "long" };
         } else if (timeRange === "1y") {
             toLocaleStringParams = { month: "long" };
         } else if (timeRange === "2y") {
