@@ -5,9 +5,10 @@ interface LoginRegisterButtonProps {
     title: string;
     onClick: () => void;
     sx?: SxProps;
-    variant?: "contained" | "outlined";
+    variant?: "contained" | "outlined" | "mainPage";
     disabled?: boolean;
 }
+
 const LoginRegisterButton: React.FC<LoginRegisterButtonProps> = ({
     title,
     onClick,
@@ -17,24 +18,31 @@ const LoginRegisterButton: React.FC<LoginRegisterButtonProps> = ({
 }) => {
     return (
         <Button
-            // variant="contained"
-            variant={variant}
+            variant={variant === "mainPage" ? "contained" : variant} // use "contained" as the base for "mainPage"
             fullWidth
             disabled={disabled}
             sx={{
-                boxShadow: 5,
+                boxShadow: variant === "mainPage" ? 0 : 5, // no shadow for "mainPage"
                 textAlign: "center",
-                padding: "8px 12px",
-                // height: {xs: '40px', md:'50px'},
-                // width: {xs: '350px', md:'400px'},
-                color: variant === "contained" ? "white" : "#0d598f",
+                padding: variant === "mainPage" ? "16px 20px" : "8px 12px", // larger padding for "mainPage"
+                color: variant === "contained" || variant === "mainPage" ? "white" : "#0d598f",
                 marginTop: "1%",
                 marginBottom: "1%",
                 borderColor: variant === "contained" ? "white" : "#0d598f",
-                backgroundColor: variant === "contained" ? "#9bcce5" : "transparent",
+                backgroundColor:
+                    variant === "mainPage"
+                        ? "#0d598f" // custom background color for "mainPage"
+                        : variant === "contained"
+                          ? "#9bcce5"
+                          : "transparent",
                 ...sx,
                 "&:hover": {
-                    backgroundColor: variant === "contained" ? "#1f4152" : "#9bcce5", // Zmiana koloru po najechaniu
+                    backgroundColor:
+                        variant === "mainPage"
+                            ? "#063c62" // custom hover color for "mainPage"
+                            : variant === "contained"
+                              ? "#1f4152"
+                              : "#9bcce5",
                 },
             }}
             onClick={onClick}

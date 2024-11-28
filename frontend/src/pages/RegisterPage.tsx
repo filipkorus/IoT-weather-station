@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
 import { useNavigate } from "react-router-dom";
 import useRegister from "@/hooks/auth/useRegister";
+import { removeAccessTokenIfObsolete } from "@/utils/removeAccessTokenIfObsolete";
 
 const RegisterPage: React.FC = () => {
     const { register, isRegistering } = useRegister();
@@ -19,6 +20,11 @@ const RegisterPage: React.FC = () => {
             navigate("/account");
         }
     }, [navigate]);
+
+    const goToMainPageAction = () => {
+        removeAccessTokenIfObsolete();
+        navigate("/");
+    };
 
     return (
         <>
@@ -96,6 +102,13 @@ const RegisterPage: React.FC = () => {
                                 onClick={() => navigate("/login")}
                                 sx={{ height: { xs: "40px", md: "50px" } }}
                                 variant="outlined"
+                            ></LoginRegisterButton>
+
+                            <LoginRegisterButton
+                                title="Strona główna"
+                                onClick={goToMainPageAction}
+                                sx={{ height: { xs: "40px", md: "50px" } }}
+                                variant="mainPage"
                             ></LoginRegisterButton>
                         </Grid>
                     </Box>
