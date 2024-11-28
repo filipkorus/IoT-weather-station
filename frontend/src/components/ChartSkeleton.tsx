@@ -6,19 +6,18 @@ import { useParams } from "react-router-dom";
 import { useIsItMyStation } from "@/hooks/useIsItMyStation";
 
 // Określamy typy dla danych
-interface DataEntry {
+export interface DataEntry {
     created: Date;
-    value: number;
+    value: number | null;
 }
 
 interface ChartSkeletonProps {
     title: string;
     unit: string;
     data: { [key: string]: DataEntry[] }; // Zmieniamy na bardziej precyzyjny typ
-    property: string;
 }
 export type Intervals = "24h" | "7d" | "30d" | "1y" | "2y";
-const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data, property }) => {
+const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data }) => {
     const [timeRange, setTimeRange] = useState<Intervals>("24h");
     const handleTimeRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTimeRange(event.target.value as Intervals);

@@ -2,7 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./baseQueryWithReauth";
 import { likesFromREST, slopeDataFromREST } from "@/store/slices/liveDataSlice";
 
-interface Gateway {
+export interface Gateway {
     id: string;
     name: string;
     latitude: number;

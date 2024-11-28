@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
 import ChartSkeleton from "@/components/ChartSkeleton.tsx";
 import { Box } from "@mui/material";
+import useGatewayMeasurements from "@/hooks/useGatewayMeasurements";
+import { normalizeData } from "@/utils/normalizeData";
 const snowData = {
     "24h": [
         { created: new Date(Date.now() - 0 * 60 * 60 * 1000), value: 0 }, // "0h" → now
@@ -96,12 +98,17 @@ const snowData = {
 const SnowPage: React.FC = () => {
     const id = useParams().id;
     const navigate = useNavigate();
+    const { data } = useGatewayMeasurements(id ?? "");
     return (
         <Box sx={{ padding: 3 }}>
             {/* Przyciski i nagłówek w górnym lewym rogu */}
             <Box sx={{ display: "flex", alignItems: "flex-start" }}>
                 <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-                <ChartSkeleton title="Poziom śniegu" unit="m" data={snowData} property="snowDepth" />
+                <ChartSkeleton
+                    title="Poziom śniegu"
+                    unit="m"
+                    data={normalizeData(data?.measurements ?? [], "snowDepth")}
+                />
             </Box>
         </Box>
     );

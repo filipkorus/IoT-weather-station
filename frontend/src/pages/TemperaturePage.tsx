@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
 import { Box } from "@mui/material";
 import ChartSkeleton from "@/components/ChartSkeleton.tsx";
+import { normalizeData } from "@/utils/normalizeData";
+import useGatewayMeasurements from "@/hooks/useGatewayMeasurements";
 const temperatureData = {
     "24h": [
         { created: new Date(Date.now() - 0 * 60 * 60 * 1000), value: 0 }, // "0h" → now
@@ -96,12 +98,17 @@ const temperatureData = {
 const TemperaturePage: React.FC = () => {
     const id = useParams().id;
     const navigate = useNavigate();
+    const { data } = useGatewayMeasurements(id ?? "");
     return (
         <Box sx={{ padding: 3 }}>
             {/* Przyciski i nagłówek w górnym lewym rogu */}
             <Box sx={{ display: "flex", alignItems: "flex-start" }}>
                 <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-                <ChartSkeleton title="Temperatura" unit="°C" data={temperatureData} property="temperature" />
+                <ChartSkeleton
+                    title="Temperatura"
+                    unit="°C"
+                    data={normalizeData(data?.measurements ?? [], "temperature")}
+                />
             </Box>
         </Box>
     );

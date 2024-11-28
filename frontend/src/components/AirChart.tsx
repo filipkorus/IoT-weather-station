@@ -6,11 +6,11 @@ import formatChartData from "@/utils/formatChartData.ts";
 import { useParams } from "react-router-dom";
 import { useIsItMyStation } from "@/hooks/useIsItMyStation";
 
-interface DataEntry {
+export interface DataEntry {
     created: Date;
-    pm1: number;
-    pm2_5: number;
-    pm10: number;
+    pm1: number | null;
+    pm2_5: number | null;
+    pm10: number | null;
 }
 
 interface AirChartProps {
