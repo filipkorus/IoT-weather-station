@@ -26,32 +26,36 @@ export const baseQueryWithReauth: BaseQueryFn<BaseQueryWithReauthArgs, unknown, 
     api,
     extraOptions,
 ) => {
-    let result = await baseQuery(args, api, extraOptions);
+    // decode the JWT to check if it's expired
+    const token = localStorage.getItem("token");
+    if (token) {
+        const payload = JSON.parse(atob(token.split(".")[1])); // Decode JWT payload
+        const isExpired = payload.exp * 1000 < Date.now();
 
-    // check for 401 Unauthorized
-    if (result.error && result.error.status === 401) {
-        // attempt to refresh token
-        const refreshResult = await baseQuery("/auth/refresh", api, extraOptions);
+        if (isExpired) {
+            console.log("Token expired, attempting to refresh...");
+            const refreshResult = await baseQuery("/auth/refresh", api, extraOptions);
 
-        if (refreshResult.data) {
-            // store the new token
-            const token = (refreshResult.data as RefreshResponse).token;
-            localStorage.setItem("token", token);
+            if (refreshResult.data) {
+                // store the new token
+                const newToken = (refreshResult.data as RefreshResponse).token;
+                localStorage.setItem("token", newToken);
+                console.log("Token refreshed successfully.");
 
-            // retry the original request
-            result = await baseQuery(args, api, extraOptions);
-        } else {
-            console.log(".");
-            if (window?.location?.pathname === "/account") {
+                // update headers with new token
+                args.headers = {
+                    ...args.headers,
+                    authorization: `Bearer ${newToken}`,
+                };
+            } else {
+                console.log("Failed to refresh token, logging out...");
                 localStorage.removeItem("token");
                 window.location.href = "/login";
+                return { error: { status: 401, data: "Token refresh failed" } };
             }
-
-            // console.log("refresh failure");
-            // handle refresh failure (e.g., logout user)
-            // window?.location.replace("/login");
         }
     }
 
-    return result;
+    // proceed with the original request
+    return await baseQuery(args, api, extraOptions);
 };

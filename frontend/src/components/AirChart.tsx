@@ -3,12 +3,14 @@ import { Box, Typography, Radio, RadioGroup, FormControlLabel, FormControl, useM
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList, Cell } from "recharts";
 import { Intervals } from "@/components/ChartSkeleton.tsx";
 import formatChartData from "@/utils/formatChartData.ts";
+import { useParams } from "react-router-dom";
+import { useIsItMyStation } from "@/hooks/useIsItMyStation";
 
-interface DataEntry {
+export interface DataEntry {
     created: Date;
-    pm1: number;
-    pm2_5: number;
-    pm10: number;
+    pm1: number | null;
+    pm2_5: number | null;
+    pm10: number | null;
 }
 
 interface AirChartProps {
@@ -39,6 +41,9 @@ const AirChart: React.FC<AirChartProps> = ({ title, unit, data }) => {
     const isLoggedIn = localStorage.getItem("token") !== null;
 
     const selectedData = formatChartData<DataEntry>(data[timeRange], timeRange);
+    const params = useParams();
+    // const results = useHistoricalData({ gatewayId: params.id ?? "", property: ["pm1", "pm25", "pm10"], timeRange });
+    const isItMyStation = useIsItMyStation(params.id ?? "");
 
     // Sprawdzanie, czy ekran jest mały (xs, sm) lub średni (md)
     const isSmallScreen = useMediaQuery("(max-width: 700px)");
@@ -57,7 +62,7 @@ const AirChart: React.FC<AirChartProps> = ({ title, unit, data }) => {
                         <FormControlLabel value="24h" control={<Radio />} label="Ostatnie 24h" />
                         <FormControlLabel value="7d" control={<Radio />} label="Ostatnie 7 dni" />
                         <FormControlLabel value="30d" control={<Radio />} label="Ostatnie 30 dni" />
-                        {isLoggedIn && (
+                        {isLoggedIn && isItMyStation && (
                             <>
                                 <FormControlLabel value="1y" control={<Radio />} label="Ostatni rok" />
                                 <FormControlLabel value="2y" control={<Radio />} label="Ostatnie 2 lata" />

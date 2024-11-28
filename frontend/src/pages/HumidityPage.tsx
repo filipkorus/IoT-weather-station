@@ -3,6 +3,8 @@ import {Box, Typography} from '@mui/material';
 import {useNavigate} from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
 import ChartSkeleton from "@/components/ChartSkeleton.tsx";
+import useGatewayMeasurements from "@/hooks/useGatewayMeasurements";
+import { normalizeData } from "@/utils/normalizeData";
 const humidityData = {
     "24h": [
         { created: new Date(Date.now() - 0 * 60 * 60 * 1000), value: 0 }, // "0h" → now
@@ -96,6 +98,7 @@ const humidityData = {
 
 const HumidityPage: React.FC = () => {
     const navigate = useNavigate();
+    const { data } = useGatewayMeasurements(id ?? "");
     return (
         <Box sx={{ padding: 3 }}>
             {/* Przyciski i nagłówek w górnym lewym rogu */}

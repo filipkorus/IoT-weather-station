@@ -3,6 +3,8 @@ import React from 'react';
 import {useNavigate} from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
 import AirChart from "@/components/AirChart.tsx";
+import { normalizeAirQuality } from "@/utils/normalizeAirQuality";
+import useGatewayMeasurements from "@/hooks/useGatewayMeasurements";
 const airData = {
     "24h": [
         { created: new Date(Date.now() - 0 * 60 * 60 * 1000), pm1: 10, pm2_5: 15, pm10: 20 },
@@ -96,6 +98,7 @@ const airData = {
 
 const AirQualityPage: React.FC = () => {
     const navigate = useNavigate();
+    const { data } = useGatewayMeasurements(id ?? "");
     return (
         <div>
             <BackButton title="Powrót"

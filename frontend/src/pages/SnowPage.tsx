@@ -3,6 +3,9 @@ import { Typography } from '@mui/material';
 import {useNavigate} from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
 import ChartSkeleton from "@/components/ChartSkeleton.tsx";
+import { Box } from "@mui/material";
+import useGatewayMeasurements from "@/hooks/useGatewayMeasurements";
+import { normalizeData } from "@/utils/normalizeData";
 const snowData = {
     "24h": [
         { created: new Date(Date.now() - 0 * 60 * 60 * 1000), value: 0 }, // "0h" → now
@@ -95,6 +98,7 @@ const snowData = {
 };
 const SnowPage: React.FC = () => {
     const navigate = useNavigate();
+    const { data } = useGatewayMeasurements(id ?? "");
     return (
         <div>
             <Typography variant="h2">To jest podstrona na ktorej bedzie wykres śniegu</Typography>
