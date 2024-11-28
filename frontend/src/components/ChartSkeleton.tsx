@@ -71,7 +71,7 @@ const PressureChart: React.FC = () => {
     // Format and round data before rendering
     const selectedData = formatChartData<DataEntry>(data[timeRange], timeRange).map((entry) => ({
         ...entry,
-        value: Math.round(entry.value || 0), // Round the value
+        value: entry.value !== null ? Math.round(entry.value) : null
     }));
 
     // Custom Tooltip component
