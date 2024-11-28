@@ -9,6 +9,8 @@ const EntryPage: React.FC = () => {
     const navigate = useNavigate();
     const stations = usePublicStations();
 
+    const isLoggedIn = !!localStorage.getItem("token");
+
     return (
         <Box
             sx={{
@@ -68,16 +70,23 @@ const EntryPage: React.FC = () => {
                     gap: "1%",
                 }}
             >
-                <LoginRegisterButton
-                    title="Logowanie"
-                    onClick={() => navigate("/login")}
-                    sx={{ width: { xs: "100px", md: "150px" } }}
-                ></LoginRegisterButton>
-                <LoginRegisterButton
-                    title="Rejestracja"
-                    onClick={() => navigate("/register")}
-                    sx={{ width: { xs: "100px", md: "150px" } }}
-                ></LoginRegisterButton>
+               {isLoggedIn ?
+                  <LoginRegisterButton
+                     title="Konto"
+                     onClick={() => navigate("/account")}
+                     sx={{width: {xs: "100px", md: "150px"}}}
+                  /> : <>
+                  <LoginRegisterButton
+                     title="Logowanie"
+                     onClick={() => navigate("/login")}
+                     sx={{width: {xs: "100px", md: "150px"}}}
+                  />
+                     <LoginRegisterButton
+                     title="Rejestracja"
+                     onClick={() => navigate("/register")}
+                     sx={{width: {xs: "100px", md: "150px"}}}
+                  />
+               </>}
             </Box>
         </Box>
     );
