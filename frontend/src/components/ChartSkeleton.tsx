@@ -1,6 +1,14 @@
 import React, { useState } from "react";
-import { Box, Typography, Radio, RadioGroup, FormControlLabel, FormControl, useMediaQuery } from "@mui/material";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList, Cell } from "recharts";
+import {
+    Box,
+    Typography,
+    Radio,
+    RadioGroup,
+    FormControlLabel,
+    FormControl,
+    useMediaQuery,
+} from "@mui/material";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList, Cell, TooltipProps } from "recharts";
 import formatChartData from "@/utils/formatChartData.ts";
 import { useParams } from "react-router-dom";
 import { useIsItMyStation } from "@/hooks/useIsItMyStation";
@@ -25,14 +33,43 @@ const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data }) => {
     };
 
     const isLoggedIn = localStorage.getItem("token") !== null;
-
-    const selectedData = formatChartData<DataEntry>(data[timeRange], timeRange);
     const params = useParams();
     const isItMyStation = useIsItMyStation(params.id ?? "");
 
-    // Sprawdzamy, czy ekran jest mały (xs, sm, md)
+    // Media query for responsiveness
     const isSmallScreen = useMediaQuery("(max-width: 700px)");
     const isMediumScreen = useMediaQuery("(max-width: 1024px)");
+
+    // Format and round data before rendering
+    const selectedData = formatChartData<DataEntry>(data[timeRange], timeRange).map((entry) => ({
+        ...entry,
+        value: Math.round(entry.value || 0), // Round the value
+    }));
+
+    // Custom Tooltip component
+    const CustomTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload, label }) => {
+        if (active && payload && payload.length) {
+            return (
+                <Box
+                    sx={{
+                        backgroundColor: "#fff",
+                        border: "1px solid #ccc",
+                        padding: 2,
+                        borderRadius: 4,
+                        boxShadow: "0px 2px 8px rgba(0,0,0,0.1)",
+                    }}
+                >
+                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                        {label}
+                    </Typography>
+                    <Typography variant="body2">
+                        Wartość: <strong>{payload[0].value}{unit==="%"?"":" "}{unit}</strong>
+                    </Typography>
+                </Box>
+            );
+        }
+        return null;
+    };
 
     return (
         <Box sx={{ padding: 3 }}>
@@ -58,24 +95,35 @@ const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data }) => {
             <Box
                 sx={{
                     padding: 2,
-                    overflowX: isSmallScreen || isMediumScreen ? "auto" : "unset", // Dodanie scrolla w osi X na małych ekranach
-                    WebkitOverflowScrolling: "touch", // Optymalizacja dla iOS
+                    overflowX: isSmallScreen || isMediumScreen ? "auto" : "unset",
+                    WebkitOverflowScrolling: "touch",
                 }}
             >
                 <BarChart
                     width={1200}
                     height={400}
                     data={selectedData}
-                    margin={{ top: 20, right: 30, bottom: 69 }}
+                    margin={{ top: 25, right: 30, bottom: 69 }}
                 >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
                         dataKey="name"
-                        interval={0} // Ustawiamy interval na 0, aby wszystkie etykiety były widoczne
+                        interval={0}
                         angle={-45}
                         textAnchor="end"
                     />
-                    <YAxis tickFormatter={(value: number) => `${value} ${unit}`} />
+                    <YAxis
+                        tick={{ fontSize: 15, dy: 0 }}
+                        tickFormatter={(value: number) => `${value}`} // Show only numerical values
+                        label={{
+                            value: unit,
+                            angle: 0,
+                            position: "top",
+                            offset: 10,
+                            style: { fontSize: 16, fill: "#666" },
+                        }}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
                     <Bar dataKey="value" fill="#8884d8">
                         {selectedData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={index % 2 === 0 ? "#9bcce5" : "#7ca6c4"} />

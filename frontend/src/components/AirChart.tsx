@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Box, Typography, Radio, RadioGroup, FormControlLabel, FormControl, useMediaQuery } from "@mui/material";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList, Cell } from "recharts";
+import {BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList, Cell, Tooltip} from "recharts";
 import { Intervals } from "@/components/ChartSkeleton.tsx";
 import formatChartData from "@/utils/formatChartData.ts";
 import { useParams } from "react-router-dom";
 import { useIsItMyStation } from "@/hooks/useIsItMyStation";
+import { TooltipProps } from "recharts";
+
 
 export interface DataEntry {
     created: Date;
@@ -26,7 +28,11 @@ const AirChart: React.FC<AirChartProps> = ({ title, unit, data }) => {
         pm2_5: true,
         pm10: true,
     });
-
+    const barColors = {
+        pm1: "#7ca6c4",
+        pm2_5: "#1f4152",
+        pm10: "#4dadd9",
+    };
     const handleTimeRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTimeRange(event.target.value as Intervals);
     };
@@ -40,13 +46,63 @@ const AirChart: React.FC<AirChartProps> = ({ title, unit, data }) => {
 
     const isLoggedIn = localStorage.getItem("token") !== null;
 
-    const selectedData = formatChartData<DataEntry>(data[timeRange], timeRange);
+    const selectedData = formatChartData<DataEntry>(data[timeRange], timeRange).map(entry => ({
+        ...entry,
+        pm1: entry.pm1 !== null ? Math.round(entry.pm1) : null,
+        pm2_5: entry.pm2_5 !== null ? Math.round(entry.pm2_5) : null,
+        pm10: entry.pm10 !== null ? Math.round(entry.pm10) : null,
+    }));
     const params = useParams();
     const isItMyStation = useIsItMyStation(params.id ?? "");
 
-    // Sprawdzanie, czy ekran jest mały (xs, sm) lub średni (md)
+    //  ekran jest mały (xs, sm) lub średni (md)
     const isSmallScreen = useMediaQuery("(max-width: 700px)");
     const isMediumScreen = useMediaQuery("(max-width: 1024px)");
+    const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+        if (active && payload && payload.length) {
+            return (
+                <Box
+                    sx={{
+                        backgroundColor: "#fff",
+                        border: "1px solid #ccc",
+                        padding: 2,
+                        borderRadius: 4,
+                        boxShadow: "0px 2px 8px rgba(0,0,0,0.1)",
+                    }}
+                >
+                    <Typography variant="body2" sx={{ fontWeight: "bold", marginBottom: 1 }}>
+                        {label}
+                    </Typography>
+                    {payload.map((item, index) => {
+                        const name = item.name || "Unknown";
+                        const value = item.value || 0;
+                        const color = barColors[item.dataKey as keyof typeof barColors] || "#ccc";
+
+                        return (
+                            <Box
+                                key={index}
+                                sx={{ display: "flex", alignItems: "center", marginBottom: 0.5 }}
+                            >
+                                <Box
+                                    sx={{
+                                        width: 10,
+                                        height: 10,
+                                        backgroundColor: color,
+                                        marginRight: 1,
+                                    }}
+                                />
+                                <Typography variant="body2">
+                                    {name}: <strong>{value} {unit}</strong>
+                                </Typography>
+                            </Box>
+                        );
+                    })}
+                </Box>
+            );
+        }
+        return null;
+    };
+
 
     return (
         <Box sx={{ display: "flex", flexDirection: isSmallScreen || isMediumScreen ? "column" : "row", padding: 3 }}>
@@ -75,14 +131,23 @@ const AirChart: React.FC<AirChartProps> = ({ title, unit, data }) => {
                         width={1200}
                         height={400}
                         data={selectedData}
-                        margin={{ top: 20, right: 30, bottom: 69 }}
+                        margin={{ top: 25, right: 30, bottom: 69 }}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" interval={0} angle={-45} textAnchor="end" />
                         <YAxis
                             tick={{ fontSize: 15, dy: 0 }}
-                            tickFormatter={(value: number) => `${value} ${unit.replace('³', '³')}`}
+                            tickFormatter={(value: number) => `${value}`} // Show only numerical values
+                            label={{
+                                value: unit,
+                                angle: 0,
+                                position: "top",
+                                offset: 10,
+                                style: { fontSize: 16, fill: "#666" },
+                            }}
                         />
+                        {/* Tooltip z odpowiednimi kolorami */}
+                        <Tooltip content={<CustomTooltip />} />
 
                         {visibleBars.pm1 && (
                             <Bar dataKey="pm1" fill="#8884d8" name="PM1.0">

@@ -31,7 +31,7 @@ const Buttons: React.FC<ButtonsProps> = ({ title, value, unit, onClick }) => {
                     {title}
                 </Typography>
                 <Typography variant="h2" sx={{ textTransform: "none", fontSize: { xs: "1.5rem", sm: "2rem" } }}>
-                    {value} {isNumeric(value) ? unit : ""}
+                    {value}{unit==="%"?"":" "}{isNumeric(value) ? unit : ""}
                 </Typography>
             </Box>
         </Button>
