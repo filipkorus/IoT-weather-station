@@ -17,6 +17,11 @@ const RegisterPage: React.FC = () => {
         }
     }, [navigate]);
 
+    const goToMainPageAction = () => {
+        removeAccessTokenIfObsolete();
+        navigate("/");
+    };
+
     return (
         <>
             <Container maxWidth="xs">

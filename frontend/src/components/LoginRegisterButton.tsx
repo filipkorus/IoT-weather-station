@@ -10,8 +10,7 @@ interface LoginRegisterButtonProps {
 const LoginRegisterButton: React.FC<LoginRegisterButtonProps> = ({ title, onClick,sx, variant = 'contained' }) => {
     return (
         <Button
-            // variant="contained"
-            variant={variant}
+            variant={variant === "mainPage" ? "contained" : variant} // use "contained" as the base for "mainPage"
             fullWidth
             sx={{
                 boxShadow: 5,

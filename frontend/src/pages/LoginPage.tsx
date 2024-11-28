@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import  {useNavigate} from "react-router-dom";
 import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
 import useLogin from "@/hooks/auth/useLogin";
+import { removeAccessTokenIfObsolete } from "@/utils/removeAccessTokenIfObsolete";
 const LoginPage: React.FC = () => {
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
@@ -16,6 +17,11 @@ const LoginPage: React.FC = () => {
             navigate("/account");
         }
     }, [navigate]);
+
+    const goToMainPageAction = () => {
+        removeAccessTokenIfObsolete();
+        navigate("/");
+    };
 
     return (
         <>
