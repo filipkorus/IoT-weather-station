@@ -2,6 +2,8 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
 import ChartSkeleton from "@/components/ChartSkeleton.tsx";
+import useGatewayMeasurements from "@/hooks/useGatewayMeasurements";
+import { normalizeData } from "@/utils/normalizeData";
 const humidityData = {
     "24h": [
         { created: new Date(Date.now() - 0 * 60 * 60 * 1000), value: 0 }, // "0h" → now
@@ -96,12 +98,12 @@ const humidityData = {
 const HumidityPage: React.FC = () => {
     const id = useParams().id;
     const navigate = useNavigate();
+    const { data } = useGatewayMeasurements(id ?? "");
     return (
-    <div>
-        <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-        <ChartSkeleton title="Wilgotność" unit="%" data={humidityData}/>
-    </div>
-)
-    ;
+        <div>
+            <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
+            <ChartSkeleton title="Wilgotność" unit="%" data={normalizeData(data?.measurements ?? [], "humidity")} />
+        </div>
+    );
 };
 export default HumidityPage;

@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { Box, Typography, Radio, RadioGroup, FormControlLabel, FormControl, useMediaQuery } from "@mui/material";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList, Cell } from "recharts";
 import formatChartData from "@/utils/formatChartData.ts";
+import { useParams } from "react-router-dom";
+import { useIsItMyStation } from "@/hooks/useIsItMyStation";
 
 // Określamy typy dla danych
-interface DataEntry {
+export interface DataEntry {
     created: Date;
-    value: number;
+    value: number | null;
 }
 
 interface ChartSkeletonProps {
@@ -28,6 +30,9 @@ const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data }) => {
 
     // Funkcja do formatuowania etykiet na podstawie zakresu
     const selectedData = formatChartData<DataEntry>(data[timeRange], timeRange);
+    const params = useParams();
+    // const dupa = useHistoricalData({ gatewayId: params.id ?? "", property, timeRange });
+    const isItMyStation = useIsItMyStation(params.id ?? "");
 
     // Sprawdzamy, czy ekran jest mały (xs, sm, md)
     const isSmallScreen = useMediaQuery("(max-width: 700px)");
@@ -45,7 +50,7 @@ const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data }) => {
                     <FormControlLabel value="24h" control={<Radio />} label="Ostatnie 24h" />
                     <FormControlLabel value="7d" control={<Radio />} label="Ostatnie 7 dni" />
                     <FormControlLabel value="30d" control={<Radio />} label="Ostatnie 30 dni" />
-                    {isLoggedIn && (
+                    {isLoggedIn && isItMyStation && (
                         <>
                             <FormControlLabel value="1y" control={<Radio />} label="Ostatni rok" />
                             <FormControlLabel value="2y" control={<Radio />} label="Ostatnie 2 lata" />

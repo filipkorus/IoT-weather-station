@@ -2,6 +2,8 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
 import AirChart from "@/components/AirChart.tsx";
+import { normalizeAirQuality } from "@/utils/normalizeAirQuality";
+import useGatewayMeasurements from "@/hooks/useGatewayMeasurements";
 const airData = {
     "24h": [
         { created: new Date(Date.now() - 0 * 60 * 60 * 1000), pm1: 10, pm2_5: 15, pm10: 20 },
@@ -96,10 +98,11 @@ const airData = {
 const AirQualityPage: React.FC = () => {
     const id = useParams().id;
     const navigate = useNavigate();
+    const { data } = useGatewayMeasurements(id ?? "");
     return (
         <div>
             <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-            <AirChart title="Jakość powietrza" unit="&nbsp;&nbsp;&nbsp;µg/m3" data={airData} />
+            <AirChart title="Jakość powietrza" unit="&nbsp;&nbsp;&nbsp;µg/m3" data={normalizeAirQuality(data?.measurements ?? [])} />
         </div>
     );
 };

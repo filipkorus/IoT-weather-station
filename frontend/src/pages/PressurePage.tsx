@@ -2,6 +2,9 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
 import ChartSkeleton from "@/components/ChartSkeleton.tsx";
+import { Box } from "@mui/material";
+import { normalizeData } from "@/utils/normalizeData";
+import useGatewayMeasurements from "@/hooks/useGatewayMeasurements";
 const pressureData = {
     "24h": [
         { created: new Date(Date.now() - 0 * 60 * 60 * 1000), value: 0 }, // "0h" → now
@@ -96,12 +99,12 @@ const pressureData = {
 const PressurePage: React.FC = () => {
     const id = useParams().id;
     const navigate = useNavigate();
+    const { data } = useGatewayMeasurements(id ?? "");
     return (
-    <div>
-        <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-        <ChartSkeleton title="Ciśnienie" unit="hPa" data={pressureData}/>
-
-    </div>
+        <div>
+            <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
+            <ChartSkeleton title="Ciśnienie" unit="hPa" data={normalizeData(data?.measurements ?? [], "pressure")} />
+        </div>
     );
 };
 
