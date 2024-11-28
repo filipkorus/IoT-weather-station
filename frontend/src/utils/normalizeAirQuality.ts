@@ -16,8 +16,8 @@ export function normalizeAirQuality(data: Measurement[]): { [key: string]: DataE
 
     // Grouping measurements into buckets
     const getClosestValues = (target: Date, range: number) => {
-        const bucketStart = target.getTime() - range / 2;
-        const bucketEnd = target.getTime() + range / 2;
+        const bucketStart = target.getTime();
+        const bucketEnd = target.getTime() + range;
 
         return data.filter((m) => {
             const time = new Date(m.created).getTime();
