@@ -5,7 +5,6 @@ import formatChartData from "@/utils/formatChartData.ts";
 import { useParams } from "react-router-dom";
 import { useIsItMyStation } from "@/hooks/useIsItMyStation";
 
-// Określamy typy dla danych
 export interface DataEntry {
     created: Date;
     value: number | null;
@@ -25,13 +24,10 @@ const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data }) => {
         setTimeRange(event.target.value as Intervals);
     };
 
-    // Sprawdzamy, czy użytkownik jest zalogowany
     const isLoggedIn = localStorage.getItem("token") !== null;
 
-    // Funkcja do formatuowania etykiet na podstawie zakresu
     const selectedData = formatChartData<DataEntry>(data[timeRange], timeRange);
     const params = useParams();
-    // const dupa = useHistoricalData({ gatewayId: params.id ?? "", property, timeRange });
     const isItMyStation = useIsItMyStation(params.id ?? "");
 
     // Sprawdzamy, czy ekran jest mały (xs, sm, md)

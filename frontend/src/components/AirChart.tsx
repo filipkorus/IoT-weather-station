@@ -42,7 +42,6 @@ const AirChart: React.FC<AirChartProps> = ({ title, unit, data }) => {
 
     const selectedData = formatChartData<DataEntry>(data[timeRange], timeRange);
     const params = useParams();
-    // const results = useHistoricalData({ gatewayId: params.id ?? "", property: ["pm1", "pm25", "pm10"], timeRange });
     const isItMyStation = useIsItMyStation(params.id ?? "");
 
     // Sprawdzanie, czy ekran jest mały (xs, sm) lub średni (md)
