@@ -64,9 +64,40 @@ const PressureChart: React.FC = () => {
     // Wybór danych na podstawie wybranego zakresu
     const selectedData = data[timeRange]; // Teraz TypeScript wie, że timeRange jest jednym z kluczy data
 
-    // Sprawdzamy, czy ekran jest mały (xs, sm, md)
+    // Media query for responsiveness
     const isSmallScreen = useMediaQuery("(max-width: 700px)");
     const isMediumScreen = useMediaQuery("(max-width: 1024px)");
+
+    // Format and round data before rendering
+    const selectedData = formatChartData<DataEntry>(data[timeRange], timeRange).map((entry) => ({
+        ...entry,
+        value: Math.round(entry.value || 0), // Round the value
+    }));
+
+    // Custom Tooltip component
+    const CustomTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload, label }) => {
+        if (active && payload && payload.length) {
+            return (
+                <Box
+                    sx={{
+                        backgroundColor: "#fff",
+                        border: "1px solid #ccc",
+                        padding: 2,
+                        borderRadius: 4,
+                        boxShadow: "0px 2px 8px rgba(0,0,0,0.1)",
+                    }}
+                >
+                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                        {label}
+                    </Typography>
+                    <Typography variant="body2">
+                        Wartość: <strong>{payload[0].value}{unit==="%"?"":" "}{unit}</strong>
+                    </Typography>
+                </Box>
+            );
+        }
+        return null;
+    };
 
     return (
         <Box sx={{ padding: 3 }}>
