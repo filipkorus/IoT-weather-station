@@ -1,5 +1,4 @@
 import React from "react";
-import { Box } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/components/BackButton.tsx";
 import ChartSkeleton from "@/components/ChartSkeleton.tsx";
@@ -101,13 +100,10 @@ const HumidityPage: React.FC = () => {
     const navigate = useNavigate();
     const { data } = useGatewayMeasurements(id ?? "");
     return (
-        <Box sx={{ padding: 3 }}>
-            {/* Przyciski i nagłówek w górnym lewym rogu */}
-            <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-                <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-                <ChartSkeleton title="Wilgotność" unit="%" data={normalizeData(data?.measurements ?? [], "humidity")} />
-            </Box>
-        </Box>
+        <div>
+            <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
+            <ChartSkeleton title="Wilgotność" unit="%" data={normalizeData(data?.measurements ?? [], "humidity")} />
+        </div>
     );
 };
 export default HumidityPage;

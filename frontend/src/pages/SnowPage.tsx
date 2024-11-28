@@ -100,17 +100,14 @@ const SnowPage: React.FC = () => {
     const navigate = useNavigate();
     const { data } = useGatewayMeasurements(id ?? "");
     return (
-        <Box sx={{ padding: 3 }}>
-            {/* Przyciski i nagłówek w górnym lewym rogu */}
-            <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-                <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-                <ChartSkeleton
-                    title="Poziom śniegu"
-                    unit="m"
-                    data={normalizeData(data?.measurements ?? [], "snowDepth")}
-                />
-            </Box>
-        </Box>
+        <div>
+            <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
+            <ChartSkeleton
+                title="Poziom śniegu"
+                unit="cm"
+                data={normalizeData(data?.measurements ?? [], "snowDepth")}
+            />
+        </div>
     );
 };
 

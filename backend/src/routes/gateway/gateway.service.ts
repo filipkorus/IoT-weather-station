@@ -272,7 +272,7 @@ const deleteOldGatewayLikes = async () => {
 		return prisma.gatewayLike.deleteMany({
 			where: {
 				created: {
-					lt: new Date(new Date().setHours(1, 0, 0, 0))
+					lt: getDate().todayMidnight
 				}
 			}
 		});

@@ -26,7 +26,7 @@ const BackButton: React.FC<BackButtonProps> = ({ title, onClick }) => {
                     variant="body2"
                     sx={{
                         color: "#1f4152",
-                        fontSize: { xs: "0.5rem", sm: "1rem", md: "1rem" },
+                        fontSize: { xs: "0.6rem", sm: "0.8rem", md: "0.8rem" },
                     }}
                 >
                     {title}

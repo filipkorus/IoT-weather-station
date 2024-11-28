@@ -102,7 +102,7 @@ const AirQualityPage: React.FC = () => {
     return (
         <div>
             <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-            <AirChart title="Jakość powietrza" unit="µg/m3" data={normalizeAirQuality(data?.measurements ?? [])} />
+            <AirChart title="Jakość powietrza" unit="&nbsp;&nbsp;&nbsp;µg/m3" data={normalizeAirQuality(data?.measurements ?? [])} />
         </div>
     );
 };

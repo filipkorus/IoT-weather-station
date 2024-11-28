@@ -101,17 +101,10 @@ const PressurePage: React.FC = () => {
     const navigate = useNavigate();
     const { data } = useGatewayMeasurements(id ?? "");
     return (
-        <Box sx={{ padding: 3 }}>
-            {/* Przyciski i nagłówek w górnym lewym rogu */}
-            <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-                <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
-                <ChartSkeleton
-                    title="Ciśnienie"
-                    unit="hPa"
-                    data={normalizeData(data?.measurements ?? [], "pressure")}
-                />
-            </Box>
-        </Box>
+        <div>
+            <BackButton title="Powrót" onClick={() => navigate(`/slopedata/${id}`)}></BackButton>
+            <ChartSkeleton title="Ciśnienie" unit="hPa" data={normalizeData(data?.measurements ?? [], "pressure")} />
+        </div>
     );
 };
 

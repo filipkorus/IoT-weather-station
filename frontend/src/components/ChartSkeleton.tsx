@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Box, Typography, Radio, RadioGroup, FormControlLabel, FormControl } from "@mui/material";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList, Cell } from "recharts";
+import { Box, Typography, Radio, RadioGroup, FormControlLabel, FormControl, useMediaQuery } from "@mui/material";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList, Cell } from "recharts";
 import formatChartData from "@/utils/formatChartData.ts";
 import { useParams } from "react-router-dom";
 import { useIsItMyStation } from "@/hooks/useIsItMyStation";
@@ -14,9 +14,11 @@ export interface DataEntry {
 interface ChartSkeletonProps {
     title: string;
     unit: string;
-    data: { [key: string]: DataEntry[] }; // Zmieniamy na bardziej precyzyjny typ
+    data: { [key: string]: DataEntry[] };
 }
+
 export type Intervals = "24h" | "7d" | "30d" | "1y" | "2y";
+
 const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data }) => {
     const [timeRange, setTimeRange] = useState<Intervals>("24h");
     const handleTimeRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +33,10 @@ const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data }) => {
     const params = useParams();
     // const dupa = useHistoricalData({ gatewayId: params.id ?? "", property, timeRange });
     const isItMyStation = useIsItMyStation(params.id ?? "");
+
+    // Sprawdzamy, czy ekran jest mały (xs, sm, md)
+    const isSmallScreen = useMediaQuery("(max-width: 700px)");
+    const isMediumScreen = useMediaQuery("(max-width: 1024px)");
 
     return (
         <Box sx={{ padding: 3 }}>
@@ -53,12 +59,18 @@ const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data }) => {
                 </RadioGroup>
             </FormControl>
 
-            <Box sx={{ padding: 2 }}>
+            <Box
+                sx={{
+                    padding: 2,
+                    overflowX: isSmallScreen || isMediumScreen ? "auto" : "unset", // Dodanie scrolla w osi X na małych ekranach
+                    WebkitOverflowScrolling: "touch", // Optymalizacja dla iOS
+                }}
+            >
                 <BarChart
-                    width={1000}
+                    width={1200}
                     height={400}
                     data={selectedData}
-                    margin={{ top: 20, right: 30, left: 30, bottom: 40 }}
+                    margin={{ top: 20, right: 30, bottom: 69 }}
                 >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
@@ -68,7 +80,6 @@ const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data }) => {
                         textAnchor="end"
                     />
                     <YAxis tickFormatter={(value: number) => `${value} ${unit}`} />
-                    <Tooltip formatter={(value: number | string) => `${value} ${unit}`} />
                     <Bar dataKey="value" fill="#8884d8">
                         {selectedData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={index % 2 === 0 ? "#9bcce5" : "#7ca6c4"} />

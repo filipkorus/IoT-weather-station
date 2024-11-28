@@ -125,15 +125,7 @@ const HomePage: React.FC = () => {
                         <Box sx={{ textAlign: "center", flex: 1 }}>
                             <Typography variant="body2">pm 1.0</Typography>
                             <Typography
-                                sx={{
-                                    typography: {
-                                        xs: "h4",
-                                        sm: "h6",
-                                        md: "h5",
-                                        lg: "h4",
-                                        xl: "h3",
-                                    },
-                                }}
+                                variant="h2" sx={{ textTransform: "none", fontSize: { xs: "1.5rem", sm: "2rem" } }}
                             >
                                 {stationInfoForDisplay.pm1}
                             </Typography>
@@ -159,15 +151,7 @@ const HomePage: React.FC = () => {
                         <Box sx={{ textAlign: "center", flex: 1 }}>
                             <Typography variant="body2">pm 2.5</Typography>
                             <Typography
-                                sx={{
-                                    typography: {
-                                        xs: "h4",
-                                        sm: "h6",
-                                        md: "h5",
-                                        lg: "h4",
-                                        xl: "h3",
-                                    },
-                                }}
+                                variant="h2" sx={{ textTransform: "none", fontSize: { xs: "1.5rem", sm: "2rem" } }}
                             >
                                 {stationInfoForDisplay.pm25}
                             </Typography>
@@ -193,15 +177,7 @@ const HomePage: React.FC = () => {
                         <Box sx={{ textAlign: "center", flex: 1 }}>
                             <Typography variant="body2">pm 10</Typography>
                             <Typography
-                                sx={{
-                                    typography: {
-                                        xs: "h4",
-                                        sm: "h6",
-                                        md: "h5",
-                                        lg: "h4",
-                                        xl: "h3",
-                                    },
-                                }}
+                                variant="h2" sx={{ textTransform: "none", fontSize: { xs: "1.5rem", sm: "2rem" } }}
                             >
                                 {stationInfoForDisplay.pm10}
                             </Typography>
