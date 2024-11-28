@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 interface Returns {
     data: {
         measurements: [] | null;
-    } | null;
+    };
     error: string | null;
     isLoading: boolean;
 }
