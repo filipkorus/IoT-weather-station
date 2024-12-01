@@ -5,7 +5,7 @@ WORKDIR /backend
 COPY . .
 
 RUN npm install
-RUN npm run build
 RUN npx prisma generate
+RUN npm run build
 
 ENTRYPOINT ["npm", "run", "start"]
