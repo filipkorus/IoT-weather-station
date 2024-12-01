@@ -89,7 +89,7 @@ void setup()
 
   // Init LIDAR
   myLidar.begin(0, true);
-  myLidar.configure(0);
+  myLidar.configure(3);
 
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
@@ -126,19 +126,7 @@ void getReadings()
   temperature = bme.readTemperature();
   humidity = bme.readHumidity();
   pressure = (bme.readPressure() / 100.0F);
-
-  if (cal_cnt == 0)
-  {
-    distance = myLidar.distance(); // With bias correction
-  }
-  else
-  {
-    distance = myLidar.distance(false); // Without bias correction
-  }
-
-  // Increment reading counter
-  cal_cnt++;
-  cal_cnt = cal_cnt % 100;
+  distance = myLidar.distance(); // With bias correction
 }
 
 bool firstLoop = true;
@@ -200,17 +188,14 @@ void loop()
   getReadings();
 
   // Set values to send
-  Readings.temperature = (float)TPS / 10.f;
-  Readings.humidity = (float)HDS / 10.f;
+  Readings.temperature = temperature; //(float)TPS / 10.f;
+  Readings.humidity = humidity;       //(float)HDS / 10.f;
   Readings.pressure = pressure;
   strcpy(Readings.nodeId, UID);
 
   // lidar distance
-  Readings.snowDepth = STICK_HEIGHT - distance;
+  Readings.snowDepth = distance;
   Readings.batteryLevel = ((float)analogRead(BATTERY) / 4095.f) * 2.f * 3.3f;
-
-  if (Readings.snowDepth < 5)
-    Readings.snowDepth = 0;
 
   Readings.pair = !digitalRead(BUTTON_PIN);
   // pm values - airQualitySensor
