@@ -5,7 +5,7 @@
 
 #ifndef PROD
 #define AUTH_TOKEN ""
-#define UID ""
+#define UID "N2024111401"
 #endif
 
 #endif

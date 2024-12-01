@@ -79,17 +79,30 @@ void resetEEPROM()
 float hum = 0.f;
 float temp = 0.f;
 int likes = 0;
+bool rxNow = false;
 void updateLCD()
 {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Likes: ");
   lcd.print(likes);
+  if (rxNow)
+  {
+    lcd.print(" ");
+    lcd.write(1);
+  }
   lcd.setCursor(0, 1);
   lcd.printf("%.1f", temp);
   lcd.write(0xdf);
-  lcd.print('C ');
-  lcd.printf("%.1f%", hum);
+  lcd.print("C ");
+  lcd.printf("%.1f", hum);
+  lcd.print("%");
+  if (rxNow)
+  {
+    delay(500);
+    rxNow = false;
+    updateLCD();
+  }
 }
 void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
 {
@@ -228,6 +241,8 @@ bool initBackend()
   return success;
 }
 
+byte wifiSymbol[] = {B00000, B01110, B10001, B00100, B01010, B00000, B00100, B00000};
+
 void setup()
 {
   WiFi.mode(WIFI_STA);
@@ -270,6 +285,8 @@ void setup()
   lcd.print("Connected");
   lcd.setCursor(0, 1);
   lcd.print("to WiFi");
+
+  lcd.createChar(1, wifiSymbol);
 
   if (!initBackend())
   {
@@ -349,13 +366,13 @@ void loop()
     { // Check if the user pressed Enter (new line character)
       // Print the message
       deserializeJson(doc, receivedMessage);
+      rxNow = true;
 
       auto nodeId = doc["nodeId"].as<const char *>();
       auto pair = doc["pair"].as<bool>();
       Serial.print(nodeId);
       Serial.print(" pair?: ");
       Serial.println(pair);
-      Serial.println(receivedMessage);
 
       if (pairMode && pair)
       {
@@ -376,9 +393,22 @@ void loop()
         return;
       }
 
-      webSocket.sendTXT(receivedMessage);
+      auto snowDepth = 60 - doc["snowDepth"].as<int32_t>();
+      Serial.print("og snowDepth: ");
+      Serial.println(snowDepth);
+      snowDepth += 35;
+      snowDepth = snowDepth * 0.522f + 8.437f;
+      doc["snowDepth"] = snowDepth < 5 ? 0 : snowDepth;
+
       hum = doc["humidity"].as<float>();
-      temp = doc["temperature"].as<float>();
+      temp = doc["temperature"].as<float>() - 8.f;
+
+      doc["temperature"] = temp;
+
+      String jsonOutput;
+      serializeJson(doc, jsonOutput);
+      Serial.println(jsonOutput);
+      webSocket.sendTXT(jsonOutput);
       updateLCD();
       // Clear the message buffer for the next input
       receivedMessage = "";
