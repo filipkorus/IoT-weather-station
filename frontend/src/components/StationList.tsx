@@ -31,7 +31,6 @@ interface StationListProps {
 
 const StationList: React.FC<StationListProps> = ({ headerText, stations, showActions = false, showNodeBatteryLevels }) => {
     const navigate = useNavigate();
-    const showSnackbar = useSnackbar();
     const [openNameDialog, setOpenNameDialog] = React.useState(false);
     const [openLocationDialog, setOpenLocationDialog] = React.useState(false);
     const [stationToEdit, setStationToEdit] = React.useState<DisplayStation[number] | null>(null);
