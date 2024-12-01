@@ -16,6 +16,9 @@ export interface Gateway {
             id: string;
             name: string;
             gatewayId: string;
+            NodeData: [{
+                batteryLevel: number | null;
+            }]
         },
     ];
 }

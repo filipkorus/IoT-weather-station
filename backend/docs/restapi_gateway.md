@@ -111,7 +111,10 @@ This endpoint requires the user to be logged in, i.e. have a valid access token 
         "nodes": [{
             "id": "string (node ID)",
             "name": "string (node name)",
-            "gatewayId": "string (gateway ID)"
+            "gatewayId": "string (gateway ID)",
+            "NodeData": [{
+                "batteryLevel": 5.5 // number - battery level in volts
+            }]
         }]
     }
   }
@@ -138,7 +141,10 @@ This endpoint requires the user to be logged in, i.e. have a valid access token 
         "nodes": [{
             "id": "string (node ID)",
             "name": "string (node name)",
-            "gatewayId": "string (gateway ID)"
+            "gatewayId": "string (gateway ID)",
+            "NodeData": [{
+                "batteryLevel": 5.5 // number - battery level in volts
+            }]
         }]
     }]
   }

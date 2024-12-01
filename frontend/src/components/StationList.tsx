@@ -13,6 +13,7 @@ import {
     DialogContent,
     Button,
     TextField,
+    Icon,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import PlaceIcon from "@mui/icons-material/Place";
@@ -25,9 +26,10 @@ interface StationListProps {
     headerText?: string;
     stations: DisplayStation;
     showActions?: boolean;
+    showNodeBatteryLevels?: boolean;
 }
 
-const StationList: React.FC<StationListProps> = ({ headerText, stations, showActions = false }) => {
+const StationList: React.FC<StationListProps> = ({ headerText, stations, showActions = false, showNodeBatteryLevels }) => {
     const navigate = useNavigate();
     const [openNameDialog, setOpenNameDialog] = React.useState(false);
     const [openLocationDialog, setOpenLocationDialog] = React.useState(false);

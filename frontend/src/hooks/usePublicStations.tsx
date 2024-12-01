@@ -23,7 +23,11 @@ export type DisplayStation = Array<{
     coords: {
         latitude: number | null;
         longitude: number | null;
-    }
+    },
+    nodesBatteryLevel?: {
+        nodeId: string;
+        batteryLevel: number | null;
+    }[]
 }>;
 
 const usePublicStations = (): DisplayStation => {

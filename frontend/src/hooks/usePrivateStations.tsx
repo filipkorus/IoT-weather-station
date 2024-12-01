@@ -26,7 +26,11 @@ const usePrivateStations = (): DisplayStation => {
         coords: {
             latitude: station.latitude,
             longitude: station.longitude,
-        }
+        },
+         nodesBatteryLevel: station.nodes.map((node) => ({
+               nodeId: node.id,
+               batteryLevel: node.NodeData.length > 0 ? node.NodeData[0].batteryLevel : null
+         })),
     }));
 };
 

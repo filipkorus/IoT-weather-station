@@ -116,7 +116,18 @@ const getGatewayByApiKey = async (apiKey: string): Promise<Gateway | null> => {
 const getGatewayById = async (gatewayId: string): Promise<Gateway | null> => {
 	try {
 		return prisma.gateway.findFirst({
-			where: {id: gatewayId}
+			where: {id: gatewayId},
+			include: {
+				nodes: {
+					include: {
+						NodeData: {
+							take: 1, // Get only the latest NodeData entry
+							orderBy: { created: 'desc' }, // Order by created date in descending order
+							select: { batteryLevel: true }, // Select only the batteryLevel field
+						},
+					},
+				},
+			},
 		});
 	} catch (error) {
 		logger.error(error);
@@ -137,7 +148,17 @@ const getGatewaysByUserId = async (userId: number): Promise<Gateway[] | null> =>
 		return prisma.gateway.findMany({
 			where: {userId},
 			orderBy: {lastOnline: 'desc'},
-			include: {nodes: true}
+			include: {
+				nodes: {
+					include: {
+						NodeData: {
+							take: 1, // Get only the latest NodeData entry
+							orderBy: { created: 'desc' }, // Order by created date in descending order
+							select: { batteryLevel: true }, // Select only the batteryLevel field
+						},
+					},
+				},
+			},
 		});
 	} catch (error) {
 		logger.error(error);
