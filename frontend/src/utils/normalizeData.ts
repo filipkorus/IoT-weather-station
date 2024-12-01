@@ -39,7 +39,7 @@ export function normalizeData(
 
     // 24-hour buckets (4 intervals: 0h, 6h, 12h, 18h, 24h)
     const hourlyBuckets = [...Array(5)].map((_, i) => {
-        const target = new Date(now.getTime() - i * 6 * 60 * 60 * 1000); // Decrement by 6 hours
+        const target = new Date(now.getTime() - 3 * 60 * 60 * 1000 - i * 6 * 60 * 60 * 1000); // Decrement by 6 hours
         return {
             created: target,
             value: calculateMean(getClosestValues(target, 6 * 60 * 60 * 1000)), // 6-hour range
