@@ -1,14 +1,18 @@
 // login page only for users of sensors and hardware not for potential custoomers of skiing resort
-import { Box, Container, CssBaseline,Grid, TextField,Typography,} from "@mui/material";
-import React, { useState } from "react";
+import { Box, Container, CssBaseline, Grid, TextField, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import useRegister from "@/hooks/auth/useRegister";
+import { removeAccessTokenIfObsolete } from "@/utils/removeAccessTokenIfObsolete";
 
 const RegisterPage: React.FC = () => {
+    const { register, isRegistering } = useRegister();
+
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleRegister = async () => {};
+    const handleRegister = () => register({ username: name, password });
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,10 +40,10 @@ const RegisterPage: React.FC = () => {
                 >
                     <Box
                         component="img"
-                        src="public/icon.png" // Ścieżka do obrazka w folderze public
+                        src="icon.png" // Ścieżka do obrazka w folderze public
                         sx={{
-                            width: '25%', // Możesz ustawić na '100%' lub inną wartość
-                            height: 'auto',
+                            width: "25%",
+                            height: "auto",
                             mb: 2, // Odstęp poniżej obrazka
                         }}
                     />
@@ -85,10 +89,27 @@ const RegisterPage: React.FC = () => {
                                 />
                             </Grid>
                         </Grid>
-                        <Grid container justifyContent="flex" sx={{justifyContent: 'center'}}>
-                        <LoginRegisterButton title="Zarejestruj się" onClick={(handleRegister)} sx={{height: {xs: '40px', md:'50px'}}} ></LoginRegisterButton>
+                        <Grid container justifyContent="flex" sx={{ justifyContent: "center" }}>
+                            <LoginRegisterButton
+                                title="Zarejestruj się"
+                                onClick={handleRegister}
+                                sx={{ height: { xs: "40px", md: "50px" } }}
+                                disabled={isRegistering}
+                            ></LoginRegisterButton>
 
-                            <LoginRegisterButton title="Masz już konto? Zaloguj się" onClick={() => navigate('/login')}  sx={{ height: { xs: '40px', md: '50px' }}}  variant="outlined" ></LoginRegisterButton>
+                            <LoginRegisterButton
+                                title="Masz już konto? Zaloguj się"
+                                onClick={() => navigate("/login")}
+                                sx={{ height: { xs: "40px", md: "50px" } }}
+                                variant="outlined"
+                            ></LoginRegisterButton>
+
+                            <LoginRegisterButton
+                                title="Strona główna"
+                                onClick={goToMainPageAction}
+                                sx={{ height: { xs: "40px", md: "50px" } }}
+                                variant="mainPage"
+                            ></LoginRegisterButton>
                         </Grid>
                     </Box>
                 </Box>

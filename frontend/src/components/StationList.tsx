@@ -127,21 +127,76 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
             <List>
                 {stations?.length ? (
                     stations.map((station, index) => (
-                        <ListItemButton
+                        <Box
                             key={index}
-                            onClick={() => navigate(`/slopedata/${station.id}`)}
                             sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
                                 mb: 2,
                                 "&:hover": {
                                     backgroundColor: "#d8eaf6",
                                 },
+                                padding: "8px",
+                                borderRadius: "8px",
                             }}
                         >
-                            <ListItemAvatar>
-                                <Avatar sx={{ bgcolor: "#1f4152" }}>{station.icon}</Avatar>
-                            </ListItemAvatar>
-                            <ListItemText primary={station.name} />
-                        </ListItemButton>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    flexGrow: 1,
+                                    cursor: "pointer",
+                                }}
+                                onClick={() => navigate(`/slopedata/${station.id}`)}
+                            >
+                                <ListItemAvatar>
+                                    <Avatar sx={{ bgcolor: "#1f4152" }}>{station.icon}</Avatar>
+                                </ListItemAvatar>
+                                <ListItemText primary={station.name} />
+                            </Box>
+
+                            {/* Ikony akcji */}
+                            {showActions && (
+                                <Box
+                                   sx={{
+                                       display: 'flex',
+                                       alignItems: 'center'
+                                   }}
+                                >
+                                    {station.nodesBatteryLevel != null && <>
+                                          {station.nodesBatteryLevel.filter(node => node.batteryLevel != null).map((node, index) => (
+                                             <Icon
+                                               key={index}
+                                               aria-label="Bateria"
+                                               title={`Poziom baterii dla Node ID=${node.nodeId}`}
+                                               onClick={() => showSnackbar(
+                                                  `Poziom baterii dla Node ID=${node.nodeId}`,
+                                                  "info",
+                                                  5000,
+                                               )}
+                                               sx={{ fontSize: "1.1rem", margin: 0, padding: 0, paddingRight: "2.5rem" }}
+                                             >
+                                                 {node.batteryLevel?.toFixed(2)}V
+                                             </Icon>
+                                          ))}
+                                    </>}
+                                    <IconButton
+                                        aria-label="Edytuj"
+                                        onClick={() => handleOpenNameDialog(station)}
+                                        sx={{ marginRight: 1 }}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
+                                    <IconButton
+                                        aria-label="Lokalizacja"
+                                        onClick={() => handleOpenLocationDialog(station)}
+                                    >
+                                        <PlaceIcon />
+                                    </IconButton>
+                                </Box>
+                            )}
+                        </Box>
                     ))
                 ) : (
                     <Typography variant="h6" sx={{ mb: 2 }}>
@@ -231,12 +286,7 @@ const StationList: React.FC<StationListProps> = ({ headerText, stations, showAct
                     <Button onClick={handleCloseDialogs} color="primary">
                         Anuluj
                     </Button>
-                    <Button
-                        onClick={handleSaveLocation}
-                        color="success"
-                        variant="contained"
-                        autoFocus
-                    >
+                    <Button onClick={handleSaveLocation} color="success" variant="contained">
                         Zapisz
                     </Button>
                 </DialogActions>

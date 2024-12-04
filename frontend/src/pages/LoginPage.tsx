@@ -1,7 +1,7 @@
 // login page only for users of sensors and hardware not for potential custoomers of skiing resort
-import {Container, CssBaseline, Box,Typography,TextField,Grid,} from "@mui/material";
-import React, { useState } from "react";
-import  {useNavigate} from "react-router-dom";
+import { Container, CssBaseline, Box, Typography, TextField, Grid } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
 import useLogin from "@/hooks/auth/useLogin";
 import { removeAccessTokenIfObsolete } from "@/utils/removeAccessTokenIfObsolete";
@@ -9,7 +9,12 @@ const LoginPage: React.FC = () => {
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleLogin = () => {};
+    const { isLoggingIn, login } = useLogin();
+    const handleLogin = () => {
+        login({ username: name, password });
+    };
+
+    // const handleLogin = () => {};
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,15 +39,16 @@ const LoginPage: React.FC = () => {
                         flexDirection: "column",
                         alignItems: "center",
                     }}
-                ><Box
-                    component="img"
-                    src="public/icon.png" // Ścieżka do obrazka w folderze public
-                    sx={{
-                        width: '25%', // Możesz ustawić na '100%' lub inną wartość
-                        height: 'auto',
-                        mb: 2, // Odstęp poniżej obrazka
-                    }}
-                />
+                >
+                    <Box
+                        component="img"
+                        src="icon.png" // Ścieżka do obrazka w folderze public
+                        sx={{
+                            width: "25%",
+                            height: "auto",
+                            mb: 2, // Odstęp poniżej obrazka
+                        }}
+                    />
                     <Typography variant="h4">Logowanie</Typography>
                     <Box sx={{ mt: 3 }} maxWidth="xs">
                         <Grid container spacing={2}>
@@ -85,11 +91,28 @@ const LoginPage: React.FC = () => {
                             </Grid>
                         </Grid>
 
-                        <Grid container justifyContent="flex" sx={{justifyContent: 'center'}}>
-                        <LoginRegisterButton title="Zaloguj się" onClick={(handleLogin)} sx={{height: {xs: '40px', md:'50px'}}} ></LoginRegisterButton>
+                        <Grid container justifyContent="flex" sx={{ justifyContent: "center" }}>
+                            <LoginRegisterButton
+                                title="Zaloguj się"
+                                onClick={handleLogin}
+                                disabled={isLoggingIn}
+                                sx={{ height: { xs: "40px", md: "50px" } }}
+                            ></LoginRegisterButton>
 
-                        <LoginRegisterButton title="Nie masz jeszcze konta? Zarejestruj się" onClick={() => navigate('/register')}  sx={{ height: { xs: '40px', md: '50px' }}}  variant="outlined" ></LoginRegisterButton>
-                    </Grid>
+                            <LoginRegisterButton
+                                title="Nie masz jeszcze konta? Zarejestruj się"
+                                onClick={() => navigate("/register")}
+                                sx={{ height: { xs: "40px", md: "50px" } }}
+                                variant="outlined"
+                            ></LoginRegisterButton>
+
+                            <LoginRegisterButton
+                                title="Strona główna"
+                                onClick={goToMainPageAction}
+                                sx={{ height: { xs: "40px", md: "50px" } }}
+                                variant="mainPage"
+                            ></LoginRegisterButton>
+                        </Grid>
                     </Box>
                 </Box>
             </Container>

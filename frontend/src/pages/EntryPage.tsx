@@ -1,31 +1,92 @@
-import React from 'react';
-import {Box, Typography} from '@mui/material';
-// import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
-// import {useNavigate} from "react-router-dom";
+import React from "react";
+import { Box, Typography } from "@mui/material";
+import StationList from "@/components/StationList.tsx";
+import LoginRegisterButton from "@/components/LoginRegisterButton.tsx";
+import { useNavigate } from "react-router-dom";
+import usePublicStations from "@/hooks/usePublicStations";
 
 const EntryPage: React.FC = () => {
-    // const navigate = useNavigate();
-    return (
-        <Box>
+    const navigate = useNavigate();
+    const stations = usePublicStations();
 
+    const isLoggedIn = !!localStorage.getItem("token");
+
+    return (
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                minHeight: "97vh",
+                borderRadius: "8px",
+                overflowY: "hidden",
+                // backgroundColor: "#9bcce5",
+            }}
+        >
             <Box
                 sx={{
-                    backgroundColor: '#1f4152',
-                    padding: '16px',
-                    textAlign: 'center',
-                    marginBottom: '16px',
-                    borderRadius: '8px'
+                    backgroundColor: "#0d598f",
+                    padding: "1%",
+                    textAlign: "center",
+                    marginBottom: "1%",
+                    borderRadius: "8px",
                 }}
             >
                 <Typography
                     variant="h4"
                     sx={{
-                        color: 'white',
-                        fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }
+                        color: "white",
+                        fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem" },
                     }}
                 >
                     ❄️Witamy na Narciarskiej Stacji Pomiarowo Pogodowej!❄️
                 </Typography>
+            </Box>
+
+            {/* Kontener z listą stacji */}
+            <Box
+                sx={{
+                    flex: 1,
+                    flexDirection: "column",
+                    alignItems: "center", // Wyśrodkowanie poziome
+                    justifyContent: "flex-start",
+                    display: "flex",
+                    padding: "1%",
+                    backgroundColor: "#9bcce5",
+                    borderRadius: "8px",
+                    marginBottom: "1%",
+                    overflowY: "auto",
+                    maxHeight: { lg: "70vh", xs: "80vh" },
+                }}
+            >
+                <StationList stations={stations}  showActions={false}/>
+            </Box>
+            <Box
+                sx={{
+                    // padding: "16px",
+                    // backgroundColor: "#0d598f",
+                    borderRadius: "8px",
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "1%",
+                }}
+            >
+               {isLoggedIn ?
+                  <LoginRegisterButton
+                     title="Konto"
+                     onClick={() => navigate("/account")}
+                     sx={{width: {xs: "100px", md: "150px"}}}
+                  /> : <>
+                  <LoginRegisterButton
+                     title="Logowanie"
+                     onClick={() => navigate("/login")}
+                     sx={{width: {xs: "100px", md: "150px"}}}
+                  />
+                     <LoginRegisterButton
+                     title="Rejestracja"
+                     onClick={() => navigate("/register")}
+                     sx={{width: {xs: "100px", md: "150px"}}}
+                  />
+               </>}
             </Box>
         </Box>
     );

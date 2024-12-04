@@ -1,68 +1,40 @@
-import React, { useState } from 'react';
-import { Box, Typography, FormControlLabel, Checkbox, Paper } from '@mui/material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import React, { useState } from "react";
+import {
+    Box,
+    Typography,
+    Radio,
+    RadioGroup,
+    FormControlLabel,
+    FormControl,
+    useMediaQuery,
+} from "@mui/material";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList, Cell, TooltipProps } from "recharts";
+import formatChartData from "@/utils/formatChartData.ts";
+import { useParams } from "react-router-dom";
+import { useIsItMyStation } from "@/hooks/useIsItMyStation";
 
-// Typ danych
-type PressureData = {
-    name: string;
-    value: number;
-};
+export interface DataEntry {
+    created: Date;
+    value: number | null;
+}
 
-// Typ dla zakresu danych
-type PressureDataRange = {
-    '24h': PressureData[];
-    '7d': PressureData[];
-    '30d': PressureData[];
-};
+interface ChartSkeletonProps {
+    title: string;
+    unit: string;
+    data: { [key: string]: DataEntry[] };
+}
 
-// Mockowe dane dla różnych zakresów
-const data: PressureDataRange = {
-    '24h': [
-        { name: '0h', value: 30 },
-        { name: '1h', value: 32 },
-        { name: '2h', value: 28 },
-        { name: '3h', value: 34 },
-        { name: '4h', value: 29 },
-        { name: '5h', value: 31 },
-        { name: '6h', value: 33 },
-        { name: '12h', value: 30 },
-        { name: '24h', value: 32 },
-    ],
-    '7d': [
-        { name: 'Dzień 1', value: 28 },
-        { name: 'Dzień 2', value: 29 },
-        { name: 'Dzień 3', value: 32 },
-        { name: 'Dzień 4', value: 35 },
-        { name: 'Dzień 5', value: 30 },
-        { name: 'Dzień 6', value: 31 },
-        { name: 'Dzień 7', value: 33 },
-    ],
-    '30d': [
-        { name: 'Tydzień 1', value: 30 },
-        { name: 'Tydzień 2', value: 31 },
-        { name: 'Tydzień 3', value: 29 },
-        { name: 'Tydzień 4', value: 32 },
-        { name: 'Tydzień 5', value: 33 },
-        { name: 'Tydzień 6', value: 30 },
-        { name: 'Tydzień 7', value: 28 },
-        { name: 'Tydzień 8', value: 35 },
-        { name: 'Tydzień 9', value: 31 },
-        { name: 'Tydzień 10', value: 32 },
-        { name: 'Tydzień 11', value: 34 },
-        { name: 'Tydzień 12', value: 30 },
-    ],
-};
+export type Intervals = "24h" | "7d" | "30d" | "1y" | "2y";
 
-const PressureChart: React.FC = () => {
-    const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d'>('24h'); // Użycie ograniczonego typu
-
-    // Funkcja zmieniająca zakres czasu
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setTimeRange(event.target.value as '24h' | '7d' | '30d'); // Rzutowanie wartości
+const ChartSkeleton: React.FC<ChartSkeletonProps> = ({ title, unit, data }) => {
+    const [timeRange, setTimeRange] = useState<Intervals>("24h");
+    const handleTimeRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setTimeRange(event.target.value as Intervals);
     };
 
-    // Wybór danych na podstawie wybranego zakresu
-    const selectedData = data[timeRange]; // Teraz TypeScript wie, że timeRange jest jednym z kluczy data
+    const isLoggedIn = localStorage.getItem("token") !== null;
+    const params = useParams();
+    const isItMyStation = useIsItMyStation(params.id ?? "");
 
     // Media query for responsiveness
     const isSmallScreen = useMediaQuery("(max-width: 700px)");
@@ -101,58 +73,65 @@ const PressureChart: React.FC = () => {
 
     return (
         <Box sx={{ padding: 3 }}>
-            <Typography variant="h4" gutterBottom>
-                Wykres ciśnienia
+            <Typography variant="h6" gutterBottom>
+                {title}
             </Typography>
 
-            <Box sx={{ display: 'flex', gap: 2, marginBottom: 2 }}>
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={timeRange === '24h'}
-                            onChange={handleChange}
-                            value="24h"
-                        />
-                    }
-                    label="Ostatnie 24h"
-                />
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={timeRange === '7d'}
-                            onChange={handleChange}
-                            value="7d"
-                        />
-                    }
-                    label="Ostatnie 7 dni"
-                />
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={timeRange === '30d'}
-                            onChange={handleChange}
-                            value="30d"
-                        />
-                    }
-                    label="Ostatnie 30 dni"
-                />
-            </Box>
+            <FormControl component="fieldset" sx={{ marginBottom: 3 }}>
+                <Typography variant="body1">Wybierz zakres czasowy:</Typography>
+                <RadioGroup row value={timeRange} onChange={handleTimeRangeChange} sx={{ gap: 2 }}>
+                    <FormControlLabel value="24h" control={<Radio />} label="Ostatnie 24h" />
+                    <FormControlLabel value="7d" control={<Radio />} label="Ostatnie 7 dni" />
+                    <FormControlLabel value="30d" control={<Radio />} label="Ostatnie 30 dni" />
+                    {isLoggedIn && isItMyStation && (
+                        <>
+                            <FormControlLabel value="1y" control={<Radio />} label="Ostatni rok" />
+                            <FormControlLabel value="2y" control={<Radio />} label="Ostatnie 2 lata" />
+                        </>
+                    )}
+                </RadioGroup>
+            </FormControl>
 
-            <Paper elevation={3} sx={{ padding: 2, backgroundColor: '#f0f0f0' }}>
-                <LineChart
-                    width={600}
-                    height={300}
+            <Box
+                sx={{
+                    padding: 2,
+                    overflowX: isSmallScreen || isMediumScreen ? "auto" : "unset",
+                    WebkitOverflowScrolling: "touch",
+                }}
+            >
+                <BarChart
+                    width={1200}
+                    height={400}
                     data={selectedData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    margin={{ top: 25, right: 30, bottom: 69 }}
                 >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
-                </LineChart>
-            </Paper>
+                    <XAxis
+                        dataKey="name"
+                        interval={0}
+                        angle={-45}
+                        textAnchor="end"
+                    />
+                    <YAxis
+                        tick={{ fontSize: 15, dy: 0 }}
+                        tickFormatter={(value: number) => `${value}`} // Show only numerical values
+                        label={{
+                            value: unit,
+                            angle: 0,
+                            position: "top",
+                            offset: 10,
+                            style: { fontSize: 16, fill: "#666" },
+                        }}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="value" fill="#8884d8">
+                        {selectedData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={index % 2 === 0 ? "#9bcce5" : "#7ca6c4"} />
+                        ))}
+                        <LabelList dataKey="value" position="top" />
+                    </Bar>
+                </BarChart>
+            </Box>
         </Box>
     );
 };
